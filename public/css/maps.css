@@ -1,0 +1,44 @@
+form {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin: 0 auto;
+}
+form > fieldset {
+  margin: 0 0.5rem;
+  padding: 1rem;
+  background-color: var(--color2);
+  border: none;
+  border-radius: 1rem;
+}
+form > fieldset > * {
+  margin-bottom: 0.5rem;
+}
+form > fieldset > div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: left;
+  height: min-content;
+  background-color: var(--color3);
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+form label {
+  cursor: pointer;
+}
+form > fieldset > div:hover {
+  background-color: var(--color4);
+}
+form select {
+  font-size: 1.25rem;
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+}
+form input {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+form label {
+  padding: 0.25rem;
+}

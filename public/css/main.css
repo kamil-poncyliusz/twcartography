@@ -1,0 +1,139 @@
+:root {
+  --color1: #313131;
+  --color2: #727272;
+  --color3: #9e4a00;
+  --color4: #ff9d68;
+  --color5: #242424;
+}
+@media (max-width: 1920px) {
+  html {
+    font-size: 16px;
+  }
+}
+@media (max-width: 1280px) {
+  html {
+    font-size: 12px;
+  }
+}
+@media (max-width: 800px) {
+  html {
+    font-size: 8px;
+  }
+}
+html,
+body {
+  width: 100vw;
+  background-color: var(--color1);
+  font-family: Arial, Helvetica, sans-serif;
+}
+a,
+button,
+select,
+input {
+  background-color: var(--color3);
+  color: var(--color5);
+  border: none;
+  cursor: pointer;
+}
+button:disabled,
+select:disabled,
+input:disabled {
+  cursor: not-allowed;
+}
+input {
+  cursor: text;
+}
+a:hover:enabled,
+button:hover:enabled,
+select:hover:enabled,
+input:hover:enabled {
+  background-color: var(--color4);
+}
+a:active,
+button:active {
+  background-color: var(--color2);
+}
+input:focus,
+select:focus,
+a:focus,
+button:focus {
+  outline: 2px solid var(--color4);
+}
+a:link {
+  text-decoration: none;
+}
+a:visited {
+  color: inherit;
+}
+a:hover {
+  color: inherit;
+}
+input {
+  border: none;
+}
+input[type="number"] {
+  appearance: textfield;
+}
+h1 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+h2 {
+  font-size: 1.5rem;
+}
+.hidden {
+  display: none;
+}
+
+main {
+  width: min-content;
+  margin: 1rem auto;
+}
+#accessories {
+  display: flex;
+  width: 100%;
+  margin: 0 auto 1rem auto;
+  font-size: 1.25rem;
+  text-align: left;
+}
+
+#maps-list {
+  display: flex;
+  flex-direction: column;
+  width: 50rem;
+}
+.map {
+  background-color: var(--color3);
+  padding: 0;
+  margin-bottom: 0.5rem;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+.map:hover {
+  background-color: var(--color4);
+}
+.map > a {
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+}
+.map > a > div:first-child {
+  height: 20rem;
+  flex: 0 0 20rem;
+  overflow: hidden;
+}
+.map > a > div:last-child {
+  display: block;
+  width: 0;
+  height: 20rem;
+  flex: 1 0 0;
+  padding: 0.5rem;
+}
+.map img {
+  width: 20rem;
+  height: 20rem;
+  object-fit: fill;
+}
+.map > a > div:last-child > * {
+  margin-bottom: 0.5rem;
+}

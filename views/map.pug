@@ -1,0 +1,29 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(http-equiv="X-UA-Compatible", content="IE=edge")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Map
+    link(rel="stylesheet", href="/css/reset.css", type="text/css")
+    link(rel="stylesheet", href="/css/main.css", type="text/css")
+    link(rel="stylesheet", href="/css/navbar.css", type="text/css")
+    link(rel="stylesheet", href="/css/map.css", type="text/css")
+    script(src="/scripts/map.js", type="module", defer)
+  body
+    include navbar.pug
+    #wrapper
+      #map
+        img(src="../images/maps/" + map.id + ".png", alt="mapa")
+      #info
+        h1= `${map.title}`
+        h2= `${map.description}`
+        p= `${map.turn} dzień świata ${map.worlds.server + map.worlds.num}`
+        div
+          span= `Stworzona przez `
+          a.user-label(href=`/user/${map.users.id}`) #{ map.users.login }
+          span= ` ${map.created_at.toLocaleDateString()}`
+        div
+          input#settings(type="text", name="settings", value=map.settings, readonly)
+        div
+          a.a-button(href=`/new/${map.settings}`) Stwórz mapę na podstawie tych ustawień

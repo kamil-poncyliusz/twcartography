@@ -1,0 +1,25 @@
+html,
+body {
+  height: 100%;
+}
+body {
+  display: flex;
+  align-items: center;
+  padding: 40px 0;
+  text-align: center;
+}
+body > div {
+  max-width: 400px;
+  padding: 20px;
+}
+body > div input[type="text"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+body > div input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}

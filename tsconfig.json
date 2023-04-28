@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "allowJs": false,
+    "target": "es2016",
+    "module": "ES2020",
+    "lib": ["esnext", "DOM"],
+    "sourceMap": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "outDir": "./",
+    "rootDir": "./ts",
+    "moduleResolution": "node",
+    "strict": true,
+    "useUnknownInCatchVariables": true,
+    "noImplicitThis": true,
+    "strictBindCallApply": true,
+    "alwaysStrict": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "noImplicitAny": true,
+    "strictFunctionTypes": true
+  },
+  "include": ["./ts/**/*", "tests/ts/public/scripts/utils.test.ts"],
+  "exclude": ["node_modules", "**/*.test.ts"]
+}

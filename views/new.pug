@@ -1,0 +1,85 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(http-equiv="X-UA-Compatible", content="IE=edge")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title New
+    link(rel="stylesheet", href="/css/reset.css", type="text/css")
+    link(rel="stylesheet", href="/css/main.css", type="text/css")
+    link(rel="stylesheet", href="/css/navbar.css", type="text/css")
+    link(rel="stylesheet", href="/css/new.css", type="text/css")
+    script(src="/scripts/new.js", type="module", defer)
+  body
+    include navbar.pug
+    #controls-wrapper
+      #settings.settings-tab
+        div
+          .row
+            label(for="background-color") Kolor tła:
+            div
+              input#background-color(type="color", name="background-color", autocomplete="off")
+          .row
+            span Skala
+            div
+              input#scale(type="number", name="scale", min="1", max="5", autocomplete="off")
+          .row
+            span Plamka
+            div
+              input#spot-size(type="number", name="spot-size", min="1", max="6", autocomplete="off")
+          .row
+            span Min. punkty wioski:
+            div
+              input#village-filter(type="number", name="village-filter", min="20", max="12154", autocomplete="off")
+          .row
+            span Filtr plamek
+            div
+              input#spots-filter(type="number", name="spots-filter", min="1", max="100", autocomplete="off")
+          .row
+            span Promień
+            div
+              input#radius(type="number", name="radius", min="1", max="500", autocomplete="off")
+          .row
+            label(for="auto-refresh") Auto-odświerzanie
+            div
+              input#auto-refresh(type="checkbox", name="auto-refresh", autocomplete="off")
+          .row
+            div
+              input#encoded-settings(type="text", name="encoded-settings", autocomplete="off", value=encodedSettings)
+      #mark-suggestions.marks-tab.hidden
+        div
+          table
+            thead
+              tr
+                th NAZWA
+                th
+                  input#suggestions-search-input(
+                    type="text",
+                    name="suggestions-search-input",
+                    placeholder="TAG",
+                    autocomplete="off"
+                  )
+                th GR
+                th WI
+                th PUNKTY
+                th DODAJ
+            tbody
+      #mark-groups.marks-tab.hidden
+        div
+          table
+            thead
+              tr
+                th LISTA
+                th NAZWA
+                th KOLOR
+                th PL
+                th GR
+                th WI
+                th PKT
+                th
+            tbody
+      #user-account.account-tab.hidden
+        div
+          include profileTab.pug
+    #map
+      canvas#map-canvas(width="100", height="100")

@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model maps {
+  id          Int      @id @default(autoincrement())
+  world       Int
+  turn        Int
+  created_at  DateTime @default(now()) @db.Timestamptz(0)
+  author      Int
+  title       String   @db.VarChar(20)
+  description String   @db.VarChar(100)
+  views       Int      @default(0)
+  settings    String
+  users       users    @relation(fields: [author], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "author_id")
+  worlds      worlds   @relation(fields: [world], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "world_id")
+}
+
+model users {
+  id       Int    @id @default(autoincrement())
+  login    String @unique @db.VarChar(15)
+  password String @db.Char(60)
+  rank     Int    @default(0)
+  maps     maps[]
+}
+
+model world_data {
+  world_id Int
+  turn     Int
+  data     Json   @db.Json
+  id       Int    @id @default(autoincrement())
+  worlds   worlds @relation(fields: [world_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "world_id")
+}
+
+model worlds {
+  id              Int          @id @default(autoincrement())
+  server          String
+  num             String
+  start_timestamp Int          @default(dbgenerated("EXTRACT(epoch FROM now())"))
+  domain          String       @default("plemiona.pl")
+  maps            maps[]
+  world_data      world_data[]
+}

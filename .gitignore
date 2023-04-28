@@ -1,0 +1,11 @@
+node_modules
+app.code-workspace
+.env
+temp/*
+public/images/maps
+*.txt
+coverage/*
+server.js
+public/scripts/*.js
+routes/*.js
+src/**/*.js

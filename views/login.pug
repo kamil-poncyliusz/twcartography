@@ -1,0 +1,16 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(http-equiv="X-UA-Compatible", content="IE=edge")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Login
+    link(rel="stylesheet", href="/css/login.css", type="text/css")
+    script(src="/scripts/login.js", defer)
+  body.text-center
+    .m-auto.w-100
+      form(class="")
+        h1.h2.mb-3.fw-normal Zaloguj się
+        input#login.form-control(type="text", name="login", autofocus)
+        input#password.form-control(type="password", name="password")
+        input#submit.w-100.btn.btn-lg.btn-primary(type="submit", value="Zaloguj")
