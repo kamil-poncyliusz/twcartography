@@ -1,14 +1,17 @@
 import fs from "fs";
 import zlib from "zlib";
-import { createWorldData } from "./queries/worldData";
+import { createWorldData } from "./queries/worldData.js";
 import { ParsedTurnData } from "../public/scripts/Types";
+import { Prisma } from "@prisma/client";
 
 const parseFile = function (world: number, turn: number, name: string) {
   const path = `temp/${world}/${turn}/${name}.txt.gz`;
   try {
     const fileData = fs.readFileSync(path);
     const unzipped = zlib.unzipSync(fileData);
-    return unzipped.toString().split(/\r?\n/).splice(-1);
+    let rows = unzipped.toString().split(/\r?\n/);
+    rows.splice(-1);
+    return rows;
   } catch {
     console.log(`Parsing failed for ${path}`);
     return [];
@@ -32,7 +35,7 @@ const worldDataParser = function (world_id: number, turn: number) {
     killDef: 0,
     villages: [],
   };
-  let fileData, row;
+  let fileData;
   const playerTribeIds: { [key: string]: string } = {};
   fileData = parseFile(world_id, turn, "ally");
   for (let i = 0; i < fileData.length; i++) {
@@ -113,7 +116,8 @@ const worldDataParser = function (world_id: number, turn: number) {
     }
   }
   parsedData.width = Math.ceil((maxDistance + 2) / 10) * 20;
-  createWorldData(world_id, turn, JSON.stringify(parsedData)).then((result) => {
+  const inputJsonValue = parsedData as unknown;
+  createWorldData(world_id, turn, inputJsonValue as Prisma.InputJsonValue).then((result) => {
     if (result) console.log(`World_data created: (world:${result.world_id},turn:${result.turn})`);
   });
 };

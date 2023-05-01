@@ -1,14 +1,15 @@
 import express from "express";
+import { Prisma } from "@prisma/client";
 import { readMaps, createMap } from "../src/queries/map.js";
 import { readWorldData } from "../src/queries/worldData.js";
 import { readWorld } from "../src/queries/world.js";
-import authorization, { AuthorizedRequest } from "../src/authorization.js";
+import authorization from "../src/authorization.js";
 import saveMapAsPng from "../src/saveMapAsPng.js";
 import SettingsValidator from "../public/scripts/SettingsValidator.js";
 import MapGenerator from "../public/scripts/MapGenerator.js";
 import { encodeSettings } from "../public/scripts/settingsCodec.js";
-import { ParsedTurnData, Settings, ReadMapsParameters } from "../public/scripts/Types.js";
-import { Prisma } from "@prisma/client";
+import { ParsedTurnData, Settings, ReadMapsParameters, AuthorizedRequest } from "../public/scripts/Types.js";
+
 type mapsWithRelations = Prisma.PromiseReturnType<typeof readMaps>;
 
 const router = express.Router();

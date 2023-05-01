@@ -1,7 +1,7 @@
-import CanvasController from "./Canvas";
 import GeneratorController from "./GeneratorController";
-import MarkGroupsTabController from "./MarkGroupsTab";
 import SettingsTabController from "./SettingsTab";
+import MarkGroupsTabController from "./MarkGroupsTab";
+import CanvasController from "./Canvas";
 
 const suggestionsTableElement = document.querySelector("#mark-suggestions table") as Element;
 

@@ -1,3 +1,5 @@
+import { Request } from "express";
+
 export interface MarkGroup {
   tribes: string[];
   name: string;
@@ -51,4 +53,18 @@ export interface ReadMapsParameters {
   order: "newest" | "oldest" | "views";
   timespan: "day" | "week" | "month" | "any";
   world: number | undefined;
+}
+export interface Authorized {
+  id: number;
+  login: string;
+  rank: number;
+}
+export interface AuthorizedRequest extends Request {
+  authorized?: Authorized;
+}
+export interface MapLoaderSettings {
+  author: number;
+  order: string;
+  timespan: string;
+  world: number;
 }

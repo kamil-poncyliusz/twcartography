@@ -7,11 +7,9 @@ import Canvas from "./Canvas.js";
 const showSettingsButton = document.getElementById("settings-button");
 const showMarksButton = document.getElementById("marks-button");
 const showAccountButton = document.getElementById("profile-button");
-
-const publishButton = document.getElementById("publish-button");
-
 const worldSelection = document.getElementById("world-selection");
 const turnInput = document.getElementById("turn-input") as HTMLInputElement;
+const publishButton = document.getElementById("publish-button");
 
 const changeSelectedWorld = function (e: Event) {
   const target = e.target as HTMLSelectElement;

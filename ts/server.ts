@@ -6,8 +6,9 @@ import cors from "cors";
 import { fileURLToPath } from "url";
 import router from "./routes/router.js";
 import api from "./routes/api.js";
-// import scheduleWorldDataDownload from "./src/scheduleWorldDataDownload.js";
-import parser from "./src/worldDataParser.js";
+import scheduleWorldDataDownload from "./src/scheduleWorldDataDownload.js";
+import worldDataParser from "./src/worldDataParser.js";
+import { readWorldData } from "./src/queries/worldData.js";
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -36,17 +37,5 @@ app.listen(process.env.PORT || PORT, () => {
   console.log("[server] Server started");
 });
 
-// worldDataDownloader();
-
-// parser(8, 5);
-// parser(8, 10);
-// parser(8, 15);
-// parser(8, 20);
-// parser(8, 25);
-// parser(8, 30);
-// parser(8, 35);
-// parser(8, 40);
-// parser(8, 45);
-// parser(8, 50);
-// parser(8, 55);
-// parser(8, 60);
+// scheduleWorldDataDownload();
+// worldDataParser(9, 30);

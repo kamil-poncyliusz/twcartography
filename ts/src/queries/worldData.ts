@@ -1,5 +1,6 @@
-import { PrismaClient, Prisma, world_data } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import { ParsedTurnData } from "../../public/scripts/Types";
+
 const prisma = new PrismaClient();
 
 export const readWorldData = async function (world: number, turn: number) {

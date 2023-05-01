@@ -1,9 +1,9 @@
 import fs from "fs";
 import scheduler from "node-schedule";
 import { DownloaderHelper } from "node-downloader-helper";
-import parseWorldData from "./worldDataParser.js";
-import { readWorlds } from "./queries/world.js";
 import { worlds } from "@prisma/client";
+import { readWorlds } from "./queries/world.js";
+import parseWorldData from "./worldDataParser.js";
 
 const files = ["village", "player", "ally", "conquer", "kill_all_tribe", "kill_att_tribe", "kill_def_tribe"];
 
@@ -40,7 +40,7 @@ async function downloadWorldData(world: worlds, turn: number) {
   fs.mkdirSync(turnPath);
   const promises = files.map((file) => {
     const url = `https://${world.server}${world.num}.${world.domain}/map/${file}.txt.gz`;
-    return downloadWorldDataFile(url, path, file);
+    return downloadWorldDataFile(url, turnPath, file);
   });
   try {
     await Promise.all(promises);

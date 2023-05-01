@@ -1,15 +1,11 @@
-import { maps, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { readMaps, readMap } from "../../src/queries/map.js";
+import { MapLoaderSettings } from "./Types.js";
+
 type mapsWithRelations = Prisma.PromiseReturnType<typeof readMaps>;
 type mapWithRelations = Prisma.PromiseReturnType<typeof readMap>;
-const mapsList = document.getElementById("maps-list") as Element;
 
-export interface MapLoaderSettings {
-  author: number;
-  order: string;
-  timespan: string;
-  world: number;
-}
+const mapsList = document.getElementById("maps-list") as Element;
 
 class MapLoader {
   #author: number = 0;

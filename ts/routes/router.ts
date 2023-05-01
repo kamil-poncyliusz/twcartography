@@ -1,12 +1,13 @@
 import express from "express";
+import { worlds, maps } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jsonwebtoken from "jsonwebtoken";
-import authorization, { Authorized } from "../src/authorization.js";
-import { AuthorizedRequest } from "../src/authorization.js";
+import authorization from "../src/authorization.js";
 import { readMap } from "../src/queries/map.js";
 import { createUser, readUser, readUserByLogin } from "../src/queries/user.js";
 import { readWorlds } from "../src/queries/world.js";
-import { worlds, maps } from "@prisma/client";
+import { Authorized, AuthorizedRequest } from "../public/scripts/Types.js";
+
 interface Locals {
   page: "index" | "maps" | "map" | "user" | "new";
   loggedIn: boolean;
@@ -39,11 +40,7 @@ const router = express.Router();
 
 router.get("/", authorization, async (req: AuthorizedRequest, res) => {
   const locals = await getLocals("index", req.authorized);
-  res.render("index", locals);
-});
-
-router.get("/login", (req, res) => {
-  res.render("login", {});
+  return res.render("index", locals);
 });
 
 router.post("/auth", async (req, res) => {

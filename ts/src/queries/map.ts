@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma, maps } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import { ReadMapsParameters } from "../../public/scripts/Types";
 
 const prisma = new PrismaClient();

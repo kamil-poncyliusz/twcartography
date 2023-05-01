@@ -1,15 +1,6 @@
+import { NextFunction, Response } from "express";
 import jsonwebtoken from "jsonwebtoken";
-import { NextFunction, Request, Response } from "express";
-
-export interface Authorized {
-  id: number;
-  login: string;
-  rank: number;
-}
-
-export interface AuthorizedRequest extends Request {
-  authorized?: Authorized;
-}
+import { Authorized, AuthorizedRequest } from "../public/scripts/Types";
 
 const authorization = function (req: AuthorizedRequest, res: Response, next: NextFunction) {
   if (typeof req.cookies.token !== "string") return next();

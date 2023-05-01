@@ -40,11 +40,8 @@ select:disabled,
 input:disabled {
   cursor: not-allowed;
 }
-input {
-  cursor: text;
-}
-a:hover:enabled,
-button:hover:enabled,
+a:hover,
+button:hover,
 select:hover:enabled,
 input:hover:enabled {
   background-color: var(--color4);
@@ -54,9 +51,7 @@ button:active {
   background-color: var(--color2);
 }
 input:focus,
-select:focus,
-a:focus,
-button:focus {
+select:focus {
   outline: 2px solid var(--color4);
 }
 a:link {
@@ -70,6 +65,7 @@ a:hover {
 }
 input {
   border: none;
+  cursor: text;
 }
 input[type="number"] {
   appearance: textfield;
@@ -81,8 +77,28 @@ h1 {
 h2 {
   font-size: 1.5rem;
 }
+table {
+  border-collapse: separate;
+  border-spacing: 0.25rem;
+  text-align: center;
+  color: var(--color5);
+}
+table th {
+  font-weight: bold;
+}
+
+table td,
+table th {
+  font-size: 1rem;
+  padding: 0.25rem;
+  vertical-align: middle;
+}
+
 .hidden {
   display: none;
+}
+input.is-invalid {
+  outline: 2px solid red;
 }
 
 main {
@@ -96,7 +112,6 @@ main {
   font-size: 1.25rem;
   text-align: left;
 }
-
 #maps-list {
   display: flex;
   flex-direction: column;

@@ -1,5 +1,6 @@
 import "./navBar.js";
-import MapLoader, { MapLoaderSettings } from "./MapLoader.js";
+import MapLoader from "./MapLoader.js";
+import { MapLoaderSettings } from "./Types.js";
 
 const pathnameParts = window.location.pathname.split("/");
 let userId = parseInt(pathnameParts[2]);

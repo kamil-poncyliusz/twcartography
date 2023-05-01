@@ -7,9 +7,6 @@ body {
   display: flex;
   flex-direction: column;
 }
-input.is-invalid {
-  outline: 2px solid red;
-}
 
 .delete-group {
   width: 2.5rem;
@@ -39,21 +36,6 @@ input.is-invalid {
   border-radius: 0.5rem;
   max-height: calc(100vh - 4rem);
   overflow-y: scroll;
-}
-#controls-wrapper table {
-  border-collapse: separate;
-  border-spacing: 0.25rem;
-  text-align: center;
-  color: var(--color5);
-}
-#controls-wrapper td,
-#controls-wrapper th {
-  font-size: 1rem;
-  padding: 0.25rem;
-  vertical-align: middle;
-}
-#controls-wrapper th {
-  font-weight: bold;
 }
 
 #settings > div {

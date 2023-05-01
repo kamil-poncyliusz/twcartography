@@ -1,3 +1,4 @@
+import { Base64 } from "./base64.js";
 import { MarkGroup, Settings } from "./Types";
 
 export const encodeSettings = function (settings: Settings): string {
@@ -21,7 +22,8 @@ export const encodeSettings = function (settings: Settings): string {
   result += `${settings.turn}:`;
   result += `${settings.villageFilter}:`;
   result += `${settings.world}`;
-  return btoa(result);
+  const encoded = Base64.encode(result);
+  return encoded;
 };
 
 export const decodeSettings = function (input: string): Settings {
@@ -37,7 +39,7 @@ export const decodeSettings = function (input: string): Settings {
     world: 0,
   };
   if (input === "") return defaultSettings;
-  const string = atob(input);
+  const string = Base64.decode(input);
   const markGroups: MarkGroup[] = [];
   const [markGroupsString, settingsString] = string.split(";^*");
   if (markGroupsString === "" || !markGroupsString || settingsString === "" || !settingsString) return defaultSettings;
