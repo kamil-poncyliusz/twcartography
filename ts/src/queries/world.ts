@@ -24,13 +24,14 @@ export const readWorlds = async function () {
   return result;
 };
 
-export const createWorld = async function (server: string, num: string, domain: string) {
+export const createWorld = async function (server: string, num: string, domain: string, startTimestamp: number) {
   const result = await prisma.worlds
     .create({
       data: {
         server: server,
         num: num,
         domain: domain,
+        start_timestamp: startTimestamp,
       },
     })
     .catch((err) => {

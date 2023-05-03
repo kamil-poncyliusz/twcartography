@@ -1,0 +1,23 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(http-equiv="X-UA-Compatible", content="IE=edge")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Admin Panel
+    link(rel="stylesheet", href="/css/reset.css", type="text/css")
+    link(rel="stylesheet", href="/css/main.css", type="text/css")
+    link(rel="stylesheet", href="/css/admin/worlds.css", type="text/css")
+    script(src="/scripts/worlds.js", type="module", defer)
+  body
+    form
+      div
+        input#server(type="text", name="server", autocomplete="off", placeholder="server")
+      div
+        input#num(type="text", name="num", autocomplete="off", placeholder="num")
+      div
+        input#start-timestamp(type="number", name="start-timestamp", autocomplete="off", placeholder="timestamp")
+      div
+        input#domain(type="text", name="domain", autocomplete="off", placeholder="domain")
+      div
+        input(type="submit", value="Dodaj")

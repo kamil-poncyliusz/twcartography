@@ -6,9 +6,10 @@ import cors from "cors";
 import { fileURLToPath } from "url";
 import router from "./routes/router.js";
 import api from "./routes/api.js";
+import admin from "./routes/admin.js";
 import scheduleWorldDataDownload from "./src/scheduleWorldDataDownload.js";
 import worldDataParser from "./src/worldDataParser.js";
-import { readWorldData } from "./src/queries/worldData.js";
+import { authorization, adminAuthorization } from "./src/authorization.js";
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -30,8 +31,11 @@ app.use(
   })
 );
 
+app.use("/", authorization);
 app.use("/", router);
 app.use("/api", api);
+app.use("/admin", adminAuthorization);
+app.use("/admin", admin);
 
 app.listen(process.env.PORT || PORT, () => {
   console.log("[server] Server started");

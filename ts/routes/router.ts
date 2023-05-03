@@ -2,7 +2,6 @@ import express from "express";
 import { worlds, maps } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jsonwebtoken from "jsonwebtoken";
-import authorization from "../src/authorization.js";
 import { readMap } from "../src/queries/map.js";
 import { createUser, readUser, readUserByLogin } from "../src/queries/user.js";
 import { readWorlds } from "../src/queries/world.js";
@@ -38,7 +37,7 @@ async function getLocals(page: "index" | "maps" | "map" | "user" | "new", author
 
 const router = express.Router();
 
-router.get("/", authorization, async (req: AuthorizedRequest, res) => {
+router.get("/", async (req: AuthorizedRequest, res) => {
   const locals = await getLocals("index", req.authorized);
   return res.render("index", locals);
 });
@@ -110,12 +109,12 @@ router.post("/register", async (req, res) => {
   });
 });
 
-router.get("/maps", authorization, async (req: AuthorizedRequest, res) => {
+router.get("/maps", async (req: AuthorizedRequest, res) => {
   const locals = await getLocals("maps", req.authorized);
   return res.render("maps", locals);
 });
 
-router.get("/map/:id", authorization, async (req: AuthorizedRequest, res) => {
+router.get("/map/:id", async (req: AuthorizedRequest, res) => {
   const locals = await getLocals("map", req.authorized);
   const id = parseInt(req.params.id);
   const map = await readMap(id);
@@ -124,13 +123,13 @@ router.get("/map/:id", authorization, async (req: AuthorizedRequest, res) => {
   return res.render("map", locals);
 });
 
-router.get("/new/:settings?", authorization, async (req: AuthorizedRequest, res) => {
+router.get("/new/:settings?", async (req: AuthorizedRequest, res) => {
   const locals = await getLocals("new", req.authorized);
   locals.encodedSettings = req.params.settings ?? "";
   res.render("new", locals);
 });
 
-router.get("/user/:id", authorization, async (req: AuthorizedRequest, res) => {
+router.get("/user/:id", async (req: AuthorizedRequest, res) => {
   const locals = await getLocals("user", req.authorized);
   const id = parseInt(req.params.id);
   const user = await readUser(id);

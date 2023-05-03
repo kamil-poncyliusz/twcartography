@@ -2,8 +2,8 @@ import express from "express";
 import { Prisma } from "@prisma/client";
 import { readMaps, createMap } from "../src/queries/map.js";
 import { readWorldData } from "../src/queries/worldData.js";
-import { readWorld } from "../src/queries/world.js";
-import authorization from "../src/authorization.js";
+import { createWorld, readWorld } from "../src/queries/world.js";
+import { authorization } from "../src/authorization.js";
 import saveMapAsPng from "../src/saveMapAsPng.js";
 import SettingsValidator from "../public/scripts/SettingsValidator.js";
 import MapGenerator from "../public/scripts/MapGenerator.js";
@@ -12,22 +12,29 @@ import { ParsedTurnData, Settings, ReadMapsParameters, AuthorizedRequest } from 
 
 type mapsWithRelations = Prisma.PromiseReturnType<typeof readMaps>;
 
-const router = express.Router();
+const api = express.Router();
 
-router.get("/world/:id", async (req, res) => {
+const validateWorldCreateBody = function (row: any) {
+  if (!row.server || typeof row.server !== "string" || row.server === "") return false;
+  if (!row.num || typeof row.num !== "string" || row.num === "") return false;
+  if (!row.domain || typeof row.domain !== "string" || row.domain === "") return false;
+  if (!row.timestamp || typeof row.timestamp !== "number" || row.timestamp <= 0) return false;
+  return true;
+};
+
+api.get("/world/:id", async (req, res) => {
   const id = parseInt(req.params.id);
   const data = await readWorld(id);
   return res.json(data);
 });
-router.get("/data/:world/:turn", async (req, res) => {
+api.get("/data/:world/:turn", async (req, res) => {
   const world = parseInt(req.params.world);
   const turn = parseInt(req.params.turn);
   const data = await readWorldData(world, turn);
   return res.json(data);
 });
-router.post("/map/create", authorization, async (req: AuthorizedRequest, res) => {
+api.post("/map/create", async (req: AuthorizedRequest, res) => {
   if (!req.authorized) return res.json(false);
-  console.log(req.authorized);
   if (req.authorized.rank !== 1) return res.json(false);
   const settings = req.body as Settings;
   if (!SettingsValidator.settings(settings)) return res.json(false);
@@ -53,7 +60,7 @@ router.post("/map/create", authorization, async (req: AuthorizedRequest, res) =>
     return res.json(false);
   }
 });
-router.get("/maps/:world/:author/:timespan/:order/:page", async (req, res) => {
+api.get("/maps/:world/:author/:timespan/:order/:page", async (req, res) => {
   const world = parseInt(req.params.world);
   const author = parseInt(req.params.author);
   const page = parseInt(req.params.page);
@@ -71,5 +78,19 @@ router.get("/maps/:world/:author/:timespan/:order/:page", async (req, res) => {
   const maps = await readMaps(page, params);
   return res.json(maps);
 });
+api.post("/world/create", async (req: AuthorizedRequest, res) => {
+  console.log("create world request...");
+  if (!req.authorized) return res.json({});
+  if (req.authorized.rank !== 2) return res.json({});
+  if (!validateWorldCreateBody(req.body)) return res.json({});
+  const server: string = req.body.server;
+  const num: string = req.body.num;
+  const domain: string = req.body.domain;
+  const timestamp: number = req.body.timestamp;
+  const createdWorld = await createWorld(server, num, domain, timestamp);
+  if (!createdWorld) return res.json({});
+  console.log("Stworzono świat o id", createdWorld.id);
+  return res.json(createdWorld);
+});
 
-export default router;
+export default api;

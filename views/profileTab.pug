@@ -1,5 +1,5 @@
-if user
-  p Zalogowany jako #{ login }
+if loggedIn
+  p Zalogowany jako #{ userLogin }
   if page === "new"
     button#publish-button.btn Opublikuj
 else
