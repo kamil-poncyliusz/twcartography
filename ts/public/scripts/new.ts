@@ -3,10 +3,10 @@ import SettingsTab from "./SettingsTab.js";
 import SuggestionsTab from "./SuggestionsTab.js";
 import MarkGroupsTab from "./MarkGroupsTab.js";
 import Canvas from "./Canvas.js";
+import "./navBar.js";
 
 const showSettingsButton = document.getElementById("settings-button");
 const showMarksButton = document.getElementById("marks-button");
-const showAccountButton = document.getElementById("profile-button");
 const worldSelection = document.getElementById("world-selection");
 const turnInput = document.getElementById("turn-input") as HTMLInputElement;
 const publishButton = document.getElementById("publish-button");
@@ -43,7 +43,7 @@ const changeTurn = function (e: Event) {
 };
 const sendPublishRequest = async function () {
   const settings = mapGenerator.settings;
-  const url = "http://localhost:8080/api/map/create";
+  const url = `http://${window.location.host}/api/map/create`;
   const body = JSON.stringify(settings);
   let response = await fetch(url, {
     method: "POST",
@@ -92,10 +92,6 @@ if (showSettingsButton)
 if (showMarksButton)
   showMarksButton.addEventListener("click", function () {
     showTab("marks-tab");
-  });
-if (showAccountButton)
-  showAccountButton.addEventListener("click", function () {
-    showTab("account-tab");
   });
 if (publishButton) publishButton.addEventListener("click", sendPublishRequest);
 

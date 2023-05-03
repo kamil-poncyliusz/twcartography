@@ -18,7 +18,6 @@ process.env.ROOT = __dirname;
 const PORT = "8080";
 
 app.set("view engine", "pug");
-app.set("env", "development");
 app.set("json escape", true);
 
 app.use(express.urlencoded({ extended: true }));

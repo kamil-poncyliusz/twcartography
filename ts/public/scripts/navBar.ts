@@ -1,6 +1,6 @@
 import loginRequest from "./loginRequest.js";
 
-const profileButton = <HTMLButtonElement>document.getElementById("profile-button");
+const profileButton = document.getElementById("profile-button") as HTMLButtonElement;
 const loginForm = document.getElementById("login-form");
 
 profileButton.addEventListener("click", function (e: Event) {

@@ -150,7 +150,7 @@ class GeneratorController {
   async fetchTurnData(turn: number) {
     const world = this.world;
     if (world === 0) return false;
-    const url = `http://localhost:8080/api/data/${world}/${turn}`;
+    const url = `http://${window.location.host}/api/data/${world}/${turn}`;
     const result = await fetch(url);
     const data = await result.json();
     if (data === null) return false;
@@ -158,7 +158,7 @@ class GeneratorController {
     return true;
   }
   async fetchWorldInfo(world: number) {
-    const info = await fetch(`http://localhost:8080/api/world/${world}`)
+    const info = await fetch(`http://${window.location.host}/api/world/${world}`)
       .then((r) => r.json())
       .then((data) => {
         this.data = {};

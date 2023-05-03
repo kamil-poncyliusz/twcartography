@@ -22,9 +22,9 @@ class MapLoader {
   }
   async #fetchMaps() {
     this.#page++;
-    const url = `http://localhost:8080/api/maps/${this.#world}/${this.#author}/${this.#timespan}/${this.#order}/${
-      this.#page
-    }`;
+    const url = `http://${window.location.host}/api/maps/${this.#world}/${this.#author}/${this.#timespan}/${
+      this.#order
+    }/${this.#page}`;
     this.#fetching = true;
     const result = await fetch(url);
     const maps = (await result.json()) as mapsWithRelations;
