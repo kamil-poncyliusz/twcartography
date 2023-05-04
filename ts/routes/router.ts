@@ -1,5 +1,5 @@
 import express from "express";
-import { worlds, maps } from "@prisma/client";
+import { World, Created_map } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jsonwebtoken from "jsonwebtoken";
 import { readMap } from "../src/queries/map.js";
@@ -13,8 +13,8 @@ interface Locals {
   userId?: number;
   userLogin?: string;
   userRank?: number;
-  worlds?: worlds[];
-  map?: maps;
+  worlds?: World[];
+  map?: Created_map;
   encodedSettings?: string;
 }
 

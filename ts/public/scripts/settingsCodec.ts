@@ -23,7 +23,7 @@ export const encodeSettings = function (settings: Settings): string {
   result += `${settings.villageFilter}:`;
   result += `${settings.world}`;
   const encoded = Base64.encode(result);
-  return encoded;
+  return encodeURIComponent(encoded);
 };
 
 export const decodeSettings = function (input: string): Settings {
@@ -39,7 +39,8 @@ export const decodeSettings = function (input: string): Settings {
     world: 0,
   };
   if (input === "") return defaultSettings;
-  const string = Base64.decode(input);
+  const decodedURI = decodeURIComponent(input);
+  const string = Base64.decode(decodedURI);
   const markGroups: MarkGroup[] = [];
   const [markGroupsString, settingsString] = string.split(";^*");
   if (markGroupsString === "" || !markGroupsString || settingsString === "" || !settingsString) return defaultSettings;

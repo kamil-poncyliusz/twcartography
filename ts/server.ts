@@ -41,4 +41,4 @@ app.listen(process.env.PORT || PORT, () => {
 });
 
 // scheduleWorldDataDownload();
-// worldDataParser(9, 30);
+// worldDataParser(1, 30);

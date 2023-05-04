@@ -7,42 +7,44 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model maps {
+model Created_map {
   id          Int      @id @default(autoincrement())
-  world       Int
+  world_id    Int
   turn        Int
   created_at  DateTime @default(now()) @db.Timestamptz(0)
-  author      Int
+  author_id   Int
   title       String   @db.VarChar(20)
   description String   @db.VarChar(100)
   views       Int      @default(0)
   settings    String
-  users       users    @relation(fields: [author], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "author_id")
-  worlds      worlds   @relation(fields: [world], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "world_id")
+  author      User    @relation(fields: [author_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  world       World   @relation(fields: [world_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
-model users {
-  id       Int    @id @default(autoincrement())
-  login    String @unique @db.VarChar(15)
-  password String @db.Char(60)
-  rank     Int    @default(0)
-  maps     maps[]
+model User {
+  id       Int           @id @default(autoincrement())
+  login    String        @unique @db.VarChar(20)
+  password String        @db.Char(60)
+  rank     Int           @default(0)
+  maps     Created_map[]
 }
 
-model world_data {
+model WorldData {
   world_id Int
   turn     Int
   data     Json   @db.Json
   id       Int    @id @default(autoincrement())
-  worlds   worlds @relation(fields: [world_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "world_id")
+  world    World  @relation(fields: [world_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@index([world_id, turn], name:"world_turn")
 }
 
-model worlds {
-  id              Int          @id @default(autoincrement())
+model World {
+  id              Int            @id @default(autoincrement())
   server          String
   num             String
-  start_timestamp Int          @default(dbgenerated("EXTRACT(epoch FROM now())"))
-  domain          String       @default("plemiona.pl")
-  maps            maps[]
-  world_data      world_data[]
+  start_timestamp Int
+  domain          String
+  maps            Created_map[]
+  world_data      WorldData[]
+  @@index([server,num], name: "full_name")
 }

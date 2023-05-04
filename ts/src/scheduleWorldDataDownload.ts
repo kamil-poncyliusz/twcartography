@@ -1,7 +1,7 @@
 import fs from "fs";
 import scheduler from "node-schedule";
 import { DownloaderHelper } from "node-downloader-helper";
-import { worlds } from "@prisma/client";
+import { World } from "@prisma/client";
 import { readWorlds } from "./queries/world.js";
 import parseWorldData from "./worldDataParser.js";
 
@@ -32,7 +32,7 @@ function downloadWorldDataFile(url: string, path: string, filename: string) {
     });
   });
 }
-async function downloadWorldData(world: worlds, turn: number) {
+async function downloadWorldData(world: World, turn: number) {
   const files = ["village", "player", "ally", "conquer", "kill_all_tribe", "kill_att_tribe", "kill_def_tribe"];
   const path = `${process.env.ROOT}/temp/${world.id}`;
   if (!fs.existsSync(path)) fs.mkdirSync(path);

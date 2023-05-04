@@ -18,10 +18,10 @@ html(lang="en")
       #info
         h1= `${map.title}`
         h2= `${map.description}`
-        p= `${map.turn} dzień świata ${map.worlds.server + map.worlds.num}`
+        p= `${map.turn} dzień świata ${map.world.server + map.world.num}`
         div
           span= `Stworzona przez `
-          a.user-label(href=`/user/${map.users.id}`) #{ map.users.login }
+          a.user-label(href=`/user/${map.author.id}`) #{ map.author.login }
           span= ` ${map.created_at.toLocaleDateString()}`
         div
           input#settings(type="text", name="settings", value=map.settings, readonly)
