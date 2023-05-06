@@ -1,6 +1,6 @@
 import fs from "fs";
 import zlib from "zlib";
-import { createWorldData } from "./queries/worldData.js";
+import { createWorldData } from "./queries/index.js";
 import { ParsedTurnData } from "../public/scripts/Types";
 import { Prisma } from "@prisma/client";
 

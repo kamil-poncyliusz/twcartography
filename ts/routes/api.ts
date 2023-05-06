@@ -1,9 +1,6 @@
 import express from "express";
 import { Prisma } from "@prisma/client";
-import { readMaps, createMap } from "../src/queries/map.js";
-import { readWorldData } from "../src/queries/worldData.js";
-import { createWorld, readWorld } from "../src/queries/world.js";
-import { authorization } from "../src/authorization.js";
+import { readMaps, createMap, readWorldData, createWorld, readWorld } from "../src/queries/index.js";
 import saveMapAsPng from "../src/saveMapAsPng.js";
 import SettingsValidator from "../public/scripts/SettingsValidator.js";
 import MapGenerator from "../public/scripts/MapGenerator.js";

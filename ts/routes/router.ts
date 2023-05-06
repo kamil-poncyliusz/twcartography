@@ -1,10 +1,8 @@
 import express from "express";
-import { World, Created_map } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jsonwebtoken from "jsonwebtoken";
-import { readMap } from "../src/queries/map.js";
-import { createUser, readUser, readUserByLogin } from "../src/queries/user.js";
-import { readWorlds } from "../src/queries/world.js";
+import { readMap, createUser, readUser, readUserByLogin, readWorlds } from "../src/queries/index.js";
+import { World, Created_map } from "@prisma/client";
 import { Authorized, AuthorizedRequest } from "../public/scripts/Types.js";
 
 interface Locals {
@@ -69,6 +67,26 @@ router.post("/auth", async (req, res) => {
   return res.json({ success: true, token: token });
 });
 
+router.get("/map/:id", async (req: AuthorizedRequest, res) => {
+  const locals = await getLocals("map", req.authorized);
+  const id = parseInt(req.params.id);
+  const map = await readMap(id);
+  if (map === null) return res.status(404);
+  locals.map = map;
+  return res.render("map", locals);
+});
+
+router.get("/maps", async (req: AuthorizedRequest, res) => {
+  const locals = await getLocals("maps", req.authorized);
+  return res.render("maps", locals);
+});
+
+router.get("/new/:settings?", async (req: AuthorizedRequest, res) => {
+  const locals = await getLocals("new", req.authorized);
+  locals.encodedSettings = req.params.settings ?? "";
+  res.render("new", locals);
+});
+
 router.get("/register", (req, res) => {
   res.render("register", {});
 });
@@ -107,26 +125,6 @@ router.post("/register", async (req, res) => {
   return res.render("register", {
     success: true,
   });
-});
-
-router.get("/maps", async (req: AuthorizedRequest, res) => {
-  const locals = await getLocals("maps", req.authorized);
-  return res.render("maps", locals);
-});
-
-router.get("/map/:id", async (req: AuthorizedRequest, res) => {
-  const locals = await getLocals("map", req.authorized);
-  const id = parseInt(req.params.id);
-  const map = await readMap(id);
-  if (map === null) return res.status(404);
-  locals.map = map;
-  return res.render("map", locals);
-});
-
-router.get("/new/:settings?", async (req: AuthorizedRequest, res) => {
-  const locals = await getLocals("new", req.authorized);
-  locals.encodedSettings = req.params.settings ?? "";
-  res.render("new", locals);
 });
 
 router.get("/user/:id", async (req: AuthorizedRequest, res) => {

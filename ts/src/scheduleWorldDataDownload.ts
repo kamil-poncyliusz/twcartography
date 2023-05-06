@@ -2,7 +2,7 @@ import fs from "fs";
 import scheduler from "node-schedule";
 import { DownloaderHelper } from "node-downloader-helper";
 import { World } from "@prisma/client";
-import { readWorlds } from "./queries/world.js";
+import { readWorlds } from "./queries/index.js";
 import parseWorldData from "./worldDataParser.js";
 
 const files = ["village", "player", "ally", "conquer", "kill_all_tribe", "kill_att_tribe", "kill_def_tribe"];
