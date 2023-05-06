@@ -18,6 +18,7 @@ export const createWorld = world.createWorld;
 export const deleteWorld = world.deleteWorld;
 export const readWorld = world.readWorld;
 export const readWorlds = world.readWorlds;
+export const readWorldsWithWorldData = world.readWorldsWithWorldData;
 
 export const createWorldData = worldData.createWorldData;
 export const deleteWorldData = worldData.deleteWorldData;

@@ -24,6 +24,25 @@ export const readWorlds = async function () {
   return result;
 };
 
+export const readWorldsWithWorldData = async function () {
+  const result = await prisma.world
+    .findMany({
+      include: {
+        world_data: {
+          select: {
+            id: true,
+            turn: true,
+          },
+        },
+      },
+    })
+    .catch((err) => {
+      console.error("Prisma error:", err);
+      return null;
+    });
+  return result;
+};
+
 export const createWorld = async function (server: string, num: string, domain: string, startTimestamp: number) {
   const result = await prisma.world
     .create({
