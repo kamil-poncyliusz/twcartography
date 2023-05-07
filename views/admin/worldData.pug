@@ -7,10 +7,13 @@ html(lang="en")
     title Admin Panel
     link(rel="stylesheet", href="/css/reset.css", type="text/css")
     link(rel="stylesheet", href="/css/main.css", type="text/css")
-    link(rel="stylesheet", href="/css/admin/index.css", type="text/css")
-    //- script(src="/scripts/admin.js", type="module", defer)
+    link(rel="stylesheet", href="/css/admin/worldData.css", type="text/css")
+    script(src="/scripts/worldData.js", type="module", defer)
   body
-    div
-      a(href="/admin/worlds") Światy
-    div
-      a(href="/admin/world-data") Dane światów
+    table#world-data
+      tbody
+        each world in worlds
+          tr
+            td= world.server + world.num
+            each worldData in world.world_data
+              td= worldData.turn
