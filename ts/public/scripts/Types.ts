@@ -1,4 +1,5 @@
 import { Request } from "express";
+import { World } from "@prisma/client";
 
 export interface MarkGroup {
   tribes: string[];
@@ -68,3 +69,4 @@ export interface MapLoaderSettings {
   timespan: string;
   world: number;
 }
+export type worldWithWorldData = World & { world_data: { id: number; turn: number }[] };

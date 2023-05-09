@@ -12,8 +12,11 @@ html(lang="en")
   body
     table#world-data
       tbody
-        each world in worlds
+        each world in state
           tr
-            td= world.server + world.num
-            each worldData in world.world_data
-              td= worldData.turn
+            td= world.serverName
+            each turn, index in world.turns
+              if turn.id === -1
+                td(title=`Tura ${index}, brak danych`)= index
+              else
+                td(title=`Tura ${index}, dane w bazie`)= index

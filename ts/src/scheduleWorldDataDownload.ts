@@ -4,14 +4,9 @@ import { DownloaderHelper } from "node-downloader-helper";
 import { World } from "@prisma/client";
 import { readWorlds } from "./queries/index.js";
 import parseWorldData from "./worldDataParser.js";
+import daysFromStart from "./days-from-start.js";
 
 const files = ["village", "player", "ally", "conquer", "kill_all_tribe", "kill_att_tribe", "kill_def_tribe"];
-
-function daysFromStart(date: Date) {
-  const difference = Date.now() - date.getTime();
-  const days = Math.floor(difference / 1000 / 60 / 60 / 24);
-  return days;
-}
 
 function downloadWorldDataFile(url: string, path: string, filename: string) {
   const dl = new DownloaderHelper(url, path, {
