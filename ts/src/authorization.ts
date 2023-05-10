@@ -1,6 +1,6 @@
 import { NextFunction, Response } from "express";
 import jsonwebtoken from "jsonwebtoken";
-import { Authorized, AuthorizedRequest } from "../public/scripts/Types";
+import { Authorized, AuthorizedRequest } from "../Types";
 
 export const authorization = function (req: AuthorizedRequest, res: Response, next: NextFunction) {
   if (typeof req.cookies.token !== "string") return next();
@@ -18,8 +18,8 @@ export const authorization = function (req: AuthorizedRequest, res: Response, ne
 };
 
 export const adminAuthorization = function (req: AuthorizedRequest, res: Response, next: NextFunction) {
-  if (!req.authorized) return res.status(404);
-  if (req.authorized.rank !== 2) return res.status(404);
+  if (!req.authorized) return res.status(404).render("not-found");
+  if (req.authorized.rank !== 2) return res.status(404).render("not-found");
 
   return next();
 };

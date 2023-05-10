@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import jsonwebtoken from "jsonwebtoken";
 import { readMap, createUser, readUser, readUserByLogin, readWorlds } from "../src/queries/index.js";
 import { World, Created_map } from "@prisma/client";
-import { Authorized, AuthorizedRequest } from "../public/scripts/Types.js";
+import { Authorized, AuthorizedRequest } from "../Types.js";
 
 interface Locals {
   page: "index" | "maps" | "map" | "user" | "new";
@@ -71,7 +71,7 @@ router.get("/map/:id", async (req: AuthorizedRequest, res) => {
   const locals = await getLocals("map", req.authorized);
   const id = parseInt(req.params.id);
   const map = await readMap(id);
-  if (map === null) return res.status(404);
+  if (map === null) return res.status(404).render("not-found");
   locals.map = map;
   return res.render("map", locals);
 });
@@ -131,7 +131,7 @@ router.get("/user/:id", async (req: AuthorizedRequest, res) => {
   const locals = await getLocals("user", req.authorized);
   const id = parseInt(req.params.id);
   const user = await readUser(id);
-  if (user === null) return res.status(404);
+  if (user === null) return res.status(404).render("not-found");
   return res.render("user", locals);
 });
 

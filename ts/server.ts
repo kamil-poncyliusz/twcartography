@@ -7,7 +7,7 @@ import { fileURLToPath } from "url";
 import router from "./routes/router.js";
 import api from "./routes/api.js";
 import admin from "./routes/admin.js";
-import scheduleWorldDataDownload from "./src/scheduleWorldDataDownload.js";
+import scheduleWorldDataDownload from "./src/schedule-world-data-download.js";
 import { authorization, adminAuthorization } from "./src/authorization.js";
 
 const app = express();
@@ -34,6 +34,9 @@ app.use("/", router);
 app.use("/api", api);
 app.use("/admin", adminAuthorization);
 app.use("/admin", admin);
+app.all("*", (req, res) => {
+  return res.status(404).render("not-found");
+});
 
 app.listen(process.env.PORT || PORT, () => {
   console.log("[server] Server started");
