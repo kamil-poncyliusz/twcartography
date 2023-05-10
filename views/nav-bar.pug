@@ -6,6 +6,9 @@
       a(href="/new") Stwórz mapę
     div
       a(href="/maps") Mapy
+    if loggedIn && userRank === 2
+      div
+        a(href="/admin") Panel
   else
     div
       select#world-selection(name="world", autofocus, autocomplete="off")
