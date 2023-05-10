@@ -2,7 +2,7 @@ import fs from "fs";
 import scheduler from "node-schedule";
 import { DownloaderHelper } from "node-downloader-helper";
 import { World } from "@prisma/client";
-import { readWorlds } from "./queries/index.js";
+import { createWorldData, readWorlds } from "./queries/index.js";
 import parseWorldData from "./worldDataParser.js";
 import daysFromStart from "./days-from-start.js";
 
@@ -55,9 +55,12 @@ const scheduleWorldDataDownload = async function () {
       const result = await downloadWorldData(world, turn);
       if (result) {
         console.log(`Downloading turn ${turn} of ${world.server}.${world.num} completed`);
-        parseWorldData(world.id, turn);
+        const parsedWorldData = parseWorldData(world.id, turn);
+        const createdWorldData = await createWorldData(world.id, turn, parsedWorldData);
+        if (createdWorldData)
+          console.log(`World_data created: (world:${createdWorldData.world_id},turn:${createdWorldData.turn})`);
       } else {
-        console.log(`Downloading turn ${turn} of ${world.server}.${world.num} failed`);
+        console.log(`Downloading turn ${turn} of ${world.server}${world.num} failed`);
       }
     });
   }

@@ -1,8 +1,6 @@
 import fs from "fs";
 import zlib from "zlib";
-import { createWorldData } from "./queries/index.js";
 import { ParsedTurnData } from "../public/scripts/Types";
-import { Prisma } from "@prisma/client";
 
 const parseFile = function (world: number, turn: number, name: string) {
   const path = `temp/${world}/${turn}/${name}.txt.gz`;
@@ -35,11 +33,10 @@ const worldDataParser = function (world_id: number, turn: number) {
     killDef: 0,
     villages: [],
   };
-  let fileData;
   const playerTribeIds: { [key: string]: string } = {};
-  fileData = parseFile(world_id, turn, "ally");
-  for (let i = 0; i < fileData.length; i++) {
-    const [id, name, tag, players, villages, points, allPoints, rank] = fileData[i].split(",");
+  const tribesData = parseFile(world_id, turn, "ally");
+  for (let i = 0; i < tribesData.length; i++) {
+    const [id, name, tag, players, villages, points, allPoints, rank] = tribesData[i].split(",");
     parsedData.tribes[id] = {
       id: id,
       name: decodeURIComponent(name).replaceAll("+", " "),
@@ -52,14 +49,14 @@ const worldDataParser = function (world_id: number, turn: number) {
       killDef: 0,
     };
   }
-  fileData = parseFile(world_id, turn, "player");
-  for (let i = 0; i < fileData.length; i++) {
-    const [id, name, tribeId, villages, points, rank] = fileData[i].split(",");
+  const playersData = parseFile(world_id, turn, "player");
+  for (let i = 0; i < playersData.length; i++) {
+    const [id, name, tribeId, villages, points, rank] = playersData[i].split(",");
     playerTribeIds[id] = tribeId;
   }
-  fileData = parseFile(world_id, turn, "village");
-  for (let i = 0; i < fileData.length; i++) {
-    const [id, name, x, y, playerId, points, rank] = fileData[i].split(",");
+  const villagesData = parseFile(world_id, turn, "village");
+  for (let i = 0; i < villagesData.length; i++) {
+    const [id, name, x, y, playerId, points, rank] = villagesData[i].split(",");
     if (parseInt(playerId) > 0) {
       const tribeId = playerTribeIds[playerId];
       const tribe = parsedData.tribes[tribeId];
@@ -73,36 +70,36 @@ const worldDataParser = function (world_id: number, turn: number) {
         });
     }
   }
-  fileData = parseFile(world_id, turn, "kill_all_tribe");
-  for (let i = 0; i < fileData.length; i++) {
-    const [rank, id, score] = fileData[i].split(",");
+  const killAllData = parseFile(world_id, turn, "kill_all_tribe");
+  for (let i = 0; i < killAllData.length; i++) {
+    const [rank, id, score] = killAllData[i].split(",");
     if (parsedData.tribes[id] === undefined) {
       console.log("Parser:", id, "kill_all tribe undefined");
     } else {
       parsedData.tribes[id].killAll = parseInt(score);
     }
   }
-  fileData = parseFile(world_id, turn, "kill_att_tribe");
-  for (let i = 0; i < fileData.length; i++) {
-    const [rank, id, score] = fileData[i].split(",");
+  const killAttData = parseFile(world_id, turn, "kill_att_tribe");
+  for (let i = 0; i < killAttData.length; i++) {
+    const [rank, id, score] = killAttData[i].split(",");
     if (parsedData.tribes[id] === undefined) {
       console.log("Parser:", id, "kill_att tribe undefined");
     } else {
       parsedData.tribes[id].killAtt = parseInt(score);
     }
   }
-  fileData = parseFile(world_id, turn, "kill_def_tribe");
-  for (let i = 0; i < fileData.length; i++) {
-    const [rank, id, score] = fileData[i].split(",");
+  const killDefData = parseFile(world_id, turn, "kill_def_tribe");
+  for (let i = 0; i < killDefData.length; i++) {
+    const [rank, id, score] = killDefData[i].split(",");
     if (parsedData.tribes[id] === undefined) {
       console.log("Parser:", id, "kill_def tribe undefined");
     } else {
       parsedData.tribes[id].killDef = parseInt(score);
     }
   }
-  fileData = parseFile(world_id, turn, "conquer");
-  for (let i = 0; i < fileData.length; i++) {
-    const [id, timestamp, newOwner, oldOwner] = fileData[i].split(",");
+  const conquerData = parseFile(world_id, turn, "conquer");
+  for (let i = 0; i < conquerData.length; i++) {
+    const [id, timestamp, newOwner, oldOwner] = conquerData[i].split(",");
   }
   let maxDistance = 0;
   let distance = 0;
@@ -116,10 +113,7 @@ const worldDataParser = function (world_id: number, turn: number) {
     }
   }
   parsedData.width = Math.ceil((maxDistance + 2) / 10) * 20;
-  const inputJsonValue = parsedData as unknown;
-  createWorldData(world_id, turn, inputJsonValue as Prisma.InputJsonValue).then((result) => {
-    if (result) console.log(`World_data created: (world:${result.world_id},turn:${result.turn})`);
-  });
+  return parsedData;
 };
 
 export default worldDataParser;

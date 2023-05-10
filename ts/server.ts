@@ -8,7 +8,6 @@ import router from "./routes/router.js";
 import api from "./routes/api.js";
 import admin from "./routes/admin.js";
 import scheduleWorldDataDownload from "./src/scheduleWorldDataDownload.js";
-import worldDataParser from "./src/worldDataParser.js";
 import { authorization, adminAuthorization } from "./src/authorization.js";
 
 const app = express();
@@ -41,4 +40,3 @@ app.listen(process.env.PORT || PORT, () => {
 });
 
 // scheduleWorldDataDownload();
-// worldDataParser(1, 30);

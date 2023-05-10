@@ -22,10 +22,11 @@ export const readWorldData = async function (worldId: number, turn: number) {
   return null;
 };
 
-export const createWorldData = async function (worldId: number, turn: number, data: Prisma.InputJsonValue) {
+export const createWorldData = async function (worldId: number, turn: number, parsedTurnData: ParsedTurnData) {
+  const data = parsedTurnData as unknown;
   const result = await prisma.worldData
     .create({
-      data: { world_id: worldId, turn: turn, data: data },
+      data: { world_id: worldId, turn: turn, data: data as Prisma.InputJsonValue },
     })
     .catch((err) => {
       console.error("Prisma error:", err);
