@@ -88,5 +88,10 @@ api.post("/world/create", async (req: AuthorizedRequest, res) => {
   console.log("Stworzono świat o id", createdWorld.id);
   return res.json(createdWorld);
 });
+api.post("/world-data/create/:world/:turn", async (req: AuthorizedRequest, res) => {
+  if (!req.authorized) return res.json({});
+  if (req.authorized.rank !== 2) return res.json({});
+  return res.json({});
+});
 
 export default api;
