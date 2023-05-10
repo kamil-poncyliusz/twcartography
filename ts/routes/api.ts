@@ -1,11 +1,13 @@
 import express from "express";
 import { Prisma } from "@prisma/client";
-import { readMaps, createMap, readWorldData, createWorld, readWorld } from "../src/queries/index.js";
+import { readMaps, createMap, readWorldData, createWorld, readWorld, createWorldData } from "../src/queries/index.js";
 import saveMapPng from "../src/save-map-png.js";
 import SettingsValidator from "../public/scripts/class/SettingsValidator.js";
 import MapGenerator from "../public/scripts/class/MapGenerator.js";
 import { encodeSettings } from "../public/scripts/settings-codec.js";
 import { ParsedTurnData, Settings, ReadMapsParameters, AuthorizedRequest } from "../Types.js";
+import fs from "fs";
+import worldDataParser from "../src/world-data-parser.js";
 
 type mapsWithRelations = Prisma.PromiseReturnType<typeof readMaps>;
 
@@ -89,9 +91,16 @@ api.post("/world/create", async (req: AuthorizedRequest, res) => {
   return res.json(createdWorld);
 });
 api.post("/world-data/create/:world/:turn", async (req: AuthorizedRequest, res) => {
-  if (!req.authorized) return res.json({});
-  if (req.authorized.rank !== 2) return res.json({});
-  return res.json({});
+  if (!req.authorized) return res.json(false);
+  if (req.authorized.rank !== 2) return res.json(false);
+  const world = Number(req.params.world);
+  const turn = Number(req.params.turn);
+  const worldDataFilesPath = `temp/${world}/${turn}`;
+  if (!fs.existsSync(worldDataFilesPath)) return res.json(false);
+  const parsedTurnData = worldDataParser(world, turn);
+  const createdWorldData = await createWorldData(world, turn, parsedTurnData);
+  if (!createdWorldData) return res.json(false);
+  return res.json(true);
 });
 
 export default api;

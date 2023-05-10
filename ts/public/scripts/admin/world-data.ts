@@ -12,8 +12,8 @@ const createWorldData = async function (e: Event) {
     },
     body: "",
   });
-  const json = await result.json();
-  console.log(json);
+  const message = await result.json();
+  if (message) window.location.reload();
 };
 
 createWorldDataButtons.forEach((button) => {
