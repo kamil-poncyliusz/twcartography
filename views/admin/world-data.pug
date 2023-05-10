@@ -1,0 +1,29 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(http-equiv="X-UA-Compatible", content="IE=edge")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Admin Panel
+    link(rel="stylesheet", href="/css/reset.css", type="text/css")
+    link(rel="stylesheet", href="/css/main.css", type="text/css")
+    link(rel="stylesheet", href="/css/admin/world-data.css", type="text/css")
+    script(src="/scripts/admin/world-data.js", type="module", defer)
+  body
+    table#world-data
+      tbody
+        each world in state
+          tr
+            td= world.serverName
+            each turn, index in world.turns
+              if turn.id === -1
+                if turn.hasFiles
+                  td.files-only(title=`Tura ${index}, brak danych w bazie, pliki dostępne`)
+                    button.create-world-data(data-world=world.id, data-turn=index)= index
+                else
+                  td.unavailable(title=`Tura ${index}, brak danych w bazie, pliki niedostępne`)= index
+              else
+                if turn.hasFiles
+                  td.available(title=`Tura ${index}, dane w bazie, pliki dostępne`)= index
+                else
+                  td.data-only(title=`Tura ${index}, dane w bazie, pliki niedostępne`)= index

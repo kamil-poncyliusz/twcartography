@@ -12,3 +12,4 @@ public/scripts/class/*.js
 routes/*.js
 src/**/*.js
 prisma/migrations/**/*
+Types.js

@@ -1,0 +1,21 @@
+td:first-child {
+  font-weight: bold;
+}
+.available {
+  background-color: #000080;
+}
+.unavailable {
+  background-color: #800000;
+}
+.files-only {
+  background-color: #008000;
+}
+.data-only {
+  background-color: #004080;
+}
+td > button {
+  background-color: inherit;
+}
+button.create-world-data {
+  /*  */
+}
