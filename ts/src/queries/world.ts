@@ -1,5 +1,5 @@
 import { PrismaClient, World } from "@prisma/client";
-import { worldWithWorldData } from "../../public/scripts/Types";
+import { WorldWithWorldData } from "../../public/scripts/Types";
 
 const prisma = new PrismaClient();
 
@@ -25,7 +25,7 @@ export const readWorlds = async function () {
   return result;
 };
 
-export const readWorldsWithWorldData = async function (): Promise<worldWithWorldData[]> {
+export const readWorldsWithWorldData = async function (): Promise<WorldWithWorldData[]> {
   const result = await prisma.world
     .findMany({
       include: {

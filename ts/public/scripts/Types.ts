@@ -69,4 +69,13 @@ export interface MapLoaderSettings {
   timespan: string;
   world: number;
 }
-export type worldWithWorldData = World & { world_data: { id: number; turn: number }[] };
+export type WorldWithWorldData = World & { world_data: { id: number; turn: number }[] };
+export interface TurnDataState {
+  id: number;
+  hasFiles: boolean;
+}
+export interface WorldDataState {
+  id: number;
+  serverName: string;
+  turns: TurnDataState[];
+}

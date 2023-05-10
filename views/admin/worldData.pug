@@ -17,6 +17,12 @@ html(lang="en")
             td= world.serverName
             each turn, index in world.turns
               if turn.id === -1
-                td(title=`Tura ${index}, brak danych`)= index
+                if turn.hasFiles
+                  td(title=`Tura ${index}, brak danych w bazie, pliki dostępne`)= index
+                else
+                  td(title=`Tura ${index}, brak danych w bazie, pliki niedostępne`)= index
               else
-                td(title=`Tura ${index}, dane w bazie`)= index
+                if turn.hasFiles
+                  td(title=`Tura ${index}, dane w bazie, pliki dostępne`)= index
+                else
+                  td(title=`Tura ${index}, dane w bazie, pliki niedostępne`)= index
