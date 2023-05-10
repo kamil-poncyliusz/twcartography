@@ -1,4 +1,4 @@
-import { Settings } from "./Types";
+import { Settings } from "../../../Types";
 
 const GROUP_NAME_MAX_LENGTH = 30,
   GROUP_NAME_MIN_LENGTH = 1,

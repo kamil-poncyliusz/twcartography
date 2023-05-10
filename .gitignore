@@ -6,7 +6,9 @@ public/images/maps
 *.txt
 coverage/*
 server.js
-public/scripts/*.js
+public/scripts/
+public/scripts/admin/*.js
+public/scripts/class/*.js
 routes/*.js
 src/**/*.js
 prisma/migrations/**/*

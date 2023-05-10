@@ -7,11 +7,11 @@ html(lang="en")
     title Map
     link(rel="stylesheet", href="/css/reset.css", type="text/css")
     link(rel="stylesheet", href="/css/main.css", type="text/css")
-    link(rel="stylesheet", href="/css/navbar.css", type="text/css")
+    link(rel="stylesheet", href="/css/nav-bar.css", type="text/css")
     link(rel="stylesheet", href="/css/map.css", type="text/css")
     script(src="/scripts/map.js", type="module", defer)
   body
-    include navbar.pug
+    include nav-bar.pug
     #wrapper
       #map
         img(src="../images/maps/" + map.id + ".png", alt="mapa")

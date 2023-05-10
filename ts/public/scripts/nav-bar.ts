@@ -1,4 +1,4 @@
-import loginRequest from "./loginRequest.js";
+import loginRequest from "./login-request.js";
 
 const profileButton = document.getElementById("profile-button") as HTMLButtonElement;
 const loginForm = document.getElementById("login-form");

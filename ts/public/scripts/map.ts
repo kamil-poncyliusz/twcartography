@@ -1,4 +1,4 @@
-import "./navBar.js";
+import "./nav-bar.js";
 
 const settingsInput = document.getElementById("settings") as HTMLInputElement;
 // const image = document.querySelector("#map img") as HTMLImageElement;

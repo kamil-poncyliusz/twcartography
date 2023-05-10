@@ -1,9 +1,9 @@
 import GeneratorController from "./GeneratorController.js";
-import { decodeSettings, encodeSettings } from "./settingsCodec.js";
+import { decodeSettings, encodeSettings } from "../settings-codec.js";
 import MarkGroupsTabController from "./MarkGroupsTab.js";
 import SuggestionsTabController from "./SuggestionsTab.js";
 import CanvasController from "./Canvas.js";
-import { Settings } from "./Types.js";
+import { Settings } from "../../../Types.js";
 
 const inputs: { [key: string]: HTMLInputElement } = {
   autoRefresh: document.getElementById("auto-refresh") as HTMLInputElement,

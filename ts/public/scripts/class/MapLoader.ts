@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
-import { readMaps, readMap } from "../../src/queries/index.js";
-import { MapLoaderSettings } from "./Types.js";
+import { readMaps, readMap } from "../../../src/queries/index.js";
+import { MapLoaderSettings } from "../../../Types.js";
 
 type mapsWithRelations = Prisma.PromiseReturnType<typeof readMaps>;
 type mapWithRelations = Prisma.PromiseReturnType<typeof readMap>;

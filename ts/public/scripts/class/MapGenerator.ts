@@ -1,5 +1,5 @@
-import { parseHexColor, calcExpansionArray } from "./utils.js";
-import { Settings, ParsedColor, ImageDataDummy, ParsedTurnData, Tribe, Village } from "./Types.js";
+import { parseHexColor, calcExpansionArray } from "../utils.js";
+import { Settings, ParsedColor, ImageDataDummy, ParsedTurnData, Tribe, Village } from "../../../Types.js";
 
 interface RawPixel {
   color: ParsedColor;

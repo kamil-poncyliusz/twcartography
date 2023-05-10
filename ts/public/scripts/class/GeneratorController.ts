@@ -1,7 +1,7 @@
 import MapGenerator from "./MapGenerator.js";
 import SettingsValidator from "./SettingsValidator.js";
-import { distinctiveColor } from "./utils.js";
-import { MarkGroup, Settings, ParsedTurnData, Tribe } from "./Types.js";
+import { distinctiveColor } from "../utils.js";
+import { MarkGroup, Settings, ParsedTurnData, Tribe } from "../../../Types.js";
 
 class GeneratorController {
   autoRefresh: boolean = true;

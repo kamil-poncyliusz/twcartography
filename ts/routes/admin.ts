@@ -15,7 +15,7 @@ admin.get("/world-data", async (req, res) => {
   const worldsWithWorldData = await readWorldsWithWorldData();
   const worldDataFiles = findWorldDataFiles();
   const worldDataState = getWorldDataState(worldsWithWorldData, worldDataFiles);
-  return res.render("admin/worldData", { state: worldDataState });
+  return res.render("admin/world-data", { state: worldDataState });
 });
 
 export default admin;

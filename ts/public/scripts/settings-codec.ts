@@ -1,5 +1,5 @@
 import { Base64 } from "./base64.js";
-import { MarkGroup, Settings } from "./Types";
+import { MarkGroup, Settings } from "../../Types.js";
 
 export const encodeSettings = function (settings: Settings): string {
   let result = "";

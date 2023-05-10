@@ -1,11 +1,11 @@
 import express from "express";
 import { Prisma } from "@prisma/client";
 import { readMaps, createMap, readWorldData, createWorld, readWorld } from "../src/queries/index.js";
-import saveMapAsPng from "../src/saveMapAsPng.js";
-import SettingsValidator from "../public/scripts/SettingsValidator.js";
-import MapGenerator from "../public/scripts/MapGenerator.js";
-import { encodeSettings } from "../public/scripts/settingsCodec.js";
-import { ParsedTurnData, Settings, ReadMapsParameters, AuthorizedRequest } from "../public/scripts/Types.js";
+import saveMapPng from "../src/save-map-png.js";
+import SettingsValidator from "../public/scripts/class/SettingsValidator.js";
+import MapGenerator from "../public/scripts/class/MapGenerator.js";
+import { encodeSettings } from "../public/scripts/settings-codec.js";
+import { ParsedTurnData, Settings, ReadMapsParameters, AuthorizedRequest } from "../Types.js";
 
 type mapsWithRelations = Prisma.PromiseReturnType<typeof readMaps>;
 
@@ -50,7 +50,7 @@ api.post("/map/create", async (req: AuthorizedRequest, res) => {
     encodedSettings
   );
   if (!createdMap) return res.json(false);
-  const saved = await saveMapAsPng(createdMap.id, imageData as ImageData);
+  const saved = await saveMapPng(createdMap.id, imageData as ImageData);
   if (saved) {
     return res.json(true);
   } else {
@@ -76,7 +76,6 @@ api.get("/maps/:world/:author/:timespan/:order/:page", async (req, res) => {
   return res.json(maps);
 });
 api.post("/world/create", async (req: AuthorizedRequest, res) => {
-  console.log("create world request...");
   if (!req.authorized) return res.json({});
   if (req.authorized.rank !== 2) return res.json({});
   if (!validateWorldCreateBody(req.body)) return res.json({});

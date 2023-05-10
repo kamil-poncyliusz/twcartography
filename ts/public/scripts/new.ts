@@ -1,9 +1,9 @@
-import GeneratorController from "./GeneratorController.js";
-import SettingsTab from "./SettingsTab.js";
-import SuggestionsTab from "./SuggestionsTab.js";
-import MarkGroupsTab from "./MarkGroupsTab.js";
-import Canvas from "./Canvas.js";
-import "./navBar.js";
+import GeneratorController from "./class/GeneratorController.js";
+import SettingsTab from "./class/SettingsTab.js";
+import SuggestionsTab from "./class/SuggestionsTab.js";
+import MarkGroupsTab from "./class/MarkGroupsTab.js";
+import Canvas from "./class/Canvas.js";
+import "./nav-bar.js";
 
 const showSettingsButton = document.getElementById("settings-button");
 const showMarksButton = document.getElementById("marks-button");

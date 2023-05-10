@@ -3,7 +3,7 @@ import scheduler from "node-schedule";
 import { DownloaderHelper } from "node-downloader-helper";
 import { World } from "@prisma/client";
 import { createWorldData, readWorlds } from "./queries/index.js";
-import parseWorldData from "./worldDataParser.js";
+import worldDataParser from "./world-data-parser.js";
 import daysFromStart from "./days-from-start.js";
 
 const files = ["village", "player", "ally", "conquer", "kill_all_tribe", "kill_att_tribe", "kill_def_tribe"];
@@ -55,7 +55,7 @@ const scheduleWorldDataDownload = async function () {
       const result = await downloadWorldData(world, turn);
       if (result) {
         console.log(`Downloading turn ${turn} of ${world.server}.${world.num} completed`);
-        const parsedWorldData = parseWorldData(world.id, turn);
+        const parsedWorldData = worldDataParser(world.id, turn);
         const createdWorldData = await createWorldData(world.id, turn, parsedWorldData);
         if (createdWorldData)
           console.log(`World_data created: (world:${createdWorldData.world_id},turn:${createdWorldData.turn})`);

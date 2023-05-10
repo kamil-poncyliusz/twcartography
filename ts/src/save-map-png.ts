@@ -3,7 +3,7 @@ import { PNG } from "pngjs";
 
 const mapsPath = "public/images/maps";
 
-const saveMapAsPng = async function (id: number, imageData: ImageData) {
+const saveMapPng = async function (id: number, imageData: ImageData) {
   const path = `${mapsPath}/${id}.png`;
   const pngImage = new PNG({ width: imageData.width, height: imageData.height });
   pngImage.data = Buffer.from(imageData.data);
@@ -15,4 +15,4 @@ const saveMapAsPng = async function (id: number, imageData: ImageData) {
   return true;
 };
 
-export default saveMapAsPng;
+export default saveMapPng;

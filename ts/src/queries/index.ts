@@ -1,7 +1,7 @@
 import * as map from "./map.js";
 import * as user from "./user.js";
 import * as world from "./world.js";
-import * as worldData from "./worldData.js";
+import * as worldData from "./world-data.js";
 
 export const createMap = map.createMap;
 export const deleteMap = map.deleteMap;

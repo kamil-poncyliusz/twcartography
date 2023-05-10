@@ -1,6 +1,6 @@
-import "./navBar.js";
-import MapLoader from "./MapLoader.js";
-import { MapLoaderSettings } from "./Types.js";
+import "./nav-bar.js";
+import MapLoader from "./class/MapLoader.js";
+import { MapLoaderSettings } from "../../Types.js";
 
 const radios = document.querySelectorAll("#accessories input[type='radio']");
 const worldSelect = document.getElementById("world-select") as HTMLSelectElement;
