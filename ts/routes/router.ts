@@ -1,5 +1,5 @@
 import express from "express";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jsonwebtoken from "jsonwebtoken";
 import { readMap, createUser, readUser, readUserByLogin, readWorlds } from "../src/queries/index.js";
 import { World, Created_map } from "@prisma/client";
