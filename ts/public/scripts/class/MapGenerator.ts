@@ -29,7 +29,6 @@ class MapGenerator {
     this.backgroundColor = parseHexColor(settings.backgroundColor);
     this.expansionArray = calcExpansionArray(settings.spotSize);
     this.offset = (1000 - data.width) / 2;
-    // this. = new Uint8ClampedArray(4*data.width*data.width*settings.scale*settings.scale);
     for (let i = 0; i < this.data.width; i++) {
       const row: RawPixel[] = [];
       for (let j = 0; j < this.data.width; j++) {
@@ -81,6 +80,17 @@ class MapGenerator {
       return result;
     }
     return new ImageData(imageArray, this.scaled.length, this.scaled.length);
+  }
+  calcSpotSize(villagePoints: number) {
+    const minSize = 2;
+    const maxSize = this.settings.spotSize;
+    const minPoints = this.settings.villageFilter;
+    const maxPoints = this.data.topVillagePoints;
+    if (villagePoints <= minPoints) return minSize;
+    if (villagePoints >= maxPoints) return maxSize;
+    const size =
+      Math.floor(((villagePoints - minPoints) / (maxPoints - minPoints)) * (maxSize - minSize + 1)) + minSize;
+    return size;
   }
   distributeArea(area: RawPixel[]) {
     while (area.length > 0) {
@@ -177,9 +187,10 @@ class MapGenerator {
   printVillageSpot(village: Village, color: ParsedColor) {
     const x = village.x - this.offset;
     const y = village.y - this.offset;
-    for (let d = 0; d < this.settings.spotSize; d++) {
-      const expansionArray = this.expansionArray[d];
-      for (let expansion of expansionArray) {
+    const spotSize = this.calcSpotSize(village.points);
+    console.log(village.points, "=>", spotSize);
+    for (let d = 0; d < spotSize; d++) {
+      for (let expansion of this.expansionArray[d]) {
         const pixel = this.raw[x + expansion.x][y + expansion.y];
         if (pixel.distance > d) {
           pixel.distance = d;
