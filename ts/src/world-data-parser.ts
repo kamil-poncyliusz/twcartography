@@ -21,6 +21,7 @@ const worldDataParser = function (world_id: number, turn: number) {
     conquer: {},
     tribes: {},
     width: 1000,
+    topVillagePoints: 0,
   };
   parsedData.tribes["0"] = {
     id: "0",
@@ -61,13 +62,16 @@ const worldDataParser = function (world_id: number, turn: number) {
       const tribeId = playerTribeIds[playerId];
       const tribe = parsedData.tribes[tribeId];
       if (tribe === undefined) console.log("Parser:", tribeId, "village data tribe undefined");
-      else
+      else {
+        const pointsNumber = parseInt(points);
         tribe.villages.push({
           tribeId: tribeId,
           x: parseInt(x),
           y: parseInt(y),
-          points: parseInt(points),
+          points: pointsNumber,
         });
+        if (pointsNumber > parsedData.topVillagePoints) parsedData.topVillagePoints = pointsNumber;
+      }
     }
   }
   const killAllData = parseFile(world_id, turn, "kill_all_tribe");
