@@ -10,9 +10,7 @@
   margin-right: 3rem;
 }
 #nav-bar > div > button,
-#nav-bar > div > a,
-#nav-bar > div > select,
-#nav-bar > div > input {
+#nav-bar > div > a {
   width: 100%;
   height: 100%;
   font-size: 1.25rem;

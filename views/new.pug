@@ -16,6 +16,25 @@ html(lang="en")
       #settings.settings-tab
         div
           .row
+            label(for="world-select") Świat:
+            div
+              select#world-select(name="world", autofocus, autocomplete="off")
+                option(value="", selected, disabled, hidden) wybierz
+                each world in worlds
+                  option(value=world.id) #{ world.server+world.num }
+          .row
+            label(for="turn-input") Dzień gry:
+            div
+              input#turn-input(
+                type="number",
+                name="turn-input",
+                min="0",
+                max="365",
+                placeholder="wybierz",
+                autocomplete="off",
+                disabled
+              )
+          .row
             label(for="background-color") Kolor tła:
             div
               input#background-color(type="color", name="background-color", autocomplete="off")

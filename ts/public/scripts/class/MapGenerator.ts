@@ -188,7 +188,6 @@ class MapGenerator {
     const x = village.x - this.offset;
     const y = village.y - this.offset;
     const spotSize = this.calcSpotSize(village.points);
-    console.log(village.points, "=>", spotSize);
     for (let d = 0; d < spotSize; d++) {
       for (let expansion of this.expansionArray[d]) {
         const pixel = this.raw[x + expansion.x][y + expansion.y];

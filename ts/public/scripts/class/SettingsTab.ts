@@ -15,6 +15,8 @@ const inputs: { [key: string]: HTMLInputElement } = {
   spotSize: document.getElementById("spot-size") as HTMLInputElement,
 };
 const encodedSettings = document.getElementById("encoded-settings") as HTMLInputElement;
+const worldSelect = document.getElementById("world-select") as HTMLSelectElement;
+const turnInput = document.getElementById("turn-input") as HTMLInputElement;
 
 class SettingsTabController {
   #generator: GeneratorController;
@@ -23,10 +25,14 @@ class SettingsTabController {
   #suggestionsObject: SuggestionsTabController | undefined;
   #inputs;
   #encodedSettings: HTMLInputElement;
+  #worldSelectElement: HTMLSelectElement;
+  #turnInputElement: HTMLInputElement;
   constructor(mapGeneratorObject: GeneratorController) {
     this.#generator = mapGeneratorObject;
     this.#inputs = inputs;
     this.#encodedSettings = encodedSettings;
+    this.#worldSelectElement = worldSelect;
+    this.#turnInputElement = turnInput;
     this.#inputs.autoRefresh.checked = this.#generator.autoRefresh;
     this.#inputs.autoRefresh.addEventListener("input", this.autoRefreshChange);
     this.#inputs.backgroundColor.addEventListener("input", this.backgroundColorChange);
@@ -35,7 +41,12 @@ class SettingsTabController {
     this.#inputs.spotsFilter.addEventListener("input", this.spotsFilterChange);
     this.#inputs.spotSize.addEventListener("input", this.spotSizeChange);
     this.#inputs.villageFilter.addEventListener("input", this.villageFilterChange);
+    this.#worldSelectElement.addEventListener("change", this.changeSelectedWorld);
+    this.#turnInputElement.addEventListener("input", this.changeSelectedTurn);
     this.#encodedSettings.addEventListener("input", this.encodedSettingsChange);
+    this.#encodedSettings.addEventListener("click", (e: Event) => {
+      this.#encodedSettings.select();
+    });
     this.disabled = true;
   }
 
@@ -159,6 +170,36 @@ class SettingsTabController {
       this.disabled = false;
       this.update();
     }
+  };
+  changeSelectedWorld = (e: Event) => {
+    const target = e.target as HTMLSelectElement;
+    const world = parseInt(target.value);
+    turnInput.value = "";
+    turnInput.disabled = true;
+    this.#generator.fetchWorldInfo(world).then((result) => {
+      if (result) {
+        this.#turnInputElement.disabled = false;
+        // turnInput.setAttribute('min', '');
+        // turnInput.setAttribute('max', '');
+      }
+    });
+  };
+  changeSelectedTurn = (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    const turn = parseInt(target.value);
+    this.#generator.changeTurn(turn).then((result) => {
+      if (!result) {
+        turnInput.classList.add("is-invalid");
+        this.disabled = true;
+        return;
+      }
+      this.update();
+      this.disabled = false;
+      this.renderSuggestions();
+      this.renderMarkGroups();
+      this.renderCanvas();
+      turnInput.classList.remove("is-invalid");
+    });
   };
   init() {
     this.#encodedSettings.dispatchEvent(new Event("input"));

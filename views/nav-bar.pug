@@ -11,21 +11,6 @@
         a(href="/admin") Panel
   else
     div
-      select#world-selection(name="world", autofocus, autocomplete="off")
-        option(value="", selected, disabled, hidden) Świat
-        each world in worlds
-          option(value=world.id) #{ world.server+world.num }
-    div
-      input#turn-input(
-        type="number",
-        name="turn-input",
-        min="0",
-        max="365",
-        placeholder="Dzień gry",
-        autocomplete="off",
-        disabled
-      )
-    div
       button#settings-button Ustawienia
     div
       button#marks-button Oznaczenia

@@ -46,7 +46,8 @@ body {
   z-index: 100;
 }
 #settings input[type="text"],
-#settings input[type="number"] {
+#settings input[type="number"],
+#settings select {
   display: block;
   width: 100%;
   padding: 0.5rem;
