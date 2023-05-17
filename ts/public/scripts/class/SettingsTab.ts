@@ -169,6 +169,10 @@ class SettingsTabController {
       this.renderSuggestions();
       this.disabled = false;
       this.update();
+      const worldIdString = String(this.#generator.world);
+      this.#worldSelectElement.value = worldIdString;
+      const turnString = String(this.#generator.turn);
+      this.#turnInputElement.value = turnString;
     }
   };
   changeSelectedWorld = (e: Event) => {
