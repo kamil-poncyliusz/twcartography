@@ -34,14 +34,14 @@ class MarkGroupsTabController {
       let content = "";
       for (let tribeId of group.tribes) {
         const tribe = tribes[tribeId];
-        content += `<p class='mark label-button' title='${tribe.name}'>${tribe.tag}</p>`;
+        content += `<p class='mark label-button delete-button' title='${tribe.name}'>${tribe.tag}</p>`;
       }
       const players = group.tribes.reduce((sum, tribeId) => sum + tribes[tribeId].players, 0);
       const villages = group.tribes.reduce((sum, tribeId) => sum + tribes[tribeId].villages.length, 0);
       const points = group.tribes.reduce((sum, tribeId) => sum + tribes[tribeId].points, 0);
       content = `<td class='group-tribes'>${content}</td><td class='group-name'>${group.name}</td><td><input type='color' value='${group.color}'></td>`;
       content += `<td>${group.tribes.length}</td><td>${players}</td><td>${villages}</td><td>${points}</td>`;
-      content += `<td><button class='delete-group'>X</button></td>`;
+      content += `<td><button class='delete-group delete-button'>X</button></td>`;
       newRow.innerHTML = content;
       body.appendChild(newRow);
     }

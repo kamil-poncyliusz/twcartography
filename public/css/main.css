@@ -101,6 +101,10 @@ table th {
 .is-invalid {
   outline: 3px solid red;
 }
+.delete-button:hover {
+  border-color: red;
+  outline: 3px solid red;
+}
 .label-button {
   padding: 0.25rem;
   border-radius: 0.5rem;

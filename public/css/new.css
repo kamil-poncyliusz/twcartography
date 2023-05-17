@@ -98,7 +98,12 @@ body {
   width: 2.5rem;
   height: 2.5rem;
   padding: 0;
+  border: 1px solid var(--color3);
   border-radius: 0.5rem;
+  overflow: hidden;
+}
+#mark-groups input[type="color"]:hover {
+  border-color: var(--color4);
 }
 #mark-groups tbody > tr > td:first-child > *:not(:last-child) {
   margin-bottom: 0.25rem;
