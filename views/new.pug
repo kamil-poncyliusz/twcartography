@@ -16,14 +16,14 @@ html(lang="en")
       #settings.settings-tab
         div
           .row
-            label(for="world-select") Świat:
+            label(for="world-select", title="Świat, z którego będą pobierane dane.") Świat:
             div
               select#world-select(name="world", autofocus, autocomplete="off")
                 option(value="", selected, disabled, hidden) wybierz
                 each world in worlds
                   option(value=world.id) #{ world.server+world.num }
           .row
-            label(for="turn-input") Dzień gry:
+            label(for="turn-input", title="Liczba dni od początku świata. '0' to godzina po starcie.") Dzień gry:
             div
               input#turn-input(
                 type="number",
@@ -35,35 +35,42 @@ html(lang="en")
                 disabled
               )
           .row
-            label(for="background-color") Kolor tła:
+            label(for="background-color", title="Kolor tła wyjściowej mapy.") Kolor tła:
             div
               input#background-color(type="color", name="background-color", autocomplete="off")
           .row
-            span Skala
+            span(title="Powiększenie mapy. Świat o wielkości 400x400 pól w skali 2 będzie miał rozmiar 800x800px.") Skala:
             div
               input#scale(type="number", name="scale", min="1", max="5", autocomplete="off")
           .row
-            span Plamka
-            div
-              input#spot-size(type="number", name="spot-size", min="1", max="6", autocomplete="off")
-          .row
-            span Min. punkty wioski:
+            span(title="Wioski poniżej podanej liczby punktów nie zostaną wyświetlone.") Filtr wiosek:
             div
               input#village-filter(type="number", name="village-filter", min="20", max="12154", autocomplete="off")
           .row
-            span Filtr plamek
+            span(
+              title="Rozmiar kropki nanoszonej na mapę przez największe wioski świata. '5' oznacza , że wioska rozszerzy się o 5 pól w każdym kierunku finalnie tworząc koło o średnicy 5+1+5=11 pól."
+            ) Maksymalna plamka:
+            div
+              input#spot-size(type="number", name="spot-size", min="1", max="6", autocomplete="off")
+          .row
+            span(title="Terytoria o powierzchni niższej niż podana zostaną usunięte i rozdzielone miedzy sąsiadów.") Filtr plamek:
             div
               input#spots-filter(type="number", name="spots-filter", min="1", max="100", autocomplete="off")
           .row
-            span Promień
+            span(
+              title="Maksymalna odległość od centrum świata. Wioski o odległości od centrum większej niż podana nie zostaną wyświetlone."
+            ) Promień:
             div
               input#radius(type="number", name="radius", min="1", max="500", autocomplete="off")
           .row
-            label(for="auto-refresh") Auto-odświerzanie
+            label(
+              for="auto-refresh",
+              title="Gdy włączone, mapa będzie się automatycznie odświerzać po każdej zmianie ustawień. Wyłącz, gdy odświeżanie mapy zajmuje dużo czasu."
+            ) Auto-odświerzanie:
             div
               input#auto-refresh(type="checkbox", name="auto-refresh", autocomplete="off")
           .row
-            div
+            div(title="Kod ustawień. Wklej, żeby odtworzyć ustawienia stworzone przez innego użytkownika.")
               input#encoded-settings(type="text", name="encoded-settings", autocomplete="off", value=encodedSettings)
       #mark-suggestions.marks-tab.hidden
         div

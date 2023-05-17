@@ -74,6 +74,7 @@ body {
 .row > label,
 .row > span {
   height: fit-content;
+  cursor: help;
 }
 
 #suggestions-search-input {

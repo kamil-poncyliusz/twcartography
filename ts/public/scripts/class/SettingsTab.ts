@@ -173,6 +173,7 @@ class SettingsTabController {
       this.#worldSelectElement.value = worldIdString;
       const turnString = String(this.#generator.turn);
       this.#turnInputElement.value = turnString;
+      this.#turnInputElement.disabled = false;
     }
   };
   changeSelectedWorld = (e: Event) => {

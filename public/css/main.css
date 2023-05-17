@@ -35,6 +35,13 @@ input {
   border: none;
   cursor: pointer;
 }
+input[type="text"] {
+  cursor: text;
+}
+input[type="number"] {
+  cursor: text;
+  appearance: textfield;
+}
 button:disabled,
 select:disabled,
 input:disabled {
@@ -62,13 +69,6 @@ a:visited {
 }
 a:hover {
   color: inherit;
-}
-input {
-  border: none;
-  cursor: text;
-}
-input[type="number"] {
-  appearance: textfield;
 }
 h1 {
   font-size: 2rem;
