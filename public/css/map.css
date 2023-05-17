@@ -36,18 +36,6 @@ body {
   width: 100%;
   border-radius: 0.5rem;
 }
-.user-label {
-  padding: 0.25rem;
-  border-radius: 0.5rem;
-  background-color: var(--color3);
-  color: var(--color5);
-}
-.user-label:hover {
-  background-color: var(--color4);
-}
-.user-label:active {
-  background-color: var(--color2);
-}
 .a-button {
   display: flex;
   justify-content: center;

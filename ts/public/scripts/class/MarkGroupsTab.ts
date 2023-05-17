@@ -34,7 +34,7 @@ class MarkGroupsTabController {
       let content = "";
       for (let tribeId of group.tribes) {
         const tribe = tribes[tribeId];
-        content += `<p class='mark' title='${tribe.name}'>${tribe.tag}</p>`;
+        content += `<p class='mark label-button' title='${tribe.name}'>${tribe.tag}</p>`;
       }
       const players = group.tribes.reduce((sum, tribeId) => sum + tribes[tribeId].players, 0);
       const villages = group.tribes.reduce((sum, tribeId) => sum + tribes[tribeId].villages.length, 0);

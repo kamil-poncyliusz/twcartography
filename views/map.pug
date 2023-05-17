@@ -21,7 +21,7 @@ html(lang="en")
         p= `${map.turn} dzień świata ${map.world.server + map.world.num}`
         div
           span= `Stworzona przez `
-          a.user-label(href=`/user/${map.author.id}`) #{ map.author.login }
+          a.label-button(href=`/user/${map.author.id}`) #{ map.author.login }
           span= ` ${map.created_at.toLocaleDateString()}`
         div
           input#settings(type="text", name="settings", value=map.settings, readonly)

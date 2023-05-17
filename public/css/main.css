@@ -98,8 +98,21 @@ table th {
 .hidden {
   display: none;
 }
-input.is-invalid {
-  outline: 2px solid red;
+.is-invalid {
+  outline: 3px solid red;
+}
+.label-button {
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  background-color: var(--color3);
+  color: var(--color5);
+  cursor: pointer;
+}
+.label-button:hover {
+  background-color: var(--color4);
+}
+.label-button:active {
+  background-color: var(--color2);
 }
 
 main {
