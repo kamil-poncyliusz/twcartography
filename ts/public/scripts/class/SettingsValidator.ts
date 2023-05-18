@@ -54,7 +54,7 @@ class SettingsValidator {
     return true;
   }
   static turn(input: number): boolean {
-    if (input < TURN_MIN || input > TURN_MAX) return false;
+    if (isNaN(input) || input < TURN_MIN || input > TURN_MAX) return false;
     return true;
   }
   static settings(settings: Settings): boolean {

@@ -193,7 +193,7 @@ class SettingsTabController {
     const world = parseInt(target.value);
     turnInput.value = "";
     turnInput.disabled = true;
-    const result = await this.#generator.fetchWorldInfo(world);
+    const result = await this.#generator.changeWorld(world);
     if (!result) {
       this.disabled = true;
       this.#turnInputElement.disabled = true;

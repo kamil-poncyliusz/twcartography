@@ -60,7 +60,7 @@ class GeneratorController {
   async applySettings(settings: Settings) {
     if (!SettingsValidator.settings(settings)) return false;
     if (settings.world !== this.world) {
-      const result = await this.fetchWorldInfo(settings.world);
+      const result = await this.changeWorld(settings.world);
       if (!result) return false;
       const res = await this.changeTurn(settings.turn);
       if (!res) return false;
@@ -105,14 +105,10 @@ class GeneratorController {
     return true;
   }
   async changeTurn(turn: number): Promise<boolean> {
-    if (turn < 0 || isNaN(turn)) {
+    const isTurnDataAvailable = await this.fetchTurnData(turn);
+    if (!isTurnDataAvailable) {
       this.turn = -1;
       return false;
-    }
-    if (!SettingsValidator.turn(turn)) return false;
-    if (this.data[turn] === undefined) {
-      const result = await this.fetchTurnData(turn);
-      if (result === false) return false;
     }
     this.turn = turn;
     for (let group of this.markGroups) {
@@ -123,6 +119,19 @@ class GeneratorController {
         }
       }
     }
+    return true;
+  }
+  async changeWorld(world: number) {
+    const response = await fetch(`http://${window.location.host}/api/world/${world}`);
+    const worldInfo = await response.json();
+    this.data = {};
+    this.turn = -1;
+    if (worldInfo === null) {
+      return false;
+    }
+    this.#server = worldInfo.server + worldInfo.num;
+    this.world = world;
+    this.#worldStartTimestamp = worldInfo.start_timestamp;
     return true;
   }
   deleteMark(groupName: string, tribeTag: string) {
@@ -141,32 +150,18 @@ class GeneratorController {
     return true;
   }
   async fetchTurnData(turn: number) {
-    const world = this.world;
-    if (world === 0) return false;
-    const url = `http://${window.location.host}/api/data/${world}/${turn}`;
-    const result = await fetch(url);
-    const data = await result.json();
-    if (data === null) return false;
-    this.data[turn] = data;
-    return true;
-  }
-  async fetchWorldInfo(world: number) {
-    const response = await fetch(`http://${window.location.host}/api/world/${world}`);
-    const worldInfo = await response.json();
-    this.data = {};
-    this.turn = -1;
-    if (worldInfo === null) {
-      return false;
-    }
-    this.#server = worldInfo.server + worldInfo.num;
-    this.world = world;
-    this.#worldStartTimestamp = worldInfo.start_timestamp;
+    if (this.world === 0) return false;
+    if (!SettingsValidator.turn(turn)) return false;
+    if (this.data[turn] !== undefined) return true;
+    const url = `http://${window.location.host}/api/data/${this.world}/${turn}`;
+    const response = await fetch(url);
+    const turnData = await response.json();
+    if (turnData === null) return false;
+    this.data[turn] = turnData;
     return true;
   }
   findTribe(name: string) {
-    const turn = this.turn;
     if (!this.tribes) return false;
-    // const tribes = Object.entries(this.data[turn].tribes);
     for (const tribeId in this.tribes) {
       if (this.tribes[tribeId].name === name) return this.tribes[tribeId];
     }
@@ -174,7 +169,7 @@ class GeneratorController {
   }
   getMapImageData() {
     const generator = new MapGenerator(this.data[this.turn], this.settings);
-    return generator.imageData;
+    return generator.imageData as ImageData;
   }
   getSuggestions(tag: string, limit = 15) {
     const tribes = this.tribes;

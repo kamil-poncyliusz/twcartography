@@ -1,6 +1,6 @@
-const createWorldDataButtons = document.querySelectorAll("button.create-world-data");
+const createTurnDataButtons = document.querySelectorAll("button.create-turn-data");
 
-const createWorldData = async function (e: Event) {
+const createTurnData = async function (e: Event) {
   const target = e.target as HTMLButtonElement;
   const world = Number(target.dataset.world);
   const turn = Number(target.dataset.turn);
@@ -16,6 +16,6 @@ const createWorldData = async function (e: Event) {
   if (message) window.location.reload();
 };
 
-createWorldDataButtons.forEach((button) => {
-  button.addEventListener("click", createWorldData);
+createTurnDataButtons.forEach((button) => {
+  button.addEventListener("click", createTurnData);
 });

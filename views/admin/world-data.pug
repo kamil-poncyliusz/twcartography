@@ -19,7 +19,7 @@ html(lang="en")
               if turn.id === -1
                 if turn.hasFiles
                   td.files-only(title=`Tura ${index}, brak danych w bazie, pliki dostępne`)
-                    button.create-world-data(data-world=world.id, data-turn=index)= index
+                    button.create-turn-data(data-world=world.id, data-turn=index)= index
                 else
                   td.unavailable(title=`Tura ${index}, brak danych w bazie, pliki niedostępne`)= index
               else

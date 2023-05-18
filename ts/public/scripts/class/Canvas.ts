@@ -4,7 +4,7 @@ const canvasElement = document.getElementById("map-canvas") as HTMLCanvasElement
 
 class CanvasController {
   #generator;
-  autoRefresh: boolean = false;
+  autoRefresh: boolean = true;
   constructor(mapGeneratorObject: GeneratorController) {
     this.#generator = mapGeneratorObject;
     canvasElement.addEventListener("mousedown", this.dragStart);
