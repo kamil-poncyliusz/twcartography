@@ -60,7 +60,6 @@ class GeneratorController {
     return true;
   }
   async applySettings(settings: Settings) {
-    if (typeof settings !== "object") return false;
     if (!SettingsValidator.settings(settings)) return false;
     if (settings.world !== this.world) {
       const result = await this.fetchWorldInfo(settings.world);
@@ -109,7 +108,7 @@ class GeneratorController {
     return true;
   }
   async changeTurn(turn: number): Promise<boolean> {
-    if (turn < 0) {
+    if (turn < 0 || isNaN(turn)) {
       this.turn = -1;
       return false;
     }
@@ -158,17 +157,17 @@ class GeneratorController {
     return true;
   }
   async fetchWorldInfo(world: number) {
-    const info = await fetch(`http://${window.location.host}/api/world/${world}`)
-      .then((r) => r.json())
-      .then((data) => {
-        this.data = {};
-        this.#server = data.server + data.num;
-        this.world = world;
-        this.#worldStartTimestamp = data.start_timestamp;
-        this.turn = -1;
-        return this.info;
-      });
-    return info;
+    const response = await fetch(`http://${window.location.host}/api/world/${world}`);
+    const worldInfo = await response.json();
+    this.data = {};
+    this.turn = -1;
+    if (worldInfo === null) {
+      return false;
+    }
+    this.#server = worldInfo.server + worldInfo.num;
+    this.world = world;
+    this.#worldStartTimestamp = worldInfo.start_timestamp;
+    return true;
   }
   findTribe(name: string) {
     const turn = this.turn;

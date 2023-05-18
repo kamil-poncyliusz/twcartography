@@ -29,24 +29,18 @@ export const encodeSettings = function (settings: Settings): string {
   return encodeURIComponent(encoded);
 };
 
-export const decodeSettings = function (input: string): Settings {
-  const defaultSettings: Settings = {
-    backgroundColor: "#000000",
-    markGroups: [],
-    radius: 500,
-    scale: 2,
-    spotsFilter: 5,
-    spotSize: 3,
-    turn: -1,
-    villageFilter: 1000,
-    world: 0,
-  };
-  if (input === "") return defaultSettings;
+export const decodeSettings = function (input: string) {
+  if (input === "") return false;
   const decodedURI = decodeURIComponent(input);
-  const string = Base64.decode(decodedURI);
+  let string = "";
+  try {
+    string = Base64.decode(decodedURI);
+  } catch {
+    return false;
+  }
   const markGroups: MarkGroup[] = [];
   const [markGroupsString, settingsString] = string.split(majorSeparator + majorSeparator);
-  if (markGroupsString === "" || !markGroupsString || settingsString === "" || !settingsString) return defaultSettings;
+  if (markGroupsString === "" || !markGroupsString || settingsString === "" || !settingsString) return false;
   const markGroupsArray = markGroupsString.split(majorSeparator);
   const settingsArray = settingsString.split(minorSeparator);
   for (const markGroup of markGroupsArray) {
@@ -58,7 +52,7 @@ export const decodeSettings = function (input: string): Settings {
     };
     markGroups.push(group);
   }
-  if (settingsArray.length < 8) return defaultSettings;
+  if (settingsArray.length < 8) return false;
   const [backgroundColor, radius, scale, spotsFilter, spotSize, turn, villageFilter, world] = settingsArray;
   const result = {
     backgroundColor: backgroundColor,

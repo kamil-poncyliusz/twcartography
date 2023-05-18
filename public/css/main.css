@@ -32,7 +32,7 @@ select,
 input {
   background-color: var(--color3);
   color: var(--color5);
-  border: none;
+  border: 2px solid transparent;
   cursor: pointer;
 }
 input[type="text"] {
@@ -99,7 +99,7 @@ table th {
   display: none;
 }
 .is-invalid {
-  outline: 3px solid red;
+  border-color: red;
 }
 .delete-button:hover {
   border-color: red;

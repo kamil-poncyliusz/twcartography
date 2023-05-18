@@ -90,121 +90,134 @@ class SettingsTabController {
   backgroundColorChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
     const result = this.#generator.setBackgroundColor(target.value);
-    if (!result) return;
+    if (!result) {
+      this.#inputs.backgroundColor.classList.add("is-invalid");
+      return;
+    }
     this.renderCanvas();
     this.update();
+    this.#inputs.backgroundColor.classList.remove("is-invalid");
   };
   scaleChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
     const value = Number(target.value);
     const result = this.#generator.setScale(value);
-    if (result) {
-      this.renderCanvas();
-      this.update();
-    } else {
-      //
+    if (!result) {
+      this.#inputs.scale.classList.add("is-invalid");
+      return;
     }
+    this.renderCanvas();
+    this.update();
+    this.#inputs.scale.classList.remove("is-invalid");
   };
   spotSizeChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
     const value = Number(target.value);
     const result = this.#generator.setSpotSize(value);
-    if (result) {
-      this.renderCanvas();
-      this.update();
-    } else {
-      //
+    if (!result) {
+      this.#inputs.spotSize.classList.add("is-invalid");
+      return;
     }
+    this.renderCanvas();
+    this.update();
+    this.#inputs.spotSize.classList.remove("is-invalid");
   };
   autoRefreshChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
     const value = target.checked;
-    const result = this.#generator.setAutoRefresh(value);
-    if (result) {
-      this.update();
-    }
+    this.#generator.setAutoRefresh(value);
+    this.update();
   };
   villageFilterChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
     const value = Number(target.value);
     const result = this.#generator.setVillageFilter(value);
-    if (result) {
-      this.renderCanvas();
-      this.update();
-    } else {
-      //
+    if (!result) {
+      this.#inputs.villageFilter.classList.add("is-invalid");
+      return;
     }
+    this.renderCanvas();
+    this.update();
+    this.#inputs.villageFilter.classList.remove("is-invalid");
   };
   spotsFilterChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
     const value = Number(target.value);
     const result = this.#generator.setSpotsFilter(value);
-    if (result) {
-      this.renderCanvas();
-      this.update();
-    } else {
-      //
+    if (!result) {
+      this.#inputs.spotsFilter.classList.add("is-invalid");
+      return;
     }
+    this.renderCanvas();
+    this.update();
+    this.#inputs.spotsFilter.classList.remove("is-invalid");
   };
   radiusChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
     const value = Number(target.value);
     const result = this.#generator.setRadius(value);
-    if (result) {
-      this.renderCanvas();
-      this.update();
-    } else {
-      //
+    if (!result) {
+      this.#inputs.radius.classList.add("is-invalid");
+      return;
     }
+    this.renderCanvas();
+    this.update();
+    this.#inputs.radius.classList.remove("is-invalid");
   };
   encodedSettingsChange = async (e: Event) => {
     const target = e.target as HTMLInputElement;
     const value = target.value;
-    if (value.length > 0) {
-      const decodedSettings = decodeSettings(value);
-      const result = await this.#generator.applySettings(decodedSettings);
-      if (!result) return false;
-      this.renderCanvas();
-      this.renderMarkGroups();
-      this.renderSuggestions();
-      this.disabled = false;
-      this.update();
-      const worldIdString = String(this.#generator.world);
-      this.#worldSelectElement.value = worldIdString;
-      const turnString = String(this.#generator.turn);
-      this.#turnInputElement.value = turnString;
-      this.#turnInputElement.disabled = false;
+    if (value === "") {
+      this.#encodedSettings.classList.remove("is-invalid");
+      return;
     }
+    const decodedSettings = decodeSettings(value);
+    if (!decodedSettings || !(await this.#generator.applySettings(decodedSettings))) {
+      this.#encodedSettings.classList.add("is-invalid");
+      return;
+    }
+    this.renderCanvas();
+    this.renderMarkGroups();
+    this.renderSuggestions();
+    this.disabled = false;
+    this.update();
+    const worldIdString = String(this.#generator.world);
+    this.#worldSelectElement.value = worldIdString;
+    const turnString = String(this.#generator.turn);
+    this.#turnInputElement.value = turnString;
+    this.#turnInputElement.disabled = false;
+    this.#encodedSettings.classList.remove("is-invalid");
   };
-  changeSelectedWorld = (e: Event) => {
+  changeSelectedWorld = async (e: Event) => {
     const target = e.target as HTMLSelectElement;
     const world = parseInt(target.value);
     turnInput.value = "";
     turnInput.disabled = true;
-    this.#generator.fetchWorldInfo(world).then((result) => {
-      if (result) {
-        this.#turnInputElement.disabled = false;
-        // turnInput.setAttribute('min', '');
-        // turnInput.setAttribute('max', '');
-      }
-    });
+    const result = await this.#generator.fetchWorldInfo(world);
+    if (!result) {
+      this.disabled = true;
+      this.#turnInputElement.disabled = true;
+      this.#worldSelectElement.classList.add("is-invalid");
+      return;
+    }
+    this.#turnInputElement.disabled = false;
+    this.#worldSelectElement.classList.remove("is-invalid");
   };
-  changeSelectedTurn = (e: Event) => {
+  changeSelectedTurn = async (e: Event) => {
     const target = e.target as HTMLInputElement;
     const turn = parseInt(target.value);
-    this.#generator.changeTurn(turn).then((result) => {
-      if (!result) {
-        turnInput.classList.add("is-invalid");
-        this.disabled = true;
-        return;
-      }
-      this.update();
-      this.disabled = false;
-      this.renderSuggestions();
-      this.renderMarkGroups();
-      this.renderCanvas();
-      turnInput.classList.remove("is-invalid");
-    });
+    const result = await this.#generator.changeTurn(turn);
+    if (!result) {
+      turnInput.classList.add("is-invalid");
+      this.disabled = true;
+      return;
+    }
+    this.renderSuggestions();
+    this.renderMarkGroups();
+    this.renderCanvas();
+    this.update();
+    this.disabled = false;
+    turnInput.classList.remove("is-invalid");
   };
   init() {
     this.#encodedSettings.dispatchEvent(new Event("input"));
