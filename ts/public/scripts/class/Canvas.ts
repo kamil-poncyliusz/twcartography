@@ -11,7 +11,7 @@ class CanvasController {
   }
   render = () => {
     if (this.#generator.autoRefresh) {
-      const imageData = this.#generator.generate() as ImageData;
+      const imageData = this.#generator.getMapImageData() as ImageData;
       const ctx = canvasElement.getContext("2d");
       canvasElement.width = imageData.width;
       canvasElement.height = imageData.width;

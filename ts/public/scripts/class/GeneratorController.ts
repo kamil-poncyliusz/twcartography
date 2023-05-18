@@ -43,7 +43,6 @@ class GeneratorController {
     const tribe = this.findTribe(tribeName);
     if (!tribe) return false;
     group.tribes.push(tribe.id);
-    this.generate();
     return true;
   }
   addMarkGroup(group: MarkGroup) {
@@ -94,7 +93,6 @@ class GeneratorController {
     if (!SettingsValidator.color(color)) return false;
     const group = this.markGroups[groupIndex];
     group.color = color;
-    this.generate();
     return true;
   }
   changeMarkGroupName(oldName: string, name: string) {
@@ -126,7 +124,6 @@ class GeneratorController {
         }
       }
     }
-    this.generate();
     return true;
   }
   deleteMark(groupName: string, tribeTag: string) {
@@ -136,14 +133,12 @@ class GeneratorController {
     const tribeIndex = group.tribes.findIndex((tribeId) => this.tribes[tribeId].tag === tribeTag);
     if (tribeIndex === -1) return false;
     group.tribes.splice(tribeIndex, 1);
-    this.generate();
     return true;
   }
   deleteMarkGroup(name: string) {
     const groupIndex = this.markGroups.findIndex((element) => element.name === name);
     if (groupIndex === -1) return false;
     this.markGroups.splice(groupIndex, 1);
-    this.generate();
     return true;
   }
   async fetchTurnData(turn: number) {
@@ -178,7 +173,7 @@ class GeneratorController {
     }
     return false;
   }
-  generate() {
+  getMapImageData() {
     const generator = new MapGenerator(this.data[this.turn], this.settings);
     return generator.imageData;
   }
@@ -218,42 +213,36 @@ class GeneratorController {
     if (this.turn === -1) return false;
     if (!SettingsValidator.color(color)) return false;
     this.#backgroundColor = color;
-    this.generate();
     return true;
   }
   setRadius(value: number) {
     if (this.turn === -1) return false;
     if (!SettingsValidator.radius(value)) return false;
     this.#radius = value;
-    this.generate();
     return true;
   }
   setScale(value: number) {
     if (this.turn === -1) return false;
     if (!SettingsValidator.scale(value)) return false;
     this.#scale = value;
-    this.generate();
     return true;
   }
   setSpotsFilter(value: number) {
     if (this.turn === -1) return false;
     if (!SettingsValidator.spotsFilter(value)) return false;
     this.#spotsFilter = value;
-    this.generate();
     return true;
   }
   setSpotSize(value: number) {
     if (this.turn === -1) return false;
     if (!SettingsValidator.spotSize(value)) return false;
     this.#spotSize = value;
-    this.generate();
     return true;
   }
   setVillageFilter(value: number) {
     if (this.turn === -1) return false;
     if (!SettingsValidator.villageFilter(value)) return false;
     this.#villageFilter = value;
-    this.generate();
     return true;
   }
 }

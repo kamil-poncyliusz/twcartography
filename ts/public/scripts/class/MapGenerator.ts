@@ -194,6 +194,7 @@ class MapGenerator {
         if (pixel.distance > d) {
           pixel.distance = d;
           pixel.color = color;
+          pixel.counted = false;
         }
       }
     }
