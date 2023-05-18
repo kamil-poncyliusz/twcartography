@@ -5,7 +5,7 @@ import saveMapPng from "../src/save-map-png.js";
 import SettingsValidator from "../public/scripts/class/SettingsValidator.js";
 import MapGenerator from "../public/scripts/class/MapGenerator.js";
 import { encodeSettings } from "../public/scripts/settings-codec.js";
-import { ParsedTurnData, Settings, ReadMapsParameters, AuthorizedRequest } from "../Types.js";
+import { ParsedTurnData, Settings, ReadMapsParameters, AuthorizedRequest, ImageDataDummy } from "../Types.js";
 import fs from "fs";
 import worldDataParser from "../src/world-data-parser.js";
 
@@ -38,9 +38,9 @@ api.post("/map/create", async (req: AuthorizedRequest, res) => {
   const settings = req.body as Settings;
   if (!SettingsValidator.settings(settings)) return res.json(false);
   const encodedSettings = encodeSettings(settings);
-  const result = (await readWorldData(settings.world, settings.turn)) as unknown;
-  if (!result) return res.json(false);
-  const worldData = result as ParsedTurnData;
+  const result = await readWorldData(settings.world, settings.turn);
+  if (result === null) return res.json(false);
+  const worldData = result;
   const generator = new MapGenerator(worldData, settings);
   const imageData = generator.imageData;
   const createdMap = await createMap(
@@ -52,7 +52,7 @@ api.post("/map/create", async (req: AuthorizedRequest, res) => {
     encodedSettings
   );
   if (!createdMap) return res.json(false);
-  const saved = await saveMapPng(createdMap.id, imageData as ImageData);
+  const saved = await saveMapPng(createdMap.id, imageData as ImageDataDummy);
   if (saved) {
     return res.json(true);
   } else {
