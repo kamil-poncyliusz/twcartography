@@ -1,27 +1,30 @@
 import { Base64 } from "./base64.js";
 import { MarkGroup, Settings } from "../../Types.js";
 
+const minorSeparator = ",";
+const majorSeparator = ";";
+
 export const encodeSettings = function (settings: Settings): string {
   let result = "";
   if (settings.markGroups.length === 0) {
     return result;
   }
   for (const group of settings.markGroups) {
-    result += `${group.name}:${group.color}`;
+    result += group.name + minorSeparator + group.color;
     for (const tribeId of group.tribes) {
-      result += `:${tribeId}`;
+      result += minorSeparator + tribeId;
     }
-    result += ";";
+    result += majorSeparator;
   }
-  result += "^*";
-  result += `${settings.backgroundColor}:`;
-  result += `${settings.radius}:`;
-  result += `${settings.scale}:`;
-  result += `${settings.spotsFilter}:`;
-  result += `${settings.spotSize}:`;
-  result += `${settings.turn}:`;
-  result += `${settings.villageFilter}:`;
-  result += `${settings.world}`;
+  result += majorSeparator;
+  result += settings.backgroundColor + minorSeparator;
+  result += settings.radius + minorSeparator;
+  result += settings.scale + minorSeparator;
+  result += settings.spotsFilter + minorSeparator;
+  result += settings.spotSize + minorSeparator;
+  result += settings.turn + minorSeparator;
+  result += settings.villageFilter + minorSeparator;
+  result += settings.world;
   const encoded = Base64.encode(result);
   return encodeURIComponent(encoded);
 };
@@ -42,12 +45,12 @@ export const decodeSettings = function (input: string): Settings {
   const decodedURI = decodeURIComponent(input);
   const string = Base64.decode(decodedURI);
   const markGroups: MarkGroup[] = [];
-  const [markGroupsString, settingsString] = string.split(";^*");
+  const [markGroupsString, settingsString] = string.split(majorSeparator + majorSeparator);
   if (markGroupsString === "" || !markGroupsString || settingsString === "" || !settingsString) return defaultSettings;
-  const markGroupsArray = markGroupsString.split(";");
-  const settingsArray = settingsString.split(":");
+  const markGroupsArray = markGroupsString.split(majorSeparator);
+  const settingsArray = settingsString.split(minorSeparator);
   for (const markGroup of markGroupsArray) {
-    const groupArray = markGroup.split(":");
+    const groupArray = markGroup.split(minorSeparator);
     const group = {
       name: groupArray[0],
       color: groupArray[1],
