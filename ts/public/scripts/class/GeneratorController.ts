@@ -4,7 +4,6 @@ import { distinctiveColor } from "../utils.js";
 import { MarkGroup, Settings, ParsedTurnData, Tribe } from "../../../Types.js";
 
 class GeneratorController {
-  autoRefresh: boolean = true;
   #backgroundColor: string = "#000000";
   data: { [key: number]: ParsedTurnData } = {};
   info: {} = {};
@@ -177,7 +176,7 @@ class GeneratorController {
     const generator = new MapGenerator(this.data[this.turn], this.settings);
     return generator.imageData;
   }
-  getSuggestions(tag: string, limit = 10) {
+  getSuggestions(tag: string, limit = 15) {
     const tribes = this.tribes;
     if (!tribes) return false;
     const suggestions: Tribe[] = [];
@@ -204,10 +203,6 @@ class GeneratorController {
       if (group.name === name) return true;
     }
     return false;
-  }
-  setAutoRefresh(value: boolean) {
-    this.autoRefresh = value;
-    return true;
   }
   setBackgroundColor(color: string) {
     if (this.turn === -1) return false;

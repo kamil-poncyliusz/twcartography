@@ -4,13 +4,14 @@ const canvasElement = document.getElementById("map-canvas") as HTMLCanvasElement
 
 class CanvasController {
   #generator;
+  autoRefresh: boolean = false;
   constructor(mapGeneratorObject: GeneratorController) {
     this.#generator = mapGeneratorObject;
     canvasElement.addEventListener("mousedown", this.dragStart);
     canvasElement.addEventListener("mouseup", this.dragEnd);
   }
   render = () => {
-    if (this.#generator.autoRefresh) {
+    if (this.autoRefresh) {
       const imageData = this.#generator.getMapImageData() as ImageData;
       const ctx = canvasElement.getContext("2d");
       canvasElement.width = imageData.width;

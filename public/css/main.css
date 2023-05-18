@@ -149,6 +149,7 @@ main {
   display: flex;
   flex-direction: row;
   padding: 0;
+  border: none;
 }
 .map > a > div:first-child {
   height: 20rem;

@@ -33,7 +33,6 @@ class SettingsTabController {
     this.#encodedSettings = encodedSettings;
     this.#worldSelectElement = worldSelect;
     this.#turnInputElement = turnInput;
-    this.#inputs.autoRefresh.checked = this.#generator.autoRefresh;
     this.#inputs.autoRefresh.addEventListener("input", this.autoRefreshChange);
     this.#inputs.backgroundColor.addEventListener("input", this.backgroundColorChange);
     this.#inputs.radius.addEventListener("input", this.radiusChange);
@@ -59,6 +58,7 @@ class SettingsTabController {
   }
   set canvasObject(object: CanvasController) {
     this.#canvasObject = object;
+    this.#inputs.autoRefresh.checked = this.#canvasObject.autoRefresh;
   }
   set markGroupsObject(object: MarkGroupsTabController) {
     this.#markGroupsObject = object;
@@ -125,7 +125,7 @@ class SettingsTabController {
   autoRefreshChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
     const value = target.checked;
-    this.#generator.setAutoRefresh(value);
+    if (this.#canvasObject) this.#canvasObject.autoRefresh = value;
     this.update();
   };
   villageFilterChange = (e: Event) => {
