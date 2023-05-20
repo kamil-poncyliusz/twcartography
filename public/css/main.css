@@ -3,8 +3,8 @@
   --section: #806060;
   --element: #7a5a5a;
   --light-element: #856565;
-  --accent: #9e4a00;
-  --light-accent: #ff9d68;
+  --accent: #7a3900;
+  --light-accent: #af5e33;
   --font: #242424;
   --light-font: #a1a1a1;
   --danger: #800000;
@@ -78,13 +78,13 @@ input:disabled {
   cursor: not-allowed;
 }
 a:hover,
-button:hover,
+button:hover:enabled,
 select:hover:enabled,
 input:hover:enabled {
   background-color: var(--light-accent);
 }
 a:active,
-button:active {
+button:active:enabled {
   background-color: var(--section);
 }
 input:focus,

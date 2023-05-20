@@ -7,23 +7,7 @@ import "./nav-bar.js";
 
 const showSettingsButton = document.getElementById("settings-button");
 const showMarksButton = document.getElementById("marks-button");
-const publishButton = document.getElementById("publish-button");
 
-const sendPublishRequest = async function () {
-  const settings = mapGenerator.settings;
-  const url = `http://${window.location.host}/api/map/create`;
-  const body = JSON.stringify(settings);
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: body,
-  });
-  const createdMapId = await response.json();
-  if (createdMapId > 0) console.log("Map published succesfully");
-  else console.log("Failed to publish the map");
-};
 const showTab = function (tabClassName: string) {
   const divsToHide = Array.from(document.querySelectorAll("#controls-wrapper > div"));
   const divsToShow = Array.from(document.querySelectorAll(`#controls-wrapper > .${tabClassName}`));
@@ -62,4 +46,3 @@ if (showMarksButton)
   showMarksButton.addEventListener("click", function () {
     showTab("marks-tab");
   });
-if (publishButton) publishButton.addEventListener("click", sendPublishRequest);

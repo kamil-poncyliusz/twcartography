@@ -4,6 +4,7 @@ import MarkGroupsTabController from "./MarkGroupsTab.js";
 import SuggestionsTabController from "./SuggestionsTab.js";
 import CanvasController from "./Canvas.js";
 import { Settings } from "../../../Types.js";
+import { title } from "process";
 
 const inputs: { [key: string]: HTMLInputElement } = {
   autoRefresh: document.getElementById("auto-refresh") as HTMLInputElement,
@@ -14,9 +15,12 @@ const inputs: { [key: string]: HTMLInputElement } = {
   spotsFilter: document.getElementById("spots-filter") as HTMLInputElement,
   spotSize: document.getElementById("spot-size") as HTMLInputElement,
 };
-const encodedSettings = document.getElementById("encoded-settings") as HTMLInputElement;
+const encodedSettingsInput = document.getElementById("encoded-settings") as HTMLInputElement;
 const worldSelect = document.getElementById("world-select") as HTMLSelectElement;
 const turnInput = document.getElementById("turn-input") as HTMLInputElement;
+const titleInput = document.getElementById("title") as HTMLInputElement;
+const descriptionInput = document.getElementById("description") as HTMLInputElement;
+const publishButton = document.getElementById("publish-button") as HTMLButtonElement | null;
 
 class SettingsTabController {
   #generator: GeneratorController;
@@ -24,15 +28,9 @@ class SettingsTabController {
   #markGroupsObject: MarkGroupsTabController | undefined;
   #suggestionsObject: SuggestionsTabController | undefined;
   #inputs;
-  #encodedSettings: HTMLInputElement;
-  #worldSelectElement: HTMLSelectElement;
-  #turnInputElement: HTMLInputElement;
   constructor(mapGeneratorObject: GeneratorController) {
     this.#generator = mapGeneratorObject;
     this.#inputs = inputs;
-    this.#encodedSettings = encodedSettings;
-    this.#worldSelectElement = worldSelect;
-    this.#turnInputElement = turnInput;
     this.#inputs.autoRefresh.addEventListener("input", this.autoRefreshChange);
     this.#inputs.backgroundColor.addEventListener("input", this.backgroundColorChange);
     this.#inputs.radius.addEventListener("input", this.radiusChange);
@@ -40,13 +38,13 @@ class SettingsTabController {
     this.#inputs.spotsFilter.addEventListener("input", this.spotsFilterChange);
     this.#inputs.spotSize.addEventListener("input", this.spotSizeChange);
     this.#inputs.villageFilter.addEventListener("input", this.villageFilterChange);
-    this.#worldSelectElement.addEventListener("change", this.changeSelectedWorld);
-    this.#turnInputElement.addEventListener("input", this.changeSelectedTurn);
-    this.#encodedSettings.addEventListener("input", this.encodedSettingsChange);
-    this.#encodedSettings.addEventListener("click", (e: Event) => {
-      this.#encodedSettings.select();
+    worldSelect.addEventListener("change", this.changeSelectedWorld);
+    turnInput.addEventListener("input", this.changeSelectedTurn);
+    encodedSettingsInput.addEventListener("input", this.encodedSettingsChange);
+    encodedSettingsInput.addEventListener("click", (e: Event) => {
+      encodedSettingsInput.select();
     });
-    this.disabled = true;
+    if (publishButton !== null) publishButton.addEventListener("click", this.publishMap);
   }
 
   set disabled(value: boolean) {
@@ -54,6 +52,11 @@ class SettingsTabController {
     for (const key in inputs) {
       const setting = key as keyof typeof inputs;
       inputs[setting].disabled = value;
+    }
+    if (publishButton !== null) {
+      titleInput.disabled = value;
+      descriptionInput.disabled = value;
+      publishButton.disabled = value;
     }
   }
   set canvasObject(object: CanvasController) {
@@ -66,6 +69,9 @@ class SettingsTabController {
   set suggestionsObject(object: SuggestionsTabController) {
     this.#suggestionsObject = object;
   }
+  init() {
+    encodedSettingsInput.dispatchEvent(new Event("input"));
+  }
   update() {
     const settings = this.#generator.settings;
     const encodedSettings = encodeSettings(settings);
@@ -76,7 +82,7 @@ class SettingsTabController {
       const settingsKey = key as keyof Settings;
       input.value = String(settings[settingsKey]);
     }
-    this.#encodedSettings.value = encodedSettings;
+    encodedSettingsInput.value = encodedSettings;
   }
   renderCanvas() {
     if (this.#canvasObject) this.#canvasObject.render();
@@ -168,12 +174,12 @@ class SettingsTabController {
     const target = e.target as HTMLInputElement;
     const value = target.value;
     if (value === "") {
-      this.#encodedSettings.classList.remove("is-invalid");
+      encodedSettingsInput.classList.remove("is-invalid");
       return;
     }
     const decodedSettings = decodeSettings(value);
     if (!decodedSettings || !(await this.#generator.applySettings(decodedSettings))) {
-      this.#encodedSettings.classList.add("is-invalid");
+      encodedSettingsInput.classList.add("is-invalid");
       return;
     }
     this.renderCanvas();
@@ -182,11 +188,11 @@ class SettingsTabController {
     this.disabled = false;
     this.update();
     const worldIdString = String(this.#generator.world);
-    this.#worldSelectElement.value = worldIdString;
+    worldSelect.value = worldIdString;
     const turnString = String(this.#generator.turn);
-    this.#turnInputElement.value = turnString;
-    this.#turnInputElement.disabled = false;
-    this.#encodedSettings.classList.remove("is-invalid");
+    turnInput.value = turnString;
+    turnInput.disabled = false;
+    encodedSettingsInput.classList.remove("is-invalid");
   };
   changeSelectedWorld = async (e: Event) => {
     const target = e.target as HTMLSelectElement;
@@ -196,12 +202,12 @@ class SettingsTabController {
     const result = await this.#generator.changeWorld(world);
     if (!result) {
       this.disabled = true;
-      this.#turnInputElement.disabled = true;
-      this.#worldSelectElement.classList.add("is-invalid");
+      turnInput.disabled = true;
+      worldSelect.classList.add("is-invalid");
       return;
     }
-    this.#turnInputElement.disabled = false;
-    this.#worldSelectElement.classList.remove("is-invalid");
+    turnInput.disabled = false;
+    worldSelect.classList.remove("is-invalid");
   };
   changeSelectedTurn = async (e: Event) => {
     const target = e.target as HTMLInputElement;
@@ -219,9 +225,27 @@ class SettingsTabController {
     this.disabled = false;
     turnInput.classList.remove("is-invalid");
   };
-  init() {
-    this.#encodedSettings.dispatchEvent(new Event("input"));
-  }
+  publishMap = async (e: Event) => {
+    const url = `http://${window.location.host}/api/map/create`;
+    const settings = this.#generator.settings;
+    const title = titleInput.value;
+    const description = descriptionInput.value;
+    const body = {
+      settings: settings,
+      title: title,
+      description: description,
+    };
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+    const createdMapId = await response.json();
+    if (createdMapId > 0) console.log("Map published succesfully");
+    else console.log("Failed to publish the map");
+  };
 }
 
 export default SettingsTabController;

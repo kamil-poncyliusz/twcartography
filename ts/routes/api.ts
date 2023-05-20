@@ -35,9 +35,13 @@ api.get("/data/:world/:turn", async (req, res) => {
 api.post("/map/create", async (req: AuthorizedRequest, res) => {
   if (!req.authorized) return res.json(0);
   if (req.authorized.rank === 0) return res.json(0);
-  const settings = req.body as Settings;
+  const settings = req.body.settings as Settings;
   if (!SettingsValidator.settings(settings)) return res.json(0);
   const encodedSettings = encodeSettings(settings);
+  const title = req.body.title;
+  const description = req.body.description;
+  if (typeof title !== "string" || title.length === 0 || title.length > 20) return res.json(0);
+  if (typeof description !== "string" || description.length > 100) return res.json(0);
   const result = await readWorldData(settings.world, settings.turn);
   if (result === null) return res.json(0);
   const worldData = result;
@@ -47,8 +51,8 @@ api.post("/map/create", async (req: AuthorizedRequest, res) => {
     settings.world,
     settings.turn,
     req.authorized.id,
-    "tytuł",
-    "opis",
+    title,
+    description,
     encodedSettings
   );
   if (!createdMap) return res.json(0);
