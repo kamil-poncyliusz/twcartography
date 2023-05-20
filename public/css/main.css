@@ -1,9 +1,13 @@
 :root {
-  --color1: #313131;
-  --color2: #727272;
-  --color3: #9e4a00;
-  --color4: #ff9d68;
-  --color5: #242424;
+  --background: #313131;
+  --section: #806060;
+  --element: #7a5a5a;
+  --light-element: #856565;
+  --accent: #9e4a00;
+  --light-accent: #ff9d68;
+  --font: #242424;
+  --light-font: #a1a1a1;
+  --danger: #800000;
 }
 @media (max-width: 1920px) {
   html {
@@ -23,15 +27,15 @@
 html,
 body {
   width: 100vw;
-  background-color: var(--color1);
+  background-color: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
 a,
 button,
 select,
 input {
-  background-color: var(--color3);
-  color: var(--color5);
+  background-color: var(--accent);
+  color: var(--font);
   border: 2px solid transparent;
   cursor: pointer;
 }
@@ -51,28 +55,26 @@ a:hover,
 button:hover,
 select:hover:enabled,
 input:hover:enabled {
-  background-color: var(--color4);
+  background-color: var(--light-accent);
 }
 a:active,
 button:active {
-  background-color: var(--color2);
+  background-color: var(--section);
 }
 input:focus,
 select:focus {
-  outline: 2px solid var(--color4);
+  outline: 2px solid var(--light-accent);
 }
 a:link {
   text-decoration: none;
 }
 a:visited {
-  color: inherit;
-}
-a:hover {
-  color: inherit;
+  color: var(--font);
 }
 h1 {
   font-size: 2rem;
   font-weight: bold;
+  color: var(--font);
 }
 h2 {
   font-size: 1.5rem;
@@ -81,42 +83,51 @@ table {
   border-collapse: separate;
   border-spacing: 0.25rem;
   text-align: center;
-  background-color: var(--color2);
-  color: var(--color5);
-}
-table th {
-  font-weight: bold;
+  background-color: var(--section);
+  color: var(--font);
 }
 
 table td,
 table th {
   font-size: 1rem;
-  padding: 0.25rem;
   vertical-align: middle;
+}
+table th {
+  font-weight: bold;
+}
+table td:nth-last-child(n + 2),
+table th:nth-last-child(n + 2) {
+  padding: 0 0.25rem;
+}
+table tbody tr:nth-child(2n) {
+  background-color: var(--element);
+}
+table tbody tr:nth-child(2n + 1) {
+  background-color: var(--light-element);
 }
 
 .hidden {
   display: none;
 }
 .is-invalid {
-  border-color: red;
+  border-color: var(--danger);
 }
 .delete-button:hover {
-  border-color: red;
-  outline: 3px solid red;
+  border-color: var(--danger);
+  outline: 3px solid var(--danger);
 }
 .label-button {
   padding: 0.25rem;
   border-radius: 0.5rem;
-  background-color: var(--color3);
-  color: var(--color5);
+  background-color: var(--accent);
+  color: var(--font);
   cursor: pointer;
 }
 .label-button:hover {
-  background-color: var(--color4);
+  background-color: var(--light-accent);
 }
 .label-button:active {
-  background-color: var(--color2);
+  background-color: var(--section);
 }
 
 main {
@@ -136,14 +147,14 @@ main {
   width: 50rem;
 }
 .map {
-  background-color: var(--color3);
+  background-color: var(--accent);
   padding: 0;
   margin-bottom: 0.5rem;
   border-radius: 1rem;
   overflow: hidden;
 }
 .map:hover {
-  background-color: var(--color4);
+  background-color: var(--light-accent);
 }
 .map > a {
   display: flex;

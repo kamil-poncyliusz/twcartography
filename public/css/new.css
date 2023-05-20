@@ -30,9 +30,9 @@ body {
   margin-top: 1rem;
 }
 #controls-wrapper > div > div {
-  background-color: var(--color2);
+  background-color: var(--section);
   border: none;
-  color: var(--color5);
+  color: var(--font);
   border-radius: 0.5rem;
   max-height: calc(100vh - 4rem);
   overflow-y: scroll;
@@ -87,7 +87,7 @@ body {
 #mark-suggestions select {
   font-size: 1rem;
   border-radius: 0.5rem;
-  padding: 0.5rem;
+  padding: 0.25rem;
 }
 
 #mark-groups > div {
@@ -98,12 +98,12 @@ body {
   width: 2.5rem;
   height: 2.5rem;
   padding: 0;
-  border: 1px solid var(--color3);
+  border: 1px solid var(--accent);
   border-radius: 0.5rem;
   overflow: hidden;
 }
 #mark-groups input[type="color"]:hover {
-  border-color: var(--color4);
+  border-color: var(--light-accent);
 }
 #mark-groups tbody > tr > td:first-child > *:not(:last-child) {
   margin-bottom: 0.25rem;

@@ -7,7 +7,7 @@ form {
 form > fieldset {
   margin: 0 0.5rem;
   padding: 1rem;
-  background-color: var(--color2);
+  background-color: var(--section);
   border: none;
   border-radius: 1rem;
 }
@@ -20,7 +20,7 @@ form > fieldset > div {
   align-items: center;
   justify-content: left;
   height: min-content;
-  background-color: var(--color3);
+  background-color: var(--accent);
   border-radius: 0.5rem;
   cursor: pointer;
 }
@@ -28,7 +28,7 @@ form label {
   cursor: pointer;
 }
 form > fieldset > div:hover {
-  background-color: var(--color4);
+  background-color: var(--light-accent);
 }
 form select {
   font-size: 1.25rem;
