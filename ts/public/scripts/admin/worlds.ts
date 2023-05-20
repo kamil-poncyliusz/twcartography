@@ -9,15 +9,15 @@ const sendCreateWorldRequest = async function (server: string, num: string, doma
     timestamp: timestamp,
   };
   const body = JSON.stringify(worldFields);
-  const result = await fetch(url, {
+  const response = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: body,
   });
-  const parsedResult = await result.json();
-  return parsedResult;
+  const createdMapId = await response.json();
+  return createdMapId;
 };
 
 const createWorld = async function (e: Event) {
@@ -34,7 +34,8 @@ const createWorld = async function (e: Event) {
   const domain = domainInput.value;
   const timestamp = parseInt(timestampInput.value);
   const result = await sendCreateWorldRequest(server, num, domain, timestamp);
-  console.log(result);
+  if (result > 0) console.log("World was created succesfully");
+  else console.log("Failed to create a world");
 };
 
 createWorldForm?.addEventListener("submit", createWorld);

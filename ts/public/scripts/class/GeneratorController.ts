@@ -2,6 +2,7 @@ import MapGenerator from "./MapGenerator.js";
 import SettingsValidator from "./SettingsValidator.js";
 import { distinctiveColor } from "../utils.js";
 import { MarkGroup, Settings, ParsedTurnData, Tribe } from "../../../Types.js";
+import { readWorld, readWorldData } from "../../../src/queries/index.js";
 
 class GeneratorController {
   #backgroundColor: string = "#000000";
@@ -123,7 +124,7 @@ class GeneratorController {
   }
   async changeWorld(world: number) {
     const response = await fetch(`http://${window.location.host}/api/world/${world}`);
-    const worldInfo = await response.json();
+    const worldInfo: Awaited<ReturnType<typeof readWorld>> = await response.json();
     this.data = {};
     this.turn = -1;
     if (worldInfo === null) {
@@ -155,7 +156,7 @@ class GeneratorController {
     if (this.data[turn] !== undefined) return true;
     const url = `http://${window.location.host}/api/data/${this.world}/${turn}`;
     const response = await fetch(url);
-    const turnData = await response.json();
+    const turnData: Awaited<ReturnType<typeof readWorldData>> = await response.json();
     if (turnData === null) return false;
     this.data[turn] = turnData;
     return true;

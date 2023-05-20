@@ -1,8 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { readMaps, readMap } from "../../../src/queries/index.js";
-import { MapLoaderSettings } from "../../../Types.js";
+import { Created_mapWithRelations, MapLoaderSettings } from "../../../Types.js";
 
-type mapsWithRelations = Prisma.PromiseReturnType<typeof readMaps>;
 type mapWithRelations = Prisma.PromiseReturnType<typeof readMap>;
 
 const mapsList = document.getElementById("maps-list") as Element;
@@ -27,15 +26,15 @@ class MapLoader {
     }/${this.#page}`;
     this.#fetching = true;
     const result = await fetch(url);
-    const maps = (await result.json()) as mapsWithRelations;
-    if (maps === null) return (this.#endOfData = true);
+    const maps = (await result.json()) as Awaited<ReturnType<typeof readMaps>>;
+    if (maps.length === 0) return (this.#endOfData = true);
     for (const map of maps) {
       this.#appendMap(map);
     }
     this.#fetching = false;
     return;
   }
-  #appendMap(map: mapWithRelations) {
+  #appendMap(map: Created_mapWithRelations) {
     if (map !== null) {
       const createdAt = new Date(map.created_at).toLocaleDateString();
       const newNode = document.createElement("div");

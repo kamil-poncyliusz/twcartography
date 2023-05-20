@@ -13,15 +13,16 @@ const sendPublishRequest = async function () {
   const settings = mapGenerator.settings;
   const url = `http://${window.location.host}/api/map/create`;
   const body = JSON.stringify(settings);
-  let response = await fetch(url, {
+  const response = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: body,
   });
-  response = await response.json();
-  console.log(response);
+  const createdMapId = await response.json();
+  if (createdMapId > 0) console.log("Map published succesfully");
+  else console.log("Failed to publish the map");
 };
 const showTab = function (tabClassName: string) {
   const divsToHide = Array.from(document.querySelectorAll("#controls-wrapper > div"));

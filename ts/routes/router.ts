@@ -2,8 +2,8 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import jsonwebtoken from "jsonwebtoken";
 import { readMap, createUser, readUser, readUserByLogin, readWorlds } from "../src/queries/index.js";
-import { World, Created_map } from "@prisma/client";
-import { Authorized, AuthorizedRequest } from "../Types.js";
+import { World } from "@prisma/client";
+import { Authorized, AuthorizedRequest, Created_mapWithRelations } from "../Types.js";
 
 interface Locals {
   page: "index" | "maps" | "map" | "user" | "new";
@@ -12,7 +12,7 @@ interface Locals {
   userLogin?: string;
   userRank?: number;
   worlds?: World[];
-  map?: Created_map;
+  map?: Created_mapWithRelations;
   encodedSettings?: string;
 }
 
@@ -50,14 +50,10 @@ router.post("/auth", async (req, res) => {
   if (user === null || user === undefined) return res.json({ success: false });
   const hash = user.password;
   const isValid = bcrypt.compareSync(password, hash);
-  if (!isValid) return res.json({ success: false });
-  const token = jsonwebtoken.sign(
-    { id: user.id, login: user.login, rank: user.rank },
-    process.env.TOKEN_SECRET as string,
-    {
-      expiresIn: 1 * 60 * 60,
-    }
-  );
+  if (!isValid || process.env.TOKEN_SECRET === undefined) return res.json({ success: false });
+  const token = jsonwebtoken.sign({ id: user.id, login: user.login, rank: user.rank }, process.env.TOKEN_SECRET, {
+    expiresIn: 1 * 60 * 60,
+  });
   res.cookie("token", token, {
     maxAge: 1 * 60 * 60 * 1000,
     secure: true,

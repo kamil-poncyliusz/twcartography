@@ -1,5 +1,5 @@
 import { PrismaClient, Prisma } from "@prisma/client";
-import { ReadMapsParameters } from "../../Types";
+import { Created_mapWithRelations, ReadMapsParameters } from "../../Types";
 
 const prisma = new PrismaClient();
 
@@ -22,7 +22,10 @@ export const readMap = async function (id: number) {
   return result;
 };
 
-export const readMaps = async function (page: number, filters: ReadMapsParameters) {
+export const readMaps = async function (
+  page: number,
+  filters: ReadMapsParameters
+): Promise<Created_mapWithRelations[]> {
   const mapsPerPage = 5;
   const now = Date.now();
   let timespan: string | undefined;
@@ -75,7 +78,7 @@ export const readMaps = async function (page: number, filters: ReadMapsParameter
     })
     .catch((err) => {
       console.error("Prisma error:", err);
-      return null;
+      return [];
     });
   return result;
 };

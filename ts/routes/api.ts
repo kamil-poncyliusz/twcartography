@@ -33,13 +33,13 @@ api.get("/data/:world/:turn", async (req, res) => {
   return res.json(data);
 });
 api.post("/map/create", async (req: AuthorizedRequest, res) => {
-  if (!req.authorized) return res.json(false);
-  if (req.authorized.rank === 0) return res.json(false);
+  if (!req.authorized) return res.json(0);
+  if (req.authorized.rank === 0) return res.json(0);
   const settings = req.body as Settings;
-  if (!SettingsValidator.settings(settings)) return res.json(false);
+  if (!SettingsValidator.settings(settings)) return res.json(0);
   const encodedSettings = encodeSettings(settings);
   const result = await readWorldData(settings.world, settings.turn);
-  if (result === null) return res.json(false);
+  if (result === null) return res.json(0);
   const worldData = result;
   const generator = new MapGenerator(worldData, settings);
   const imageData = generator.imageData;
@@ -51,12 +51,12 @@ api.post("/map/create", async (req: AuthorizedRequest, res) => {
     "opis",
     encodedSettings
   );
-  if (!createdMap) return res.json(false);
+  if (!createdMap) return res.json(0);
   const saved = await saveMapPng(createdMap.id, imageData as ImageDataDummy);
   if (saved) {
-    return res.json(true);
+    return res.json(createdMap.id);
   } else {
-    return res.json(false);
+    return res.json(0);
   }
 });
 api.get("/maps/:world/:author/:timespan/:order/:page", async (req, res) => {
@@ -78,17 +78,17 @@ api.get("/maps/:world/:author/:timespan/:order/:page", async (req, res) => {
   return res.json(maps);
 });
 api.post("/world/create", async (req: AuthorizedRequest, res) => {
-  if (!req.authorized) return res.json({});
-  if (req.authorized.rank !== 2) return res.json({});
-  if (!validateWorldCreateBody(req.body)) return res.json({});
+  if (!req.authorized) return res.json(0);
+  if (req.authorized.rank !== 2) return res.json(0);
+  if (!validateWorldCreateBody(req.body)) return res.json(0);
   const server: string = req.body.server;
   const num: string = req.body.num;
   const domain: string = req.body.domain;
   const timestamp: number = req.body.timestamp;
   const createdWorld = await createWorld(server, num, domain, timestamp);
-  if (!createdWorld) return res.json({});
+  if (!createdWorld) return res.json(0);
   console.log("Stworzono świat o id", createdWorld.id);
-  return res.json(createdWorld);
+  return res.json(createdWorld.id);
 });
 api.post("/world-data/create/:world/:turn", async (req: AuthorizedRequest, res) => {
   if (!req.authorized) return res.json(false);

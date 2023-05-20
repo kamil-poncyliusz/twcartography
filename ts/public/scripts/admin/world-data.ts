@@ -5,15 +5,16 @@ const createTurnData = async function (e: Event) {
   const world = Number(target.dataset.world);
   const turn = Number(target.dataset.turn);
   const url = `http://${window.location.host}/api/world-data/create/${world}/${turn}`;
-  const result = await fetch(url, {
+  const response = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: "",
   });
-  const message = await result.json();
-  if (message) window.location.reload();
+  const isCreated: boolean = await response.json();
+  if (isCreated) window.location.reload();
+  else console.log("Failed to create turn data");
 };
 
 createTurnDataButtons.forEach((button) => {
