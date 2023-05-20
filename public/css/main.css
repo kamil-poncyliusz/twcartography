@@ -46,6 +46,32 @@ input[type="number"] {
   cursor: text;
   appearance: textfield;
 }
+input[type="color"]::-moz-color-swatch,
+input[type="color"]::-webkit-color-swatch {
+  border: none;
+}
+input[type="checkbox"] {
+  appearance: none;
+  background-color: var(--accent);
+  margin: 0;
+  color: black;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  display: grid;
+  place-content: center;
+}
+input[type="checkbox"]::before {
+  content: "";
+  width: 1.25rem;
+  height: 1.25rem;
+  transform: scale(0);
+  transition: 120ms transform ease-in-out;
+  background-color: var(--font);
+}
+input[type="checkbox"]:checked::before {
+  transform: scale(1);
+}
 button:disabled,
 select:disabled,
 input:disabled {
@@ -86,7 +112,6 @@ table {
   background-color: var(--section);
   color: var(--font);
 }
-
 table td,
 table th {
   font-size: 1rem;
