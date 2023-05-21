@@ -4,7 +4,7 @@ const createTurnData = async function (e: Event) {
   const target = e.target as HTMLButtonElement;
   const world = Number(target.dataset.world);
   const turn = Number(target.dataset.turn);
-  const url = `http://${window.location.host}/api/world-data/create/${world}/${turn}`;
+  const url = `${window.location.origin}/api/world-data/create/${world}/${turn}`;
   const response = await fetch(url, {
     method: "POST",
     headers: {

@@ -226,7 +226,7 @@ class SettingsTabController {
     turnInput.classList.remove("is-invalid");
   };
   publishMap = async (e: Event) => {
-    const url = `http://${window.location.host}/api/map/create`;
+    const url = `${window.location.origin}/api/map/create`;
     const settings = this.#generator.settings;
     const title = titleInput.value;
     const description = descriptionInput.value;

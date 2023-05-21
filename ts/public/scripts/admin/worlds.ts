@@ -1,7 +1,7 @@
 const createWorldForm = document.querySelector("form");
 
 const sendCreateWorldRequest = async function (server: string, num: string, domain: string, timestamp: number) {
-  const url = `http://${window.location.host}/api/world/create`;
+  const url = `${window.location.origin}/api/world/create`;
   const worldFields = {
     server: server,
     num: num,

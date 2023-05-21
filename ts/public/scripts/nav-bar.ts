@@ -5,7 +5,7 @@ const loginForm = document.getElementById("login-form");
 const logoutButton = document.getElementById("logout-button");
 
 const logout = async function (e: Event) {
-  const url = `http://${window.location.host}/logout`;
+  const url = `${window.location.origin}/logout`;
   const response = await fetch(url, {
     method: "POST",
     headers: {

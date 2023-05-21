@@ -123,7 +123,7 @@ class GeneratorController {
     return true;
   }
   async changeWorld(world: number) {
-    const response = await fetch(`http://${window.location.host}/api/world/${world}`);
+    const response = await fetch(`${window.location.origin}/api/world/${world}`);
     const worldInfo: Awaited<ReturnType<typeof readWorld>> = await response.json();
     this.data = {};
     this.turn = -1;
@@ -154,7 +154,7 @@ class GeneratorController {
     if (this.world === 0) return false;
     if (!SettingsValidator.turn(turn)) return false;
     if (this.data[turn] !== undefined) return true;
-    const url = `http://${window.location.host}/api/data/${this.world}/${turn}`;
+    const url = `${window.location.origin}/api/data/${this.world}/${turn}`;
     const response = await fetch(url);
     const turnData: Awaited<ReturnType<typeof readWorldData>> = await response.json();
     if (turnData === null) return false;

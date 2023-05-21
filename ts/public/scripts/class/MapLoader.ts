@@ -21,9 +21,9 @@ class MapLoader {
   }
   async #fetchMaps() {
     this.#page++;
-    const url = `http://${window.location.host}/api/maps/${this.#world}/${this.#author}/${this.#timespan}/${
-      this.#order
-    }/${this.#page}`;
+    const url = `${window.location.origin}/api/maps/${this.#world}/${this.#author}/${this.#timespan}/${this.#order}/${
+      this.#page
+    }`;
     this.#fetching = true;
     const result = await fetch(url);
     const maps = (await result.json()) as Awaited<ReturnType<typeof readMaps>>;
