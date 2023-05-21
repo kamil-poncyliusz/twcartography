@@ -58,9 +58,18 @@ router.post("/auth", async (req, res) => {
     maxAge: 1 * 60 * 60 * 1000,
     secure: true,
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: "strict",
   });
   return res.json({ success: true, token: token });
+});
+
+router.post("/logout", (req, res) => {
+  res.clearCookie("token", {
+    secure: true,
+    httpOnly: true,
+    sameSite: "strict",
+  });
+  return res.json(true);
 });
 
 router.get("/map/:id", async (req: AuthorizedRequest, res) => {
