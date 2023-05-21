@@ -13,3 +13,4 @@ routes/*.js
 src/**/*.js
 prisma/migrations/**/*
 Types.js
+create-admin-account.js

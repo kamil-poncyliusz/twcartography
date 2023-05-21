@@ -11,10 +11,10 @@ import { authorization, adminAuthorization } from "./src/authorization.js";
 import turnDataDownloaderDaemon from "./src/turn-data-downloader-daemon.js";
 
 const app = express();
+const PORT = "8080";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 process.env.ROOT = __dirname;
-const PORT = "8080";
 
 app.set("view engine", "pug");
 app.set("json escape", true);
@@ -42,4 +42,4 @@ app.listen(process.env.PORT || PORT, () => {
   console.log("[server] Server started");
 });
 
-// turnDataDownloaderDaemon();
+turnDataDownloaderDaemon();
