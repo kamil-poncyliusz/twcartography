@@ -3,6 +3,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import path from "path";
 import cors from "cors";
+import helmet from "helmet";
 import { fileURLToPath } from "url";
 import router from "./routes/router.js";
 import api from "./routes/api.js";
@@ -23,6 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(__dirname + "/public"));
 app.use(cookieParser());
+app.use(helmet());
 app.use(
   cors({
     origin: true,

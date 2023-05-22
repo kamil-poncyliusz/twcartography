@@ -35,7 +35,7 @@ body {
   color: var(--font);
   border-radius: 0.5rem;
   max-height: calc(100vh - 4rem);
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 #settings > div {
@@ -72,8 +72,7 @@ body {
   display: inline-block;
   flex: 1 0 0px;
 }
-.row > label,
-.row > span {
+.row > label {
   height: fit-content;
   cursor: help;
 }
