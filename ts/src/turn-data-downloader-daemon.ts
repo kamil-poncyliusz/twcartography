@@ -29,7 +29,7 @@ const downloadWorldData = async function (world: World, turn: number) {
   const path = `${process.env.ROOT}/temp/${world.id}`;
   if (!fs.existsSync(path)) fs.mkdirSync(path);
   const turnPath = `${path}/${turn}`;
-  if (!fs.existsSync(path)) fs.mkdirSync(turnPath);
+  if (!fs.existsSync(turnPath)) fs.mkdirSync(turnPath);
   const downloadPromises = files.map((file) => {
     const url = `https://${world.server}${world.num}.${world.domain}/map/${file}.txt.gz`;
     return downloadWorldDataFile(url, turnPath, file);

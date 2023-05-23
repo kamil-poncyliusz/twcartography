@@ -22,12 +22,12 @@ const findWorldDataFiles = function () {
     for (let turnDirectory of turnsDirectories) {
       const turn = Number(turnDirectory);
       const turnPath = path.join(worldPath, turnDirectory);
-      const hasWorldDataFiles = files.every((file) => {
+      const hasAllWorldDataFiles = files.every((file) => {
         const fileName = `${file}.txt.gz`;
         const filePath = path.join(turnPath, fileName);
         return fs.existsSync(filePath);
       });
-      if (hasWorldDataFiles) {
+      if (hasAllWorldDataFiles) {
         worldDataFiles[worldId][turn] = true;
       }
     }

@@ -6,14 +6,14 @@ const getWorldDataState = function (
   worldsWithWorldData: WorldWithWorldData[],
   worldDataFiles: ReturnType<typeof findWorldDataFiles>
 ) {
-  const state: WorldDataState[] = [];
+  const worldDataState: WorldDataState[] = [];
   for (const world of worldsWithWorldData) {
     const startTimestamp = new Date(world.start_timestamp * 1000);
     const numberOfTurns = daysFromStart(startTimestamp);
     const addedWorld: WorldDataState = {
       id: world.id,
       serverName: world.server + world.num,
-      turns: Array(numberOfTurns)
+      turns: Array(numberOfTurns + 1)
         .fill(null)
         .map(() => ({
           id: -1,
@@ -30,9 +30,9 @@ const getWorldDataState = function (
         if (turnsWithFiles[turn] === true && addedWorld.turns[turn]) addedWorld.turns[turn].hasFiles = true;
       }
     }
-    state.push(addedWorld);
+    worldDataState.push(addedWorld);
   }
-  return state;
+  return worldDataState;
 };
 
 export default getWorldDataState;
