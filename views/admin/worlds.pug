@@ -11,14 +11,35 @@ html(lang="pl-PL")
     link(rel="stylesheet", href="/css/admin/worlds.css", type="text/css")
     script(src="/scripts/admin/worlds.js", type="module", defer)
   body
-    form
-      div
-        input#server(type="text", name="server", autocomplete="off", placeholder="server")
-      div
-        input#num(type="text", name="num", autocomplete="off", placeholder="num")
-      div
-        input#start-timestamp(type="number", name="start-timestamp", autocomplete="off", placeholder="timestamp")
-      div
-        input#domain(type="text", name="domain", autocomplete="off", placeholder="domain")
-      div
-        input(type="submit", value="Dodaj")
+    table
+      thead
+        tr
+          th ID
+          th serwer
+          th numer
+          th timestamp
+          th domena
+          th 
+      tbody
+        each world in worlds
+          tr
+            td= world.id
+            td= world.server
+            td= world.num
+            td= world.start_timestamp
+            td= world.domain
+            td
+              button Usuń
+        tr
+          form
+            td -
+            td
+              input#server(type="text", name="server", autocomplete="off", placeholder="server")
+            td
+              input#num(type="text", name="num", autocomplete="off", placeholder="num")
+            td
+              input#start-timestamp(type="number", name="start-timestamp", autocomplete="off", placeholder="timestamp")
+            td
+              input#domain(type="text", name="domain", autocomplete="off", placeholder="domain")
+            td
+              input(type="submit", value="Dodaj")

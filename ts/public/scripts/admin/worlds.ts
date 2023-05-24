@@ -34,7 +34,7 @@ const createWorld = async function (e: Event) {
   const domain = domainInput.value;
   const timestamp = parseInt(timestampInput.value);
   const result = await sendCreateWorldRequest(server, num, domain, timestamp);
-  if (result > 0) console.log("World was created succesfully");
+  if (result > 0) window.location.reload();
   else console.log("Failed to create a world");
 };
 
