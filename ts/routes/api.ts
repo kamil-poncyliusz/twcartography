@@ -34,7 +34,7 @@ api.get("/data/:world/:turn", async (req, res) => {
 });
 api.post("/map/create", async (req: AuthorizedRequest, res) => {
   if (!req.authorized) return res.json(0);
-  if (req.authorized.rank === 0) return res.json(0);
+  if (req.authorized.rank < 2) return res.json(0);
   const settings = req.body.settings as Settings;
   if (!SettingsValidator.settings(settings)) return res.json(0);
   const encodedSettings = encodeSettings(settings);

@@ -10,6 +10,7 @@ export const readMaps = map.readMaps;
 
 export const createUser = user.createUser;
 export const deleteUser = user.deleteUser;
+export const deleteAllUsers = user.deleteAllUsers;
 export const readUser = user.readUser;
 export const readUserByLogin = user.readUserByLogin;
 export const readUsers = user.readUsers;

@@ -121,10 +121,11 @@ class MarkGroupsTabController {
     const name = target.value;
     const oldName = target.dataset.oldName as string;
     const result = this.#generator.changeMarkGroupName(oldName, name);
-    if (result) {
+    if (!result) {
       //
     }
     this.render();
+    this.renderSuggestions();
   };
 }
 

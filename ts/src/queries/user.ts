@@ -67,3 +67,10 @@ export const deleteUser = async function (id: number) {
     });
   return result;
 };
+export const deleteAllUsers = async function () {
+  const result = await prisma.user.deleteMany({}).catch((err) => {
+    console.error("Prisma error:", err);
+    return false;
+  });
+  return true;
+};
