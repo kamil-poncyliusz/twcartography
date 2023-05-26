@@ -1,0 +1,31 @@
+doctype html
+html(lang="pl-PL")
+  head
+    meta(charset="UTF-8")
+    meta(http-equiv="X-UA-Compatible", content="IE=edge")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title TW Cartography
+    include ../favicon.pug
+    link(rel="stylesheet", href="/css/reset.css", type="text/css")
+    link(rel="stylesheet", href="/css/main.css", type="text/css")
+    link(rel="stylesheet", href="/css/admin/users.css", type="text/css")
+    script(src="/scripts/admin/users.js", type="module", defer)
+  body
+    table#users
+      thead
+        tr
+          th ID
+          th login
+          th ranga
+          th 
+      tbody
+        each user in users
+          tr
+            td= user.id
+            td= user.login
+            td= user.rank
+            td
+              select.change-rank(name="change-rank", data-user-id=user.id, autocomplete="off") zmień prawa
+                option(value="", selected, disabled, hidden) wybierz
+                each rank in ranks
+                  option(value=rank)= rank

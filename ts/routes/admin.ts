@@ -1,5 +1,5 @@
 import express from "express";
-import { readWorlds, readWorldsWithWorldData } from "../src/queries/index.js";
+import { readUsers, readWorlds, readWorldsWithWorldData } from "../src/queries/index.js";
 import getWorldDataState from "../src/get-world-data-state.js";
 import findWorldDataFiles from "../src/find-world-data-files.js";
 
@@ -17,6 +17,11 @@ admin.get("/world-data", async (req, res) => {
   const worldDataFiles = findWorldDataFiles();
   const worldDataState = getWorldDataState(worldsWithWorldData, worldDataFiles);
   return res.render("admin/world-data", { state: worldDataState });
+});
+admin.get("/users", async (req, res) => {
+  const users = await readUsers();
+  const ranks = [0, 1, 2, 10];
+  return res.render("admin/users", { users: users, ranks: ranks });
 });
 
 export default admin;

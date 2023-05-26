@@ -39,7 +39,8 @@ input {
   border: 2px solid transparent;
   cursor: pointer;
 }
-input[type="text"] {
+input[type="text"],
+input[type="password"] {
   cursor: text;
 }
 input[type="number"] {
