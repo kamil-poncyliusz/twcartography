@@ -5,9 +5,10 @@ import saveMapPng from "../src/save-map-png.js";
 import SettingsValidator from "../public/scripts/class/SettingsValidator.js";
 import MapGenerator from "../public/scripts/class/MapGenerator.js";
 import { encodeSettings } from "../public/scripts/settings-codec.js";
-import { ParsedTurnData, Settings, ReadMapsParameters, AuthorizedRequest, ImageDataDummy } from "../Types.js";
+import { Settings, ReadMapsParameters, AuthorizedRequest, ImageDataDummy } from "../Types.js";
 import fs from "fs";
 import worldDataParser from "../src/world-data-parser.js";
+import { updateUserRank } from "../src/queries/user.js";
 
 type mapsWithRelations = Prisma.PromiseReturnType<typeof readMaps>;
 
@@ -34,7 +35,7 @@ api.get("/data/:world/:turn", async (req, res) => {
 });
 api.post("/map/create", async (req: AuthorizedRequest, res) => {
   if (!req.authorized) return res.json(0);
-  if (req.authorized.rank < 2) return res.json(0);
+  if (req.authorized.rank !== 10) return res.json(0);
   const settings = req.body.settings as Settings;
   if (!SettingsValidator.settings(settings)) return res.json(0);
   const encodedSettings = encodeSettings(settings);
@@ -83,7 +84,7 @@ api.get("/maps/:world/:author/:timespan/:order/:page", async (req, res) => {
 });
 api.post("/world/create", async (req: AuthorizedRequest, res) => {
   if (!req.authorized) return res.json(0);
-  if (req.authorized.rank !== 2) return res.json(0);
+  if (req.authorized.rank !== 10) return res.json(0);
   if (!validateWorldCreateBody(req.body)) return res.json(0);
   const server: string = req.body.server;
   const num: string = req.body.num;
@@ -96,7 +97,7 @@ api.post("/world/create", async (req: AuthorizedRequest, res) => {
 });
 api.post("/world-data/create/:world/:turn", async (req: AuthorizedRequest, res) => {
   if (!req.authorized) return res.json(false);
-  if (req.authorized.rank !== 2) return res.json(false);
+  if (req.authorized.rank !== 10) return res.json(false);
   const world = Number(req.params.world);
   const turn = Number(req.params.turn);
   const worldDataFilesPath = `temp/${world}/${turn}`;
@@ -105,6 +106,16 @@ api.post("/world-data/create/:world/:turn", async (req: AuthorizedRequest, res) 
   const createdWorldData = await createWorldData(world, turn, parsedTurnData);
   if (!createdWorldData) return res.json(false);
   return res.json(true);
+});
+api.post("/user/update/rank", async (req: AuthorizedRequest, res) => {
+  if (!req.authorized) return res.json(false);
+  if (req.authorized.rank !== 10) return res.json(false);
+  const id = req.body.id;
+  const rank = req.body.rank;
+  if (typeof id !== "number" || id <= 0) return res.json(false);
+  if (typeof rank !== "number" || rank < 0) return res.json(false);
+  const success = await updateUserRank(id, rank);
+  return res.json(success);
 });
 
 export default api;

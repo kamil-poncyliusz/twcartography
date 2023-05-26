@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -67,10 +67,29 @@ export const deleteUser = async function (id: number) {
     });
   return result;
 };
+
 export const deleteAllUsers = async function () {
   const result = await prisma.user.deleteMany({}).catch((err) => {
     console.error("Prisma error:", err);
     return false;
   });
   return true;
+};
+
+export const updateUserRank = async function (id: number, rank: number) {
+  const user = await prisma.user
+    .update({
+      where: {
+        id: id,
+      },
+      data: {
+        rank: rank,
+      },
+    })
+    .catch((err) => {
+      console.error("Prisma error:", err);
+      return false;
+    });
+  if (user) return true;
+  else return false;
 };
