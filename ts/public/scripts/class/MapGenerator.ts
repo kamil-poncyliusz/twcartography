@@ -17,12 +17,13 @@ interface ScaledPixel {
 
 class MapGenerator {
   #backgroundColor: ParsedColor;
-  #turnData: ParsedTurnData;
+  #edgeTrimWidth: number = 0;
   #expansionArray: { x: number; y: number }[][];
   #offset: number;
   #rawPixels: RawPixel[][] = [];
   #scaledPixels: ScaledPixel[][] = [];
   #settings: Settings;
+  #turnData: ParsedTurnData;
   constructor(data: ParsedTurnData, settings: Settings) {
     this.#turnData = data;
     this.#settings = settings;
@@ -42,20 +43,11 @@ class MapGenerator {
       }
       this.#rawPixels.push(row);
     }
-    for (let i = 0; i < this.#turnData.width * this.#settings.scale; i++) {
-      const row: ScaledPixel[] = [];
-      for (let j = 0; j < this.#turnData.width * this.#settings.scale; j++) {
-        row.push({
-          color: this.#backgroundColor,
-          x: i,
-          y: j,
-        });
-      }
-      this.#scaledPixels.push(row);
-    }
     this.generateRawPixels();
     const smallSpots = this.#findSmallSpots();
     this.#distributeArea(smallSpots);
+    this.#edgeTrimWidth = this.#calcEdgeTrimWidth();
+    console.log(this.#edgeTrimWidth);
     this.#generateScaledPixels();
   }
   get imageData() {
@@ -81,6 +73,29 @@ class MapGenerator {
       return result;
     }
     return new ImageData(imageArray, scaledWidth, scaledWidth);
+  }
+  #calcEdgeTrimWidth() {
+    for (let width = 0; width < this.#rawPixels.length / 2; width++) {
+      let x = width;
+      let y = width;
+      while (x < this.#rawPixels.length - 1 - width) {
+        if (this.#rawPixels[x][y].color !== this.#backgroundColor) return width - 5;
+        x++;
+      }
+      while (y < this.#rawPixels.length - 1 - width) {
+        if (this.#rawPixels[x][y].color !== this.#backgroundColor) return width - 5;
+        y++;
+      }
+      while (x > width + 1) {
+        if (this.#rawPixels[x][y].color !== this.#backgroundColor) return width - 5;
+        x--;
+      }
+      while (y > width + 1) {
+        if (this.#rawPixels[x][y].color !== this.#backgroundColor) return width - 5;
+        y--;
+      }
+    }
+    return 0;
   }
   #calcSpotSize(villagePoints: number) {
     const settings = this.#settings;
@@ -177,9 +192,23 @@ class MapGenerator {
   #generateScaledPixels() {
     const width = this.#turnData.width;
     const scale = this.#settings.scale;
-    for (let x = 0; x < width; x++) {
-      for (let y = 0; y < width; y++) {
-        const pixel = this.#rawPixels[x][y];
+    const trim = this.#edgeTrimWidth;
+    const trimmedWidth = width - 2 * trim;
+    for (let i = 0; i < trimmedWidth * scale; i++) {
+      const row: ScaledPixel[] = [];
+      for (let j = 0; j < trimmedWidth * scale; j++) {
+        row.push({
+          color: this.#backgroundColor,
+          x: i,
+          y: j,
+        });
+      }
+      this.#scaledPixels.push(row);
+    }
+
+    for (let x = 0; x < trimmedWidth; x++) {
+      for (let y = 0; y < trimmedWidth; y++) {
+        const pixel = this.#rawPixels[x + trim][y + trim];
         for (let newY = y * scale; newY < y * scale + scale; newY++) {
           for (let newX = x * scale; newX < x * scale + scale; newX++) {
             this.#scaledPixels[newX][newY].color = pixel.color;

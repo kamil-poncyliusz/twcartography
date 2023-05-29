@@ -26,7 +26,7 @@ export const calcExpansionArray = function (n: number) {
 };
 
 export const distinctiveColor = function (index: number): string {
-  const colors = [
+  const colorsOld = [
     "#68affc",
     "#84317b",
     "#88cc1f",
@@ -47,6 +47,28 @@ export const distinctiveColor = function (index: number): string {
     "#fd2c3b",
     "#d4c3bd",
     "#694e0b",
+  ];
+  const colors = [
+    "#FFB300",
+    "#803E75",
+    "#FF6800",
+    "#A6BDD7",
+    "#C10020",
+    "#CEA262",
+    "#817066",
+    "#007D34",
+    "#F6768E",
+    "#00538A",
+    "#FF7A5C",
+    "#53377A",
+    "#FF8E00",
+    "#B32851",
+    "#F4C800",
+    "#7F180D",
+    "#93AA00",
+    "#593315",
+    "#F13A13",
+    "#232C16",
   ];
   if (index >= 0 && index < colors.length) return colors[index];
   return "#808080";
