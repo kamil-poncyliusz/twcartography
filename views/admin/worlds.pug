@@ -11,27 +11,27 @@ html(lang="pl-PL")
     link(rel="stylesheet", href="/css/admin/worlds.css", type="text/css")
     script(src="/scripts/admin/worlds.js", type="module", defer)
   body
-    table
-      thead
-        tr
-          th ID
-          th serwer
-          th numer
-          th timestamp
-          th domena
-          th 
-      tbody
-        each world in worlds
+    form
+      table
+        thead
           tr
-            td= world.id
-            td= world.server
-            td= world.num
-            td= world.start_timestamp
-            td= world.domain
-            td
-              button Usuń
-        tr
-          form
+            th ID
+            th serwer
+            th numer
+            th timestamp
+            th domena
+            th 
+        tbody
+          each world in worlds
+            tr
+              td= world.id
+              td= world.server
+              td= world.num
+              td= world.start_timestamp
+              td= world.domain
+              td
+                button Usuń
+          tr
             td -
             td
               input#server(type="text", name="server", autocomplete="off", placeholder="server")
