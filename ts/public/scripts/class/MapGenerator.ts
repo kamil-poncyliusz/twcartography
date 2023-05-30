@@ -17,6 +17,7 @@ interface ScaledPixel {
 
 class MapGenerator {
   #backgroundColor: ParsedColor;
+  #displayUnmarked: boolean = true;
   #edgeTrimWidth: number = 0;
   #expansionArray: { x: number; y: number }[][];
   #offset: number;
@@ -24,6 +25,7 @@ class MapGenerator {
   #scaledPixels: ScaledPixel[][] = [];
   #settings: Settings;
   #turnData: ParsedTurnData;
+  #unmarkedColor: string = "#808080";
   constructor(data: ParsedTurnData, settings: Settings) {
     this.#turnData = data;
     this.#settings = settings;
@@ -133,9 +135,16 @@ class MapGenerator {
       }
     }
   }
-  #findMarkGroupOfTribe(tribe: Tribe) {
+  #findMarkGroupOfTribe(tribeId: string) {
     for (const group of this.#settings.markGroups) {
-      if (group.tribes.includes(tribe.id)) return group;
+      if (group.tribes.includes(tribeId)) return group;
+    }
+    if (this.#displayUnmarked) {
+      return {
+        tribes: [],
+        name: "",
+        color: this.#unmarkedColor,
+      };
     }
     return false;
   }
@@ -174,18 +183,14 @@ class MapGenerator {
   generateRawPixels() {
     for (const tribeId in this.#turnData.tribes) {
       const tribe = this.#turnData.tribes[tribeId];
-      const group = this.#findMarkGroupOfTribe(tribe);
+      const group = this.#findMarkGroupOfTribe(tribe.id);
       if (group) {
         const color = parseHexColor(group.color);
         for (const village of tribe.villages) {
           if (this.#isVillageDisplayed(village)) {
             this.#printVillageSpot(village, color);
-          } else {
-            //
           }
         }
-      } else {
-        //
       }
     }
   }

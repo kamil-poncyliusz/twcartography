@@ -154,7 +154,7 @@ class GeneratorController {
     if (this.world === 0) return false;
     if (!SettingsValidator.turn(turn)) return false;
     if (this.data[turn] !== undefined) return true;
-    const url = `${window.location.origin}/api/data/${this.world}/${turn}`;
+    const url = `${window.location.origin}/api/world-data/${this.world}/${turn}`;
     const response = await fetch(url);
     const turnData: Awaited<ReturnType<typeof readWorldData>> = await response.json();
     if (turnData === null) return false;

@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Response } from "express";
 import { Prisma } from "@prisma/client";
 import { readMaps, createMap, readWorldData, createWorld, readWorld, createWorldData } from "../src/queries/index.js";
 import saveMapPng from "../src/save-map-png.js";
@@ -9,6 +9,7 @@ import { Settings, ReadMapsParameters, AuthorizedRequest, ImageDataDummy } from 
 import fs from "fs";
 import worldDataParser from "../src/world-data-parser.js";
 import { updateUserRank } from "../src/queries/user.js";
+import { adminAuthorization } from "../src/authorization.js";
 
 type mapsWithRelations = Prisma.PromiseReturnType<typeof readMaps>;
 
@@ -27,15 +28,14 @@ api.get("/world/:id", async (req, res) => {
   const data = await readWorld(id);
   return res.json(data);
 });
-api.get("/data/:world/:turn", async (req, res) => {
+api.get("/world-data/:world/:turn", async (req, res) => {
   const world = parseInt(req.params.world);
   const turn = parseInt(req.params.turn);
   const data = await readWorldData(world, turn);
   return res.json(data);
 });
 api.post("/map/create", async (req: AuthorizedRequest, res) => {
-  if (!req.authorized) return res.json(0);
-  if (req.authorized.rank !== 10) return res.json(0);
+  if (!req.authorized || req.authorized.rank < 2) return res.json(0);
   const settings = req.body.settings as Settings;
   if (!SettingsValidator.settings(settings)) return res.json(0);
   const encodedSettings = encodeSettings(settings);
@@ -82,9 +82,7 @@ api.get("/maps/:world/:author/:timespan/:order/:page", async (req, res) => {
   const maps = await readMaps(page, params);
   return res.json(maps);
 });
-api.post("/world/create", async (req: AuthorizedRequest, res) => {
-  if (!req.authorized) return res.json(0);
-  if (req.authorized.rank !== 10) return res.json(0);
+api.post("/world/create", adminAuthorization, async (req: AuthorizedRequest, res) => {
   if (!validateWorldCreateBody(req.body)) return res.json(0);
   const server: string = req.body.server;
   const num: string = req.body.num;
@@ -95,9 +93,7 @@ api.post("/world/create", async (req: AuthorizedRequest, res) => {
   console.log("Stworzono świat o id", createdWorld.id);
   return res.json(createdWorld.id);
 });
-api.post("/world-data/create/:world/:turn", async (req: AuthorizedRequest, res) => {
-  if (!req.authorized) return res.json(false);
-  if (req.authorized.rank !== 10) return res.json(false);
+api.post("/world-data/create/:world/:turn", adminAuthorization, async (req: AuthorizedRequest, res) => {
   const world = Number(req.params.world);
   const turn = Number(req.params.turn);
   const worldDataFilesPath = `temp/${world}/${turn}`;
@@ -107,9 +103,7 @@ api.post("/world-data/create/:world/:turn", async (req: AuthorizedRequest, res) 
   if (!createdWorldData) return res.json(false);
   return res.json(true);
 });
-api.post("/user/update/rank", async (req: AuthorizedRequest, res) => {
-  if (!req.authorized) return res.json(false);
-  if (req.authorized.rank !== 10) return res.json(false);
+api.post("/user/update/rank", adminAuthorization, async (req: AuthorizedRequest, res) => {
   const id = req.body.id;
   const rank = req.body.rank;
   if (typeof id !== "number" || id <= 0) return res.json(false);

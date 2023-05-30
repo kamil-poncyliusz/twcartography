@@ -18,8 +18,6 @@ export const authorization = function (req: AuthorizedRequest, res: Response, ne
 };
 
 export const adminAuthorization = function (req: AuthorizedRequest, res: Response, next: NextFunction) {
-  if (!req.authorized) return res.status(404).render("not-found");
-  if (req.authorized.rank !== 10) return res.status(404).render("not-found");
-
-  return next();
+  if (req.authorized && req.authorized.rank === 10) return next();
+  else return res.status(404).render("not-found");
 };
