@@ -17,7 +17,6 @@ interface ScaledPixel {
 
 class MapGenerator {
   #backgroundColor: ParsedColor;
-  #displayUnmarked: boolean = true;
   #edgeTrimWidth: number = 0;
   #expansionArray: { x: number; y: number }[][];
   #offset: number;
@@ -25,7 +24,6 @@ class MapGenerator {
   #scaledPixels: ScaledPixel[][] = [];
   #settings: Settings;
   #turnData: ParsedTurnData;
-  #unmarkedColor: string = "#808080";
   constructor(data: ParsedTurnData, settings: Settings) {
     this.#turnData = data;
     this.#settings = settings;
@@ -49,7 +47,6 @@ class MapGenerator {
     const smallSpots = this.#findSmallSpots();
     this.#distributeArea(smallSpots);
     this.#edgeTrimWidth = this.#calcEdgeTrimWidth();
-    console.log(this.#edgeTrimWidth);
     this.#generateScaledPixels();
   }
   get imageData() {
@@ -139,11 +136,11 @@ class MapGenerator {
     for (const group of this.#settings.markGroups) {
       if (group.tribes.includes(tribeId)) return group;
     }
-    if (this.#displayUnmarked) {
+    if (this.#settings.displayUnmarked) {
       return {
         tribes: [],
         name: "",
-        color: this.#unmarkedColor,
+        color: this.#settings.unmarkedColor,
       };
     }
     return false;

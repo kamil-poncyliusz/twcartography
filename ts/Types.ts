@@ -8,12 +8,14 @@ export interface MarkGroup {
 }
 export interface Settings {
   backgroundColor: string;
+  displayUnmarked: boolean;
   markGroups: MarkGroup[];
   radius: number;
   scale: number;
   spotsFilter: number;
   spotSize: number;
   turn: number;
+  unmarkedColor: string;
   villageFilter: number;
   world: number;
 }

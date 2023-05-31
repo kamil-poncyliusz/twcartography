@@ -60,7 +60,7 @@ html(lang="pl-PL")
           .row
             label(
               for="spot-size",
-              title="Rozmiar kropki nanoszonej na mapę przez największe wioski świata. '5' oznacza , że wioska rozszerzy się o 5 pól w każdym kierunku finalnie tworząc koło o średnicy 5+1+5=11 pól."
+              title="Rozmiar kropki nanoszonej na mapę przez największe wioski świata. \"5\" oznacza , że wioska rozszerzy się o 5 pól w każdym kierunku finalnie tworząc koło o średnicy 5+1+5=11 pól."
             ) Maksymalna plamka:
             div
               input#spot-size(type="number", name="spot-size", min="1", max="20", autocomplete="off", disabled)
@@ -78,6 +78,14 @@ html(lang="pl-PL")
             ) Promień:
             div
               input#radius(type="number", name="radius", min="1", max="500", autocomplete="off", disabled)
+          .row
+            label(for="display-unmarked", title="Nieoznaczone plemiona zostaną wyświetlone jako dodatkowa grupa.") Wyświetl nieoznaczone:
+            div
+              input#display-unmarked(type="checkbox", name="display-unmarked", autocomplete="off", disabled)
+          .row
+            label(for="unmarked-color", title="Kolor nieoznaczonych plemion.") Kolor nieoznaczonych
+            div
+              input#unmarked-color(type="color", name="unmarked-color", autocomplete="off", disabled)
           .row
             label(
               for="auto-refresh",

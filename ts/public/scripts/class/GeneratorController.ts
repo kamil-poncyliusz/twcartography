@@ -7,6 +7,7 @@ import { readWorld, readWorldData } from "../../../src/queries/index.js";
 class GeneratorController {
   #backgroundColor: string = "#000000";
   data: { [key: number]: ParsedTurnData } = {};
+  #displayUnmarked: boolean = false;
   info: {} = {};
   markGroups: MarkGroup[] = [];
   #spotsFilter: number = 5;
@@ -15,6 +16,7 @@ class GeneratorController {
   #server: string = "";
   #spotSize: number = 3;
   turn: number = -1;
+  #unmarkedColor: string = "#808080";
   #villageFilter: number = 1000;
   world: number = 0;
   #worldStartTimestamp: number = 0;
@@ -22,12 +24,14 @@ class GeneratorController {
   get settings(): Settings {
     return {
       backgroundColor: this.#backgroundColor,
+      displayUnmarked: this.#displayUnmarked,
       markGroups: this.markGroups,
       radius: this.#radius,
       scale: this.#scale,
       spotsFilter: this.#spotsFilter,
       spotSize: this.#spotSize,
       turn: this.turn,
+      unmarkedColor: this.#unmarkedColor,
       villageFilter: this.#villageFilter,
       world: this.world,
     };
@@ -206,6 +210,12 @@ class GeneratorController {
     this.#backgroundColor = color;
     return true;
   }
+  setDisplayUnmarked(value: boolean) {
+    if (this.turn === -1) return false;
+    if (!SettingsValidator.displayUnmarked(value)) return false;
+    this.#displayUnmarked = value;
+    return true;
+  }
   setRadius(value: number) {
     if (this.turn === -1) return false;
     if (!SettingsValidator.radius(value)) return false;
@@ -228,6 +238,12 @@ class GeneratorController {
     if (this.turn === -1) return false;
     if (!SettingsValidator.spotSize(value)) return false;
     this.#spotSize = value;
+    return true;
+  }
+  setUnmarkedColor(color: string) {
+    if (this.turn === -1) return false;
+    if (!SettingsValidator.color(color)) return false;
+    this.#unmarkedColor = color;
     return true;
   }
   setVillageFilter(value: number) {
