@@ -50,7 +50,7 @@ class SuggestionsTabController {
   };
   render() {
     const tag = this.#suggestionsSearchInput.value;
-    const suggestions = this.#generator.getSuggestions(tag);
+    const suggestions = this.#generator.getSuggestions(tag, 30);
     if (!suggestions) return;
     this.#body.innerHTML = "";
     const groups = this.#generator.markGroups.map((group) => group.name);

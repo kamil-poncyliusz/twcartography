@@ -17,13 +17,13 @@ interface ScaledPixel {
 
 class MapGenerator {
   #backgroundColor: ParsedColor;
-  #edgeTrimWidth: number = 0;
   #expansionArray: { x: number; y: number }[][];
   #offset: number;
   #rawPixels: RawPixel[][] = [];
   #scaledPixels: ScaledPixel[][] = [];
   #settings: Settings;
   #turnData: ParsedTurnData;
+  #widthModifier: number = 0;
   constructor(data: ParsedTurnData, settings: Settings) {
     this.#turnData = data;
     this.#settings = settings;
@@ -46,7 +46,7 @@ class MapGenerator {
     this.generateRawPixels();
     const smallSpots = this.#findSmallSpots();
     this.#distributeArea(smallSpots);
-    this.#edgeTrimWidth = this.#calcEdgeTrimWidth();
+    this.#widthModifier = this.#calcWidthModifier();
     this.#generateScaledPixels();
   }
   get imageData() {
@@ -73,24 +73,28 @@ class MapGenerator {
     }
     return new ImageData(imageArray, scaledWidth, scaledWidth);
   }
-  #calcEdgeTrimWidth() {
+  #calcWidthModifier() {
+    if (!this.#settings.trim) {
+      if (this.#settings.outputWidth === 0) return 0;
+      return this.#settings.outputWidth - this.#turnData.width;
+    }
     for (let width = 0; width < this.#rawPixels.length / 2; width++) {
       let x = width;
       let y = width;
       while (x < this.#rawPixels.length - 1 - width) {
-        if (this.#rawPixels[x][y].color !== this.#backgroundColor) return width - 5;
+        if (this.#rawPixels[x][y].color !== this.#backgroundColor) return 5 - width;
         x++;
       }
       while (y < this.#rawPixels.length - 1 - width) {
-        if (this.#rawPixels[x][y].color !== this.#backgroundColor) return width - 5;
+        if (this.#rawPixels[x][y].color !== this.#backgroundColor) return 5 - width;
         y++;
       }
       while (x > width + 1) {
-        if (this.#rawPixels[x][y].color !== this.#backgroundColor) return width - 5;
+        if (this.#rawPixels[x][y].color !== this.#backgroundColor) return 5 - width;
         x--;
       }
       while (y > width + 1) {
-        if (this.#rawPixels[x][y].color !== this.#backgroundColor) return width - 5;
+        if (this.#rawPixels[x][y].color !== this.#backgroundColor) return 5 - width;
         y--;
       }
     }
@@ -194,11 +198,11 @@ class MapGenerator {
   #generateScaledPixels() {
     const width = this.#turnData.width;
     const scale = this.#settings.scale;
-    const trim = this.#edgeTrimWidth;
-    const trimmedWidth = width - 2 * trim;
-    for (let i = 0; i < trimmedWidth * scale; i++) {
+    const widthModifier = this.#widthModifier;
+    const modifiedWidth = width + 2 * widthModifier;
+    for (let i = 0; i < modifiedWidth * scale; i++) {
       const row: ScaledPixel[] = [];
-      for (let j = 0; j < trimmedWidth * scale; j++) {
+      for (let j = 0; j < modifiedWidth * scale; j++) {
         row.push({
           color: this.#backgroundColor,
           x: i,
@@ -207,13 +211,25 @@ class MapGenerator {
       }
       this.#scaledPixels.push(row);
     }
-
-    for (let x = 0; x < trimmedWidth; x++) {
-      for (let y = 0; y < trimmedWidth; y++) {
-        const pixel = this.#rawPixels[x + trim][y + trim];
-        for (let newY = y * scale; newY < y * scale + scale; newY++) {
-          for (let newX = x * scale; newX < x * scale + scale; newX++) {
-            this.#scaledPixels[newX][newY].color = pixel.color;
+    if (widthModifier <= 0) {
+      for (let x = 0; x < modifiedWidth; x++) {
+        for (let y = 0; y < modifiedWidth; y++) {
+          const pixel = this.#rawPixels[x - widthModifier][y - widthModifier];
+          for (let newY = y * scale; newY < y * scale + scale; newY++) {
+            for (let newX = x * scale; newX < x * scale + scale; newX++) {
+              this.#scaledPixels[newX][newY].color = pixel.color;
+            }
+          }
+        }
+      }
+    } else {
+      for (let x = widthModifier; x < width + widthModifier; x++) {
+        for (let y = widthModifier; y < width + widthModifier; y++) {
+          const pixel = this.#rawPixels[x - widthModifier][y - widthModifier];
+          for (let newY = y * scale; newY < y * scale + scale; newY++) {
+            for (let newX = x * scale; newX < x * scale + scale; newX++) {
+              this.#scaledPixels[newX][newY].color = pixel.color;
+            }
           }
         }
       }

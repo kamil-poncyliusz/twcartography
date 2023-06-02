@@ -10,11 +10,13 @@ class GeneratorController {
   #displayUnmarked: boolean = false;
   info: {} = {};
   markGroups: MarkGroup[] = [];
+  #outputWidth: number = 0;
   #spotsFilter: number = 5;
   #radius: number = 500;
   #scale: number = 2;
   #server: string = "";
   #spotSize: number = 3;
+  #trim: boolean = false;
   turn: number = -1;
   #unmarkedColor: string = "#808080";
   #villageFilter: number = 1000;
@@ -26,10 +28,12 @@ class GeneratorController {
       backgroundColor: this.#backgroundColor,
       displayUnmarked: this.#displayUnmarked,
       markGroups: this.markGroups,
+      outputWidth: this.#outputWidth,
       radius: this.#radius,
       scale: this.#scale,
       spotsFilter: this.#spotsFilter,
       spotSize: this.#spotSize,
+      trim: this.#trim,
       turn: this.turn,
       unmarkedColor: this.#unmarkedColor,
       villageFilter: this.#villageFilter,
@@ -71,10 +75,14 @@ class GeneratorController {
       if (!res) return false;
     }
     this.setBackgroundColor(settings.backgroundColor);
+    this.setDisplayUnmarked(settings.displayUnmarked);
+    this.setOutputWidth(settings.outputWidth);
     this.setRadius(settings.radius);
     this.setScale(settings.scale);
     this.setSpotsFilter(settings.spotsFilter);
     this.setSpotSize(settings.spotSize);
+    this.setTrim(settings.trim);
+    this.setUnmarkedColor(settings.unmarkedColor);
     this.setVillageFilter(settings.villageFilter);
     this.markGroups = [];
     for (let group of settings.markGroups) {
@@ -176,7 +184,7 @@ class GeneratorController {
     const generator = new MapGenerator(this.data[this.turn], this.settings);
     return generator.imageData as ImageData;
   }
-  getSuggestions(tag: string, limit = 15) {
+  getSuggestions(tag: string, limit = 20) {
     const tribes = this.tribes;
     if (!tribes) return false;
     const suggestions: Tribe[] = [];
@@ -212,8 +220,14 @@ class GeneratorController {
   }
   setDisplayUnmarked(value: boolean) {
     if (this.turn === -1) return false;
-    if (!SettingsValidator.displayUnmarked(value)) return false;
+    if (!SettingsValidator.boolean(value)) return false;
     this.#displayUnmarked = value;
+    return true;
+  }
+  setOutputWidth(value: number) {
+    if (this.turn === -1) return false;
+    if (!SettingsValidator.outputWidth(value)) return false;
+    this.#outputWidth = value;
     return true;
   }
   setRadius(value: number) {
@@ -238,6 +252,12 @@ class GeneratorController {
     if (this.turn === -1) return false;
     if (!SettingsValidator.spotSize(value)) return false;
     this.#spotSize = value;
+    return true;
+  }
+  setTrim(value: boolean) {
+    if (this.turn === -1) return false;
+    if (!SettingsValidator.boolean(value)) return false;
+    this.#trim = value;
     return true;
   }
   setUnmarkedColor(color: string) {

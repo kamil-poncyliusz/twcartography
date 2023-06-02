@@ -19,10 +19,12 @@ export const encodeSettings = function (settings: Settings): string {
   result += majorSeparator;
   result += settings.backgroundColor + minorSeparator;
   result += Number(settings.displayUnmarked) + minorSeparator;
+  result += settings.outputWidth + minorSeparator;
   result += settings.radius + minorSeparator;
   result += settings.scale + minorSeparator;
   result += settings.spotsFilter + minorSeparator;
   result += settings.spotSize + minorSeparator;
+  result += settings.trim + minorSeparator;
   result += settings.turn + minorSeparator;
   result += settings.unmarkedColor + minorSeparator;
   result += settings.villageFilter + minorSeparator;
@@ -58,10 +60,12 @@ export const decodeSettings = function (input: string) {
   const [
     backgroundColor,
     displayUnmarked,
+    outputWidth,
     radius,
     scale,
     spotsFilter,
     spotSize,
+    trim,
     turn,
     unmarkedColor,
     villageFilter,
@@ -69,12 +73,14 @@ export const decodeSettings = function (input: string) {
   ] = settingsArray;
   const result = {
     backgroundColor: backgroundColor,
-    displayUnmarked: parseInt(unmarkedColor) === 1 ? true : false,
+    displayUnmarked: parseInt(displayUnmarked) === 1 ? true : false,
     markGroups: markGroups,
+    outputWidth: parseInt(outputWidth),
     radius: parseInt(radius),
     scale: parseInt(scale),
     spotsFilter: parseInt(spotsFilter),
     spotSize: parseInt(spotSize),
+    trim: parseInt(trim) === 1 ? true : false,
     turn: parseInt(turn),
     unmarkedColor: unmarkedColor,
     villageFilter: parseInt(villageFilter),

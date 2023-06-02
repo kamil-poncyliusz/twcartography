@@ -2,6 +2,8 @@ import { Settings } from "../../../Types";
 
 const GROUP_NAME_MAX_LENGTH = 30,
   GROUP_NAME_MIN_LENGTH = 1,
+  OUTPUT_WIDTH_MAX = 1000,
+  OUTPUT_WIDTH_MIN = 100,
   RADIUS_MAX = 500,
   RADIUS_MIN = 1,
   SCALE_MAX = 5,
@@ -18,13 +20,13 @@ const GROUP_NAME_MAX_LENGTH = 30,
 const GROUP_NAME_FORBIDDEN_CHARACTERS = "#^,;";
 
 class SettingsValidator {
+  static boolean(input: boolean) {
+    return typeof input === "boolean";
+  }
   static color(input: string) {
     if (typeof input != "string") return false;
     const regex = new RegExp("^#[A-Fa-f0-9]{6}$");
     return regex.test(input);
-  }
-  static displayUnmarked(input: boolean) {
-    return typeof input === "boolean";
   }
   static groupName(input: string) {
     if (typeof input !== "string" || input.length < GROUP_NAME_MIN_LENGTH || input.length > GROUP_NAME_MAX_LENGTH)
@@ -34,6 +36,10 @@ class SettingsValidator {
         if (input[i] === GROUP_NAME_FORBIDDEN_CHARACTERS[char]) return false;
       }
     }
+    return true;
+  }
+  static outputWidth(input: number) {
+    if (typeof input !== "number" || input < OUTPUT_WIDTH_MIN || input > OUTPUT_WIDTH_MAX) return false;
     return true;
   }
   static radius(input: number) {
@@ -62,11 +68,13 @@ class SettingsValidator {
   }
   static settings(settings: Settings) {
     if (!SettingsValidator.color(settings.backgroundColor)) return false;
-    if (!SettingsValidator.displayUnmarked(settings.displayUnmarked)) return false;
+    if (!SettingsValidator.boolean(settings.displayUnmarked)) return false;
+    if (!SettingsValidator.outputWidth(settings.outputWidth)) return false;
     if (!SettingsValidator.radius(settings.radius)) return false;
     if (!SettingsValidator.scale(settings.scale)) return false;
     if (!SettingsValidator.spotsFilter(settings.spotsFilter)) return false;
     if (!SettingsValidator.spotSize(settings.spotSize)) return false;
+    if (!SettingsValidator.boolean(settings.trim)) return false;
     if (!SettingsValidator.color(settings.unmarkedColor)) return false;
     if (!SettingsValidator.villageFilter(settings.villageFilter)) return false;
     const groupNames: string[] = [];

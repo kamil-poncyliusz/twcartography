@@ -10,10 +10,12 @@ export interface Settings {
   backgroundColor: string;
   displayUnmarked: boolean;
   markGroups: MarkGroup[];
+  outputWidth: number;
   radius: number;
   scale: number;
   spotsFilter: number;
   spotSize: number;
+  trim: boolean;
   turn: number;
   unmarkedColor: string;
   villageFilter: number;

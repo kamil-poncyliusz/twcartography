@@ -83,9 +83,24 @@ html(lang="pl-PL")
             div
               input#display-unmarked(type="checkbox", name="display-unmarked", autocomplete="off", disabled)
           .row
-            label(for="unmarked-color", title="Kolor nieoznaczonych plemion.") Kolor nieoznaczonych
+            label(for="unmarked-color", title="Kolor nieoznaczonych plemion.") Kolor nieoznaczonych:
             div
               input#unmarked-color(type="color", name="unmarked-color", autocomplete="off", disabled)
+          .row
+            label(for="trim", title="Przytnij mapę.") Przytnij:
+            div
+              input#trim(type="checkbox", name="trim", autocomplete="off", disabled) 
+          .row
+            label(for="map-size", title="Rozmiar mapy przed skalowaniem.") Rozmiar mapy:
+            div
+              input#output-width(
+                type="number",
+                name="output-width",
+                min="100",
+                max="1000",
+                autocomplete="off",
+                disabled
+              )
           .row
             label(
               for="auto-refresh",

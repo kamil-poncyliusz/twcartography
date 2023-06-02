@@ -9,10 +9,12 @@ const inputs: { [key: string]: HTMLInputElement } = {
   autoRefresh: document.getElementById("auto-refresh") as HTMLInputElement,
   backgroundColor: document.getElementById("background-color") as HTMLInputElement,
   displayUnmarked: document.getElementById("display-unmarked") as HTMLInputElement,
+  outputWidth: document.getElementById("output-width") as HTMLInputElement,
   radius: document.getElementById("radius") as HTMLInputElement,
   scale: document.getElementById("scale") as HTMLInputElement,
   spotsFilter: document.getElementById("spots-filter") as HTMLInputElement,
   spotSize: document.getElementById("spot-size") as HTMLInputElement,
+  trim: document.getElementById("trim") as HTMLInputElement,
   unmarkedColor: document.getElementById("unmarked-color") as HTMLInputElement,
   villageFilter: document.getElementById("village-filter") as HTMLInputElement,
 };
@@ -35,10 +37,12 @@ class SettingsTabController {
     this.#inputs.autoRefresh.addEventListener("input", this.autoRefreshChange);
     this.#inputs.backgroundColor.addEventListener("input", this.backgroundColorChange);
     this.#inputs.displayUnmarked.addEventListener("input", this.displayUnmarkedChange);
+    this.#inputs.outputWidth.addEventListener("input", this.outputWidthChange);
     this.#inputs.radius.addEventListener("input", this.radiusChange);
     this.#inputs.scale.addEventListener("input", this.scaleChange);
     this.#inputs.spotsFilter.addEventListener("input", this.spotsFilterChange);
     this.#inputs.spotSize.addEventListener("input", this.spotSizeChange);
+    this.#inputs.trim.addEventListener("input", this.trimChange);
     this.#inputs.villageFilter.addEventListener("input", this.villageFilterChange);
     this.#inputs.unmarkedColor.addEventListener("input", this.unmarkedColorChange);
     worldSelect.addEventListener("change", this.worldChange);
@@ -149,6 +153,18 @@ class SettingsTabController {
     turnInput.disabled = false;
     encodedSettingsInput.classList.remove("is-invalid");
   };
+  outputWidthChange = (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    const value = Number(target.value);
+    const result = this.#generator.setOutputWidth(value);
+    if (!result) {
+      this.#inputs.outputWidth.classList.add("is-invalid");
+      return;
+    }
+    this.renderCanvas();
+    this.update();
+    this.#inputs.outputWidth.classList.remove("is-invalid");
+  };
   radiusChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
     const value = Number(target.value);
@@ -196,6 +212,18 @@ class SettingsTabController {
     this.renderCanvas();
     this.update();
     this.#inputs.spotSize.classList.remove("is-invalid");
+  };
+  trimChange = (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    const value = target.checked;
+    const result = this.#generator.setTrim(value);
+    if (!result) {
+      this.#inputs.trim.classList.add("is-invalid");
+      return;
+    }
+    this.renderCanvas();
+    this.update();
+    this.#inputs.trim.classList.remove("is-invalid");
   };
   turnChange = async (e: Event) => {
     const target = e.target as HTMLInputElement;
