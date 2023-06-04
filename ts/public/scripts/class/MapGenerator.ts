@@ -114,6 +114,10 @@ class MapGenerator {
   }
   #distributeArea(area: RawPixel[]) {
     const pixels = this.#rawPixels;
+    const deletedColor = parseHexColor("#013467");
+    for (let pixel of area) {
+      pixel.color = deletedColor;
+    }
     while (area.length > 0) {
       for (let pixel of area) {
         const x = pixel.x,
@@ -237,10 +241,6 @@ class MapGenerator {
   }
   #isVillageDisplayed(village: Village) {
     if (village.points < this.#settings.villageFilter) return false;
-    const distanceFromCenter = Math.round(
-      Math.sqrt((500 - village.x) * (500 - village.x) + (500 - village.y) * (500 - village.y))
-    );
-    if (distanceFromCenter > this.#settings.radius) return false;
     return true;
   }
   #printVillageSpot(village: Village, color: ParsedColor) {

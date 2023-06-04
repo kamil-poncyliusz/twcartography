@@ -11,7 +11,6 @@ const inputs: { [key: string]: HTMLInputElement } = {
   backgroundColor: document.getElementById("background-color") as HTMLInputElement,
   displayUnmarked: document.getElementById("display-unmarked") as HTMLInputElement,
   outputWidth: document.getElementById("output-width") as HTMLInputElement,
-  radius: document.getElementById("radius") as HTMLInputElement,
   scale: document.getElementById("scale") as HTMLInputElement,
   spotsFilter: document.getElementById("spots-filter") as HTMLInputElement,
   spotSize: document.getElementById("spot-size") as HTMLInputElement,
@@ -41,7 +40,6 @@ class SettingsTabController {
     this.#inputs.backgroundColor.addEventListener("input", this.backgroundColorChange);
     this.#inputs.displayUnmarked.addEventListener("input", this.displayUnmarkedChange);
     this.#inputs.outputWidth.addEventListener("input", this.outputWidthChange);
-    this.#inputs.radius.addEventListener("input", this.radiusChange);
     this.#inputs.scale.addEventListener("input", this.scaleChange);
     this.#inputs.spotsFilter.addEventListener("input", this.spotsFilterChange);
     this.#inputs.spotSize.addEventListener("input", this.spotSizeChange);
@@ -185,18 +183,6 @@ class SettingsTabController {
     this.renderCanvas();
     this.update();
     this.#inputs.outputWidth.classList.remove("is-invalid");
-  };
-  radiusChange = (e: Event) => {
-    const target = e.target as HTMLInputElement;
-    const value = Number(target.value);
-    const result = this.#generator.setRadius(value);
-    if (!result) {
-      this.#inputs.radius.classList.add("is-invalid");
-      return;
-    }
-    this.renderCanvas();
-    this.update();
-    this.#inputs.radius.classList.remove("is-invalid");
   };
   scaleChange = (e: Event) => {
     const target = e.target as HTMLInputElement;

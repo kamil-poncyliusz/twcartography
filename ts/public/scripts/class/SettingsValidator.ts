@@ -7,15 +7,13 @@ const GROUP_NAME_MAX_LENGTH = 30,
 
 const min: { [key: string]: number } = {
   outputWidth: 100,
-  radius: 1,
   scale: 1,
   spotsFilter: 1,
-  spotSize: 1,
+  spotSize: 2,
   villageFilter: 20,
 };
 const max: { [key: string]: number } = {
   outputWidth: 1000,
-  radius: 500,
   scale: 5,
   spotsFilter: 400,
   spotSize: 20,
@@ -47,10 +45,6 @@ class SettingsValidator {
     if (typeof input !== "number" || input < min.outputWidth || input > max.outputWidth) return false;
     return true;
   }
-  static radius(input: number) {
-    if (typeof input !== "number" || input < min.radius || input > max.radius) return false;
-    return true;
-  }
   static scale(input: number) {
     if (typeof input !== "number" || input < min.scale || input > max.scale) return false;
     return true;
@@ -75,7 +69,6 @@ class SettingsValidator {
     if (!SettingsValidator.color(settings.backgroundColor)) return false;
     if (!SettingsValidator.boolean(settings.displayUnmarked)) return false;
     if (!SettingsValidator.outputWidth(settings.outputWidth)) return false;
-    if (!SettingsValidator.radius(settings.radius)) return false;
     if (!SettingsValidator.scale(settings.scale)) return false;
     if (!SettingsValidator.spotsFilter(settings.spotsFilter)) return false;
     if (!SettingsValidator.spotSize(settings.spotSize)) return false;

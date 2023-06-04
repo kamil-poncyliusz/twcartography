@@ -11,7 +11,6 @@ export interface Settings {
   displayUnmarked: boolean;
   markGroups: MarkGroup[];
   outputWidth: number;
-  radius: number;
   scale: number;
   spotsFilter: number;
   spotSize: number;

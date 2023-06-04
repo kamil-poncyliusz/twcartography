@@ -11,11 +11,10 @@ class GeneratorController {
   info: {} = {};
   markGroups: MarkGroup[] = [];
   #outputWidth: number = 500;
-  #spotsFilter: number = 5;
-  #radius: number = 500;
+  #spotsFilter: number = 8;
   #scale: number = 2;
   #server: string = "";
-  #spotSize: number = 3;
+  #spotSize: number = 5;
   #trim: boolean = true;
   turn: number = -1;
   #unmarkedColor: string = "#808080";
@@ -29,7 +28,6 @@ class GeneratorController {
       displayUnmarked: this.#displayUnmarked,
       markGroups: this.markGroups,
       outputWidth: this.#outputWidth,
-      radius: this.#radius,
       scale: this.#scale,
       spotsFilter: this.#spotsFilter,
       spotSize: this.#spotSize,
@@ -67,7 +65,6 @@ class GeneratorController {
     return true;
   }
   async applySettings(settings: Settings) {
-    console.log(SettingsValidator.settings(settings));
     if (!SettingsValidator.settings(settings)) return false;
     if (settings.world !== this.world) {
       const result = await this.changeWorld(settings.world);
@@ -78,7 +75,6 @@ class GeneratorController {
     this.setBackgroundColor(settings.backgroundColor);
     this.setDisplayUnmarked(settings.displayUnmarked);
     this.setOutputWidth(settings.outputWidth);
-    this.setRadius(settings.radius);
     this.setScale(settings.scale);
     this.setSpotsFilter(settings.spotsFilter);
     this.setSpotSize(settings.spotSize);
@@ -229,12 +225,6 @@ class GeneratorController {
     if (this.turn === -1) return false;
     if (!SettingsValidator.outputWidth(value)) return false;
     this.#outputWidth = value;
-    return true;
-  }
-  setRadius(value: number) {
-    if (this.turn === -1) return false;
-    if (!SettingsValidator.radius(value)) return false;
-    this.#radius = value;
     return true;
   }
   setScale(value: number) {

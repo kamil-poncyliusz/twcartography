@@ -20,11 +20,10 @@ export const encodeSettings = function (settings: Settings): string {
   result += settings.backgroundColor + minorSeparator;
   result += Number(settings.displayUnmarked) + minorSeparator;
   result += settings.outputWidth + minorSeparator;
-  result += settings.radius + minorSeparator;
   result += settings.scale + minorSeparator;
   result += settings.spotsFilter + minorSeparator;
   result += settings.spotSize + minorSeparator;
-  result += settings.trim + minorSeparator;
+  result += Number(settings.trim) + minorSeparator;
   result += settings.turn + minorSeparator;
   result += settings.unmarkedColor + minorSeparator;
   result += settings.villageFilter + minorSeparator;
@@ -61,7 +60,6 @@ export const decodeSettings = function (input: string) {
     backgroundColor,
     displayUnmarked,
     outputWidth,
-    radius,
     scale,
     spotsFilter,
     spotSize,
@@ -76,7 +74,6 @@ export const decodeSettings = function (input: string) {
     displayUnmarked: parseInt(displayUnmarked) === 1 ? true : false,
     markGroups: markGroups,
     outputWidth: parseInt(outputWidth),
-    radius: parseInt(radius),
     scale: parseInt(scale),
     spotsFilter: parseInt(spotsFilter),
     spotSize: parseInt(spotSize),
@@ -87,4 +84,24 @@ export const decodeSettings = function (input: string) {
     world: parseInt(world),
   };
   return result;
+};
+
+export const encodeJsonSettings = function (settings: Settings): string {
+  if (settings.markGroups.length === 0) return "";
+  const stringified = JSON.stringify(settings);
+  const baseEncoded = Base64.encode(stringified);
+  return encodeURIComponent(baseEncoded);
+};
+
+export const decodeJsonSettings = function (input: string) {
+  if (typeof input !== "string") return false;
+  const decodedURI = decodeURIComponent(input);
+  let string = "";
+  try {
+    string = Base64.decode(decodedURI);
+  } catch {
+    return false;
+  }
+  const settings = JSON.parse(string);
+  return settings;
 };
