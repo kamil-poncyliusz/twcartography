@@ -10,13 +10,13 @@ class GeneratorController {
   #displayUnmarked: boolean = false;
   info: {} = {};
   markGroups: MarkGroup[] = [];
-  #outputWidth: number = 0;
+  #outputWidth: number = 500;
   #spotsFilter: number = 5;
   #radius: number = 500;
   #scale: number = 2;
   #server: string = "";
   #spotSize: number = 3;
-  #trim: boolean = false;
+  #trim: boolean = true;
   turn: number = -1;
   #unmarkedColor: string = "#808080";
   #villageFilter: number = 1000;
@@ -67,6 +67,7 @@ class GeneratorController {
     return true;
   }
   async applySettings(settings: Settings) {
+    console.log(SettingsValidator.settings(settings));
     if (!SettingsValidator.settings(settings)) return false;
     if (settings.world !== this.world) {
       const result = await this.changeWorld(settings.world);

@@ -3,6 +3,7 @@ import { decodeSettings, encodeSettings } from "../settings-codec.js";
 import MarkGroupsTabController from "./MarkGroupsTab.js";
 import SuggestionsTabController from "./SuggestionsTab.js";
 import CanvasController from "./Canvas.js";
+import { limits } from "./SettingsValidator.js";
 import { Settings } from "../../../Types.js";
 
 const inputs: { [key: string]: HTMLInputElement } = {
@@ -15,25 +16,27 @@ const inputs: { [key: string]: HTMLInputElement } = {
   spotsFilter: document.getElementById("spots-filter") as HTMLInputElement,
   spotSize: document.getElementById("spot-size") as HTMLInputElement,
   trim: document.getElementById("trim") as HTMLInputElement,
+  turn: document.getElementById("turn-input") as HTMLInputElement,
   unmarkedColor: document.getElementById("unmarked-color") as HTMLInputElement,
   villageFilter: document.getElementById("village-filter") as HTMLInputElement,
 };
-const encodedSettingsInput = document.getElementById("encoded-settings") as HTMLInputElement;
-const worldSelect = document.getElementById("world-select") as HTMLSelectElement;
-const turnInput = document.getElementById("turn-input") as HTMLInputElement;
-const titleInput = document.getElementById("title") as HTMLInputElement;
 const descriptionInput = document.getElementById("description") as HTMLInputElement;
+const encodedSettingsInput = document.getElementById("encoded-settings") as HTMLInputElement;
 const publishButton = document.getElementById("publish-button") as HTMLButtonElement | null;
+const titleInput = document.getElementById("title") as HTMLInputElement;
+const worldSelect = document.getElementById("world-select") as HTMLSelectElement;
 
 class SettingsTabController {
   #generator: GeneratorController;
   #canvasObject: CanvasController | undefined;
   #markGroupsObject: MarkGroupsTabController | undefined;
   #suggestionsObject: SuggestionsTabController | undefined;
+  #worldSelect: HTMLSelectElement;
   #inputs;
   constructor(mapGeneratorObject: GeneratorController) {
     this.#generator = mapGeneratorObject;
     this.#inputs = inputs;
+    this.#worldSelect = worldSelect;
     this.#inputs.autoRefresh.addEventListener("input", this.autoRefreshChange);
     this.#inputs.backgroundColor.addEventListener("input", this.backgroundColorChange);
     this.#inputs.displayUnmarked.addEventListener("input", this.displayUnmarkedChange);
@@ -43,10 +46,10 @@ class SettingsTabController {
     this.#inputs.spotsFilter.addEventListener("input", this.spotsFilterChange);
     this.#inputs.spotSize.addEventListener("input", this.spotSizeChange);
     this.#inputs.trim.addEventListener("input", this.trimChange);
-    this.#inputs.villageFilter.addEventListener("input", this.villageFilterChange);
+    this.#inputs.turn.addEventListener("input", this.turnChange);
     this.#inputs.unmarkedColor.addEventListener("input", this.unmarkedColorChange);
-    worldSelect.addEventListener("change", this.worldChange);
-    turnInput.addEventListener("input", this.turnChange);
+    this.#inputs.villageFilter.addEventListener("input", this.villageFilterChange);
+    this.#worldSelect.addEventListener("change", this.worldChange);
     encodedSettingsInput.addEventListener("input", this.encodedSettingsChange);
     encodedSettingsInput.addEventListener("click", (e: Event) => {
       encodedSettingsInput.select();
@@ -87,9 +90,30 @@ class SettingsTabController {
       const inputsKey = key as keyof typeof inputs;
       const input = inputs[inputsKey];
       const settingsKey = key as keyof Settings;
-      input.value = String(settings[settingsKey]);
+      const value = settings[settingsKey];
+      if (typeof value === "boolean") input.checked = value;
+      else input.value = String(value);
     }
-    encodedSettingsInput.value = encodedSettings;
+    if (this.#worldSelect.classList.contains("is-invalid")) {
+      this.disabled = true;
+    } else if (this.#inputs.turn.classList.contains("is-invalid") || this.#inputs.turn.value === "-1") {
+      this.disabled = true;
+      this.#inputs.turn.disabled = false;
+    } else {
+      this.disabled = false;
+      if (!this.#inputs.displayUnmarked.checked) this.#inputs.unmarkedColor.disabled = true;
+      if (this.#inputs.trim.checked) this.#inputs.outputWidth.disabled = true;
+      encodedSettingsInput.value = encodedSettings;
+    }
+    for (let setting in limits.min) {
+      this.#inputs[setting].setAttribute("min", String(limits.min[setting]));
+      this.#inputs[setting].setAttribute("placeholder", String(limits.min[setting]) + "-");
+    }
+    for (let setting in limits.max) {
+      this.#inputs[setting].setAttribute("max", String(limits.max[setting]));
+      const current = this.#inputs[setting].getAttribute("placeholder");
+      this.#inputs[setting].setAttribute("placeholder", current + String(limits.max[setting]));
+    }
   }
   renderCanvas() {
     if (this.#canvasObject) this.#canvasObject.render();
@@ -148,9 +172,6 @@ class SettingsTabController {
     this.update();
     const worldIdString = String(this.#generator.world);
     worldSelect.value = worldIdString;
-    const turnString = String(this.#generator.turn);
-    turnInput.value = turnString;
-    turnInput.disabled = false;
     encodedSettingsInput.classList.remove("is-invalid");
   };
   outputWidthChange = (e: Event) => {
@@ -229,17 +250,12 @@ class SettingsTabController {
     const target = e.target as HTMLInputElement;
     const turn = parseInt(target.value);
     const result = await this.#generator.changeTurn(turn);
-    if (!result) {
-      turnInput.classList.add("is-invalid");
-      this.disabled = true;
-      return;
-    }
+    if (!result) return this.#inputs.turn.classList.add("is-invalid");
     this.renderSuggestions();
     this.renderMarkGroups();
     this.renderCanvas();
+    this.#inputs.turn.classList.remove("is-invalid");
     this.update();
-    this.disabled = false;
-    turnInput.classList.remove("is-invalid");
   };
   unmarkedColorChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
@@ -267,17 +283,11 @@ class SettingsTabController {
   worldChange = async (e: Event) => {
     const target = e.target as HTMLSelectElement;
     const world = parseInt(target.value);
-    turnInput.value = "";
-    turnInput.disabled = true;
     const result = await this.#generator.changeWorld(world);
-    if (!result) {
-      this.disabled = true;
-      turnInput.disabled = true;
-      worldSelect.classList.add("is-invalid");
-      return;
-    }
-    turnInput.disabled = false;
+    if (!result) return worldSelect.classList.add("is-invalid");
     worldSelect.classList.remove("is-invalid");
+    this.update();
+    this.#inputs.turn.value = "";
   };
   publishMap = async (e: Event) => {
     const url = `${window.location.origin}/api/map/create`;

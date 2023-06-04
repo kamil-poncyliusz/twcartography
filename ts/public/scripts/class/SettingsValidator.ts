@@ -2,20 +2,25 @@ import { Settings } from "../../../Types";
 
 const GROUP_NAME_MAX_LENGTH = 30,
   GROUP_NAME_MIN_LENGTH = 1,
-  OUTPUT_WIDTH_MAX = 1000,
-  OUTPUT_WIDTH_MIN = 100,
-  RADIUS_MAX = 500,
-  RADIUS_MIN = 1,
-  SCALE_MAX = 5,
-  SCALE_MIN = 1,
-  SPOTS_FILTER_MAX = 1000,
-  SPOTS_FILTER_MIN = 1,
-  SPOT_SIZE_MAX = 20,
-  SPOT_SIZE_MIN = 1,
   TURN_MAX = 365,
-  TURN_MIN = 0,
-  VILLAGE_FILTER_MAX = 12154,
-  VILLAGE_FILTER_MIN = 20;
+  TURN_MIN = 0;
+
+const min: { [key: string]: number } = {
+  outputWidth: 100,
+  radius: 1,
+  scale: 1,
+  spotsFilter: 1,
+  spotSize: 1,
+  villageFilter: 20,
+};
+const max: { [key: string]: number } = {
+  outputWidth: 1000,
+  radius: 500,
+  scale: 5,
+  spotsFilter: 400,
+  spotSize: 20,
+  villageFilter: 12154,
+};
 
 const GROUP_NAME_FORBIDDEN_CHARACTERS = "#^,;";
 
@@ -39,23 +44,23 @@ class SettingsValidator {
     return true;
   }
   static outputWidth(input: number) {
-    if (typeof input !== "number" || input < OUTPUT_WIDTH_MIN || input > OUTPUT_WIDTH_MAX) return false;
+    if (typeof input !== "number" || input < min.outputWidth || input > max.outputWidth) return false;
     return true;
   }
   static radius(input: number) {
-    if (typeof input !== "number" || input < RADIUS_MIN || input > RADIUS_MAX) return false;
+    if (typeof input !== "number" || input < min.radius || input > max.radius) return false;
     return true;
   }
   static scale(input: number) {
-    if (typeof input !== "number" || input < SCALE_MIN || input > SCALE_MAX) return false;
+    if (typeof input !== "number" || input < min.scale || input > max.scale) return false;
     return true;
   }
   static spotsFilter(input: number) {
-    if (typeof input !== "number" || input < SPOTS_FILTER_MIN || input > SPOTS_FILTER_MAX) return false;
+    if (typeof input !== "number" || input < min.spotsFilter || input > max.spotsFilter) return false;
     return true;
   }
   static spotSize(input: number) {
-    if (typeof input !== "number" || input < SPOT_SIZE_MIN || input > SPOT_SIZE_MAX) return false;
+    if (typeof input !== "number" || input < min.spotSize || input > max.spotSize) return false;
     return true;
   }
   static turn(input: number) {
@@ -63,7 +68,7 @@ class SettingsValidator {
     return true;
   }
   static villageFilter(input: number) {
-    if (typeof input !== "number" || input < VILLAGE_FILTER_MIN || input > VILLAGE_FILTER_MAX) return false;
+    if (typeof input !== "number" || input < min.villageFilter || input > max.villageFilter) return false;
     return true;
   }
   static settings(settings: Settings) {
@@ -94,3 +99,8 @@ class SettingsValidator {
 }
 
 export default SettingsValidator;
+
+export const limits = {
+  min: min,
+  max: max,
+};
