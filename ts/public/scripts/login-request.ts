@@ -17,13 +17,9 @@ const loginRequest = async function (e: Event) {
       password: password,
     }),
   });
-  const message: { success: boolean; token: string | undefined } = await response.json();
-  if (!message.success) console.log("Login failed");
-  else {
-    console.log(message.token);
-    //
-  }
-  window.location.reload();
+  const success: { success: boolean; token: string | undefined } = await response.json();
+  if (!success) console.log("Login failed");
+  else window.location.reload();
 };
 
 export default loginRequest;

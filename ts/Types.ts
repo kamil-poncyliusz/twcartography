@@ -59,14 +59,6 @@ export interface ReadMapsParameters {
   timespan: "day" | "week" | "month" | "any";
   world: number | undefined;
 }
-export interface Authorized {
-  id: number;
-  login: string;
-  rank: number;
-}
-export interface AuthorizedRequest extends Request {
-  authorized?: Authorized;
-}
 export interface MapLoaderSettings {
   author: number;
   order: string;
@@ -86,4 +78,9 @@ export interface WorldDataState {
   id: number;
   serverName: string;
   turns: TurnDataState[];
+}
+export interface UserSessionData {
+  id: number;
+  login: string;
+  rank: number;
 }

@@ -118,8 +118,8 @@ body {
 }
 #map-canvas {
   position: relative;
-  left: 1px;
-  top: 1px;
+  display: block;
+  float: right;
 }
 #map-canvas:hover {
   cursor: grab;

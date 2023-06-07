@@ -1,9 +1,8 @@
 import express from "express";
 import bcrypt from "bcryptjs";
-import jsonwebtoken from "jsonwebtoken";
 import { readMap, createUser, readUser, readUserByLogin, readWorlds } from "../src/queries/index.js";
 import { World } from "@prisma/client";
-import { Authorized, AuthorizedRequest, Created_mapWithRelations } from "../Types.js";
+import { Created_mapWithRelations, UserSessionData } from "../Types.js";
 
 interface Locals {
   page: "index" | "maps" | "map" | "user" | "new";
@@ -16,16 +15,16 @@ interface Locals {
   encodedSettings?: string;
 }
 
-async function getLocals(page: "index" | "maps" | "map" | "user" | "new", authorized: Authorized | undefined) {
+async function getLocals(page: "index" | "maps" | "map" | "user" | "new", user: UserSessionData | undefined) {
   const locals: Locals = {
     page: page,
     loggedIn: false,
   };
-  if (authorized) {
+  if (user) {
     locals.loggedIn = true;
-    locals.userId = authorized.id;
-    locals.userLogin = authorized.login;
-    locals.userRank = authorized.rank;
+    locals.userId = user.id;
+    locals.userLogin = user.login;
+    locals.userRank = user.rank;
   }
   if (page === "maps" || page === "new") {
     locals.worlds = await readWorlds();
@@ -35,8 +34,8 @@ async function getLocals(page: "index" | "maps" | "map" | "user" | "new", author
 
 const router = express.Router();
 
-router.get("/", async (req: AuthorizedRequest, res) => {
-  const locals = await getLocals("index", req.authorized);
+router.get("/", async (req, res) => {
+  const locals = await getLocals("index", req.session.user);
   return res.render("index", locals);
 });
 
@@ -50,30 +49,25 @@ router.post("/auth", async (req, res) => {
   if (user === null || user === undefined) return res.json({ success: false });
   const hash = user.password;
   const isValid = bcrypt.compareSync(password, hash);
-  if (!isValid || process.env.TOKEN_SECRET === undefined) return res.json({ success: false });
-  const token = jsonwebtoken.sign({ id: user.id, login: user.login, rank: user.rank }, process.env.TOKEN_SECRET, {
-    expiresIn: 1 * 60 * 60,
+  if (!isValid) return res.json({ success: false });
+  req.session.regenerate((err) => {
+    req.session.user = {
+      id: user.id,
+      login: user.login,
+      rank: user.rank,
+    };
+    return res.json({ success: true });
   });
-  res.cookie("token", token, {
-    maxAge: 1 * 60 * 60 * 1000,
-    secure: true,
-    httpOnly: true,
-    sameSite: "strict",
-  });
-  return res.json({ success: true, token: token });
 });
 
 router.post("/logout", (req, res) => {
-  res.clearCookie("token", {
-    secure: true,
-    httpOnly: true,
-    sameSite: "strict",
+  req.session.destroy((err) => {
+    return res.json(true);
   });
-  return res.json(true);
 });
 
-router.get("/map/:id", async (req: AuthorizedRequest, res) => {
-  const locals = await getLocals("map", req.authorized);
+router.get("/map/:id", async (req, res) => {
+  const locals = await getLocals("map", req.session.user);
   const id = parseInt(req.params.id);
   const map = await readMap(id);
   if (map === null) return res.status(404).render("not-found");
@@ -81,13 +75,13 @@ router.get("/map/:id", async (req: AuthorizedRequest, res) => {
   return res.render("map", locals);
 });
 
-router.get("/maps", async (req: AuthorizedRequest, res) => {
-  const locals = await getLocals("maps", req.authorized);
+router.get("/maps", async (req, res) => {
+  const locals = await getLocals("maps", req.session.user);
   return res.render("maps", locals);
 });
 
-router.get("/new/:settings?", async (req: AuthorizedRequest, res) => {
-  const locals = await getLocals("new", req.authorized);
+router.get("/new/:settings?", async (req, res) => {
+  const locals = await getLocals("new", req.session.user);
   locals.encodedSettings = req.params.settings ?? "";
   res.render("new", locals);
 });
@@ -132,8 +126,8 @@ router.post("/register", async (req, res) => {
   });
 });
 
-router.get("/user/:id", async (req: AuthorizedRequest, res) => {
-  const locals = await getLocals("user", req.authorized);
+router.get("/user/:id", async (req, res) => {
+  const locals = await getLocals("user", req.session.user);
   const id = parseInt(req.params.id);
   const user = await readUser(id);
   if (user === null) return res.status(404).render("not-found");

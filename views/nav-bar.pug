@@ -15,6 +15,13 @@
     div
       button#marks-button Oznaczenia
   #profile
-    button#profile-button Profil
+    button#profile-button= loggedIn ? "Profil" : "Logowanie"
     .hidden
-      include profile-tab.pug
+      if loggedIn
+        p Zalogowany jako #{ userLogin }
+        button#logout-button Wyloguj się
+      else
+        form#login-form
+          input#login(type="text", name="login", autocomplete="off", placeholder="login")
+          input#password(type="password", name="password", placeholder="hasło")
+          input#submit(type="submit", value="Zaloguj się")

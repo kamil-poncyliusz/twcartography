@@ -5,7 +5,7 @@ import saveMapPng from "../src/save-map-png.js";
 import SettingsValidator from "../public/scripts/class/SettingsValidator.js";
 import MapGenerator from "../public/scripts/class/MapGenerator.js";
 import { encodeSettings } from "../public/scripts/settings-codec.js";
-import { Settings, ReadMapsParameters, AuthorizedRequest, ImageDataDummy } from "../Types.js";
+import { Settings, ReadMapsParameters, ImageDataDummy } from "../Types.js";
 import fs from "fs";
 import worldDataParser from "../src/world-data-parser.js";
 import { updateUserRank } from "../src/queries/user.js";
@@ -34,8 +34,8 @@ api.get("/world-data/:world/:turn", async (req, res) => {
   const data = await readWorldData(world, turn);
   return res.json(data);
 });
-api.post("/map/create", async (req: AuthorizedRequest, res) => {
-  if (!req.authorized || req.authorized.rank < 2) return res.json(0);
+api.post("/map/create", async (req, res) => {
+  if (!req.session.user || req.session.user.rank < 2) return res.json(0);
   const settings = req.body.settings as Settings;
   if (!SettingsValidator.settings(settings)) return res.json(0);
   const encodedSettings = encodeSettings(settings);
@@ -51,7 +51,7 @@ api.post("/map/create", async (req: AuthorizedRequest, res) => {
   const createdMap = await createMap(
     settings.world,
     settings.turn,
-    req.authorized.id,
+    req.session.user.id,
     title,
     description,
     encodedSettings
@@ -82,7 +82,8 @@ api.get("/maps/:world/:author/:timespan/:order/:page", async (req, res) => {
   const maps = await readMaps(page, params);
   return res.json(maps);
 });
-api.post("/world/create", adminAuthorization, async (req: AuthorizedRequest, res) => {
+api.post("/world/create", async (req, res) => {
+  if (!req.session.user || req.session.user.rank < 10) return res.json(0);
   if (!validateWorldCreateBody(req.body)) return res.json(0);
   const server: string = req.body.server;
   const num: string = req.body.num;
@@ -93,7 +94,8 @@ api.post("/world/create", adminAuthorization, async (req: AuthorizedRequest, res
   console.log("Stworzono świat o id", createdWorld.id);
   return res.json(createdWorld.id);
 });
-api.post("/world-data/create/:world/:turn", adminAuthorization, async (req: AuthorizedRequest, res) => {
+api.post("/world-data/create/:world/:turn", async (req, res) => {
+  if (!req.session.user || req.session.user.rank < 10) return res.json(false);
   const world = Number(req.params.world);
   const turn = Number(req.params.turn);
   const worldDataFilesPath = `temp/${world}/${turn}`;
@@ -103,7 +105,8 @@ api.post("/world-data/create/:world/:turn", adminAuthorization, async (req: Auth
   if (!createdWorldData) return res.json(false);
   return res.json(true);
 });
-api.post("/user/update/rank", adminAuthorization, async (req: AuthorizedRequest, res) => {
+api.post("/user/update/rank", async (req, res) => {
+  if (!req.session.user || req.session.user.rank < 10) return res.json(false);
   const id = req.body.id;
   const rank = req.body.rank;
   if (typeof id !== "number" || id <= 0) return res.json(false);
