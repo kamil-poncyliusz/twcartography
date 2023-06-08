@@ -1,6 +1,6 @@
 import { handleCreateWorld } from "../../../routes/api-handlers.js";
 
-const createWorldForm = document.querySelector("form");
+const createWorldForm = document.querySelector("form") as HTMLFormElement;
 
 const sendCreateWorldRequest = async function (server: string, num: string, domain: string, timestamp: number) {
   const url = `${window.location.origin}/api/world/create`;
@@ -39,4 +39,4 @@ const createWorld = async function (e: Event) {
   else window.location.reload();
 };
 
-createWorldForm?.addEventListener("submit", createWorld);
+createWorldForm.addEventListener("submit", createWorld);

@@ -16,7 +16,7 @@ const parseFile = function (world: number, turn: number, name: string) {
   }
 };
 
-const worldDataParser = function (world_id: number, turn: number) {
+const parseTurnData = function (world_id: number, turn: number) {
   const parsedData: ParsedTurnData = {
     conquer: {},
     tribes: {},
@@ -120,4 +120,4 @@ const worldDataParser = function (world_id: number, turn: number) {
   return parsedData;
 };
 
-export default worldDataParser;
+export default parseTurnData;

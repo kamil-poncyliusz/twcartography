@@ -7,6 +7,7 @@
   --light-accent: #c06c3f;
   --font: #242424;
   --light-font: #a1a1a1;
+  --disabled-font: #707070;
   --danger: #800000;
 }
 @media (max-width: 1920px) {
@@ -77,6 +78,7 @@ button:disabled,
 select:disabled,
 input:disabled {
   cursor: not-allowed;
+  color: var(--disabled-font);
 }
 a:hover,
 button:hover:enabled,

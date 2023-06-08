@@ -2,7 +2,7 @@ import fs from "fs";
 import scheduler from "node-schedule";
 import { DownloaderHelper } from "node-downloader-helper";
 import { createWorldData, readWorlds } from "./queries/index.js";
-import worldDataParser from "./world-data-parser.js";
+import parseTurnData from "./parse-turn-data.js";
 import daysFromStart from "./days-from-start.js";
 import { World } from "@prisma/client";
 
@@ -52,10 +52,9 @@ const turnDataDownloaderDaemon = async function () {
       const success = await downloadWorldData(world, turn);
       if (success) {
         console.log(`Downloading turn ${turn} of ${world.server}${world.num} completed`);
-        const parsedWorldData = worldDataParser(world.id, turn);
+        const parsedWorldData = parseTurnData(world.id, turn);
         const createdWorldData = await createWorldData(world.id, turn, parsedWorldData);
-        if (createdWorldData !== null)
-          console.log(`Turn data created for ${createdWorldData.turn} turn of ${world.server + world.num}`);
+        if (createdWorldData !== null) console.log(`Turn data created for ${createdWorldData.turn} turn of ${world.server + world.num}`);
         else console.log(`Failed to create turn data record in database`);
       } else {
         console.log(`Downloading turn ${turn} of ${world.server}${world.num} failed`);

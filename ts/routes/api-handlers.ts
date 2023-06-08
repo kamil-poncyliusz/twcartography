@@ -4,7 +4,7 @@ import SettingsValidator from "../public/scripts/class/SettingsValidator.js";
 import MapGenerator from "../public/scripts/class/MapGenerator.js";
 import { encodeSettings } from "../public/scripts/settings-codec.js";
 import saveMapPng from "../src/save-map-png.js";
-import worldDataParser from "../src/world-data-parser.js";
+import parseTurnData from "../src/parse-turn-data.js";
 import { Settings, ImageDataDummy } from "../Types.js";
 import { Request } from "express";
 import { Prisma } from "@prisma/client";
@@ -83,7 +83,7 @@ export const handleCreateTurnData = async function (req: Request) {
   if (isNaN(world) || isNaN(turn) || world < 1 || turn < 0 || turn > 365) return false;
   const worldDataFilesPath = `temp/${world}/${turn}`;
   if (!fs.existsSync(worldDataFilesPath)) return false;
-  const parsedTurnData = worldDataParser(world, turn);
+  const parsedTurnData = parseTurnData(world, turn);
   const createdWorldData = await createWorldData(world, turn, parsedTurnData);
   if (!createdWorldData) return false;
   return true;
