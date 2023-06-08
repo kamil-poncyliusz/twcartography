@@ -17,7 +17,7 @@ const loginRequest = async function (e: Event) {
       password: password,
     }),
   });
-  const success: { success: boolean; token: string | undefined } = await response.json();
+  const success: boolean = await response.json();
   if (!success) console.log("Login failed");
   else window.location.reload();
 };

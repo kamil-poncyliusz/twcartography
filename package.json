@@ -10,7 +10,7 @@
     "compile": "tsc --watch",
     "test": "jest",
     "coverage": "jest --coverage",
-    "migrate": "npx prisma migrate dev --name init",
+    "migrate": "npx prisma migrate dev",
     "create-admin-account": "node create-admin-account.js"
   },
   "author": "Kamil P",

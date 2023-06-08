@@ -42,21 +42,20 @@ router.get("/", async (req, res) => {
 router.post("/auth", async (req, res) => {
   const login = req.body.login;
   const password = req.body.password;
-  if (!login || !password) return res.json({ success: false });
-  if (login.length < 3 || login.length > 24 || password.length < 8 || password.length > 24)
-    return res.json({ success: false });
+  if (!login || !password) return res.json(false);
+  if (login.length < 3 || login.length > 24 || password.length < 8 || password.length > 24) return res.json(false);
   const user = await readUserByLogin(login);
-  if (user === null || user === undefined) return res.json({ success: false });
+  if (user === null || user === undefined) return res.json(false);
   const hash = user.password;
   const isValid = bcrypt.compareSync(password, hash);
-  if (!isValid) return res.json({ success: false });
+  if (!isValid) return res.json(false);
   req.session.regenerate((err) => {
     req.session.user = {
       id: user.id,
       login: user.login,
       rank: user.rank,
     };
-    return res.json({ success: true });
+    return res.json(true);
   });
 });
 
@@ -94,34 +93,34 @@ router.post("/register", async (req, res) => {
   const login = req.body.login;
   const password = req.body.password;
   if (!login || login.length < 3 || login.length > 24)
-    return res.render("register", {
+    return res.json({
       success: false,
       message: "incorrect login",
     });
   if (!password || password.length < 8 || password.length > 24)
-    return res.render("register", {
+    return res.json({
       success: false,
       message: "incorrect password",
     });
   const user = await readUserByLogin(login);
   if (user === undefined)
-    return res.render("register", {
+    return res.json({
       success: false,
       message: "database error",
     });
   if (user !== null)
-    return res.render("register", {
+    return res.json({
       success: false,
       message: "login taken",
     });
   const hash = bcrypt.hashSync(password, 5);
   const createdUser = await createUser(login, hash, 1);
   if (createdUser === null)
-    return res.render("register", {
+    return res.json({
       success: false,
       message: "database error",
     });
-  return res.render("register", {
+  return res.json({
     success: true,
   });
 });
