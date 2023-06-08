@@ -1,3 +1,5 @@
+import { handleCreateTurnData } from "../../../routes/api-handlers.js";
+
 const createTurnDataButtons = document.querySelectorAll("button.create-turn-data");
 
 const createTurnData = async function (e: Event) {
@@ -12,7 +14,7 @@ const createTurnData = async function (e: Event) {
     },
     body: "",
   });
-  const isCreated: boolean = await response.json();
+  const isCreated: Awaited<ReturnType<typeof handleCreateTurnData>> = await response.json();
   if (isCreated) window.location.reload();
   else console.log("Failed to create turn data");
 };

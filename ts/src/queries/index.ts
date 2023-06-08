@@ -14,6 +14,7 @@ export const deleteAllUsers = user.deleteAllUsers;
 export const readUser = user.readUser;
 export const readUserByLogin = user.readUserByLogin;
 export const readUsers = user.readUsers;
+export const updateUserRank = user.updateUserRank;
 
 export const createWorld = world.createWorld;
 export const deleteWorld = world.deleteWorld;

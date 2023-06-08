@@ -33,15 +33,15 @@ class SuggestionsTabController {
     const target = e.target as HTMLSelectElement;
     const cell = target.parentElement as HTMLTableCellElement;
     const row = cell.parentElement as HTMLTableRowElement;
-    const nameCell = row.querySelector(".suggestion-name") as HTMLTableCellElement;
-    const tribeName = nameCell.textContent as string;
+    const tagCell = row.querySelector(".suggestion-tag") as HTMLTableCellElement;
+    const tribeTag = tagCell.textContent as string;
     let groupName = target.value;
     if (groupName === "Utwórz grupę") {
-      const result = this.#generator.addMarkGroup({ name: tribeName, color: "#FFFFFF", tribes: [] });
+      const result = this.#generator.addMarkGroup({ name: tribeTag, color: "#FFFFFF", tribes: [] });
       if (!result) return;
-      groupName = tribeName;
+      groupName = tribeTag;
     }
-    const result = this.#generator.addMark(tribeName, groupName);
+    const result = this.#generator.addMark(tribeTag, groupName);
     if (!result) return;
     this.render();
     this.updateSettings();

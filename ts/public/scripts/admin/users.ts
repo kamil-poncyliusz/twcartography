@@ -1,3 +1,5 @@
+import { handleUpdateUserRank } from "../../../routes/api-handlers.js";
+
 const selectElements = document.querySelectorAll("select.change-rank");
 
 const changeUserRank = async function (e: Event) {
@@ -17,7 +19,7 @@ const changeUserRank = async function (e: Event) {
         },
         body: JSON.stringify(payload),
       });
-      const success = await response.json();
+      const success: Awaited<ReturnType<typeof handleUpdateUserRank>> = await response.json();
       if (success) return window.location.reload();
     }
   }

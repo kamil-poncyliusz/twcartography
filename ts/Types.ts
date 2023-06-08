@@ -53,12 +53,6 @@ export interface ParsedTurnData {
   width: number;
   topVillagePoints: number;
 }
-export interface ReadMapsParameters {
-  author: number | undefined;
-  order: "newest" | "oldest" | "views";
-  timespan: "day" | "week" | "month" | "any";
-  world: number | undefined;
-}
 export interface MapLoaderSettings {
   author: number;
   order: string;

@@ -108,8 +108,7 @@ class MapGenerator {
     const maxPoints = this.#turnData.topVillagePoints;
     if (villagePoints <= minPoints) return minSize;
     if (villagePoints >= maxPoints) return maxSize;
-    const size =
-      Math.floor(((villagePoints - minPoints) / (maxPoints - minPoints)) * (maxSize - minSize + 1)) + minSize;
+    const size = Math.floor(((villagePoints - minPoints) / (maxPoints - minPoints)) * (maxSize - minSize + 1)) + minSize;
     return size;
   }
   #distributeArea(area: RawPixel[]) {

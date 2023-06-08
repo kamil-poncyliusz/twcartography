@@ -1,5 +1,5 @@
 import { PrismaClient, Prisma } from "@prisma/client";
-import { Created_mapWithRelations, ReadMapsParameters } from "../../Types";
+import { Created_mapWithRelations } from "../../Types";
 
 const prisma = new PrismaClient();
 
@@ -24,14 +24,16 @@ export const readMap = async function (id: number) {
 
 export const readMaps = async function (
   page: number,
-  filters: ReadMapsParameters
+  author: number | undefined,
+  order: string,
+  timespan: string | undefined,
+  world: number | undefined
 ): Promise<Created_mapWithRelations[]> {
   const mapsPerPage = 5;
   const now = Date.now();
-  let timespan: string | undefined;
-  if (filters.author === 0) filters.author = undefined;
-  if (filters.world === 0) filters.world = undefined;
-  switch (filters.timespan) {
+  if (author === 0) author = undefined;
+  if (world === 0) world = undefined;
+  switch (timespan) {
     case "day":
       timespan = new Date(now - 24 * 60 * 60 * 1000).toISOString();
       break;
@@ -44,26 +46,23 @@ export const readMaps = async function (
     case "any":
       timespan = undefined;
   }
-  const newest: Prisma.Created_mapOrderByWithRelationInput = {
-    created_at: "desc",
-  };
-  const oldest: Prisma.Created_mapOrderByWithRelationInput = {
-    created_at: "asc",
-  };
-  const views: Prisma.Created_mapOrderByWithRelationInput = {
-    views: "desc",
-  };
-  const order = {
-    newest: newest,
-    oldest: oldest,
-    views: views,
+  const orders: { [key: string]: Prisma.Created_mapOrderByWithRelationInput } = {
+    newest: {
+      created_at: "desc",
+    },
+    oldest: {
+      created_at: "asc",
+    },
+    views: {
+      views: "desc",
+    },
   };
 
   const result = await prisma.created_map
     .findMany({
       where: {
-        author_id: filters.author,
-        world_id: filters.world,
+        author_id: author,
+        world_id: world,
         created_at: {
           gte: timespan,
         },
@@ -72,7 +71,7 @@ export const readMaps = async function (
         author: true,
         world: true,
       },
-      orderBy: order[filters.order],
+      orderBy: orders[order],
       skip: mapsPerPage * (page - 1),
       take: mapsPerPage,
     })
@@ -83,14 +82,7 @@ export const readMaps = async function (
   return result;
 };
 
-export const createMap = async function (
-  worldId: number,
-  turn: number,
-  authorId: number,
-  title: string,
-  description: string,
-  settings: string
-) {
+export const createMap = async function (worldId: number, turn: number, authorId: number, title: string, description: string, settings: string) {
   const result = await prisma.created_map
     .create({
       data: {

@@ -2,7 +2,7 @@ import MapGenerator from "./MapGenerator.js";
 import SettingsValidator from "./SettingsValidator.js";
 import { distinctiveColor } from "../utils.js";
 import { MarkGroup, Settings, ParsedTurnData, Tribe } from "../../../Types.js";
-import { readWorld, readWorldData } from "../../../src/queries/index.js";
+import { handleReadTurnData, handleReadWorld } from "../../../routes/api-handlers.js";
 
 class GeneratorController {
   #backgroundColor: string = "#000000";
@@ -42,11 +42,11 @@ class GeneratorController {
     if (this.world === 0 || this.turn === -1) return {};
     return this.data[this.turn].tribes;
   }
-  addMark(tribeName: string, groupName: string) {
+  addMark(tribeTag: string, groupName: string) {
     if (!this.world || !this.turn) return false;
     const group = this.markGroups.find((element) => element.name === groupName);
     if (group === undefined) return false;
-    const tribe = this.findTribe(tribeName);
+    const tribe = this.findTribe(tribeTag);
     if (!tribe) return false;
     group.tribes.push(tribe.id);
     return true;
@@ -90,7 +90,7 @@ class GeneratorController {
       });
       for (let tribeId of group.tribes) {
         const tribe = this.tribes[tribeId];
-        if (tribe) this.addMark(tribe.name, group.name);
+        if (tribe) this.addMark(tribe.tag, group.name);
       }
     }
     return true;
@@ -133,12 +133,10 @@ class GeneratorController {
   }
   async changeWorld(world: number) {
     const response = await fetch(`${window.location.origin}/api/world/${world}`);
-    const worldInfo: Awaited<ReturnType<typeof readWorld>> = await response.json();
+    const worldInfo: Awaited<ReturnType<typeof handleReadWorld>> = await response.json();
     this.data = {};
     this.turn = -1;
-    if (worldInfo === null) {
-      return false;
-    }
+    if (!worldInfo) return false;
     this.#server = worldInfo.server + worldInfo.num;
     this.world = world;
     this.#worldStartTimestamp = worldInfo.start_timestamp;
@@ -165,15 +163,15 @@ class GeneratorController {
     if (this.data[turn] !== undefined) return true;
     const url = `${window.location.origin}/api/world-data/${this.world}/${turn}`;
     const response = await fetch(url);
-    const turnData: Awaited<ReturnType<typeof readWorldData>> = await response.json();
-    if (turnData === null) return false;
+    const turnData: Awaited<ReturnType<typeof handleReadTurnData>> = await response.json();
+    if (!turnData) return false;
     this.data[turn] = turnData;
     return true;
   }
-  findTribe(name: string) {
+  findTribe(tag: string) {
     if (!this.tribes) return false;
     for (const tribeId in this.tribes) {
-      if (this.tribes[tribeId].name === name) return this.tribes[tribeId];
+      if (this.tribes[tribeId].tag === tag) return this.tribes[tribeId];
     }
     return false;
   }

@@ -5,6 +5,7 @@ import SuggestionsTabController from "./SuggestionsTab.js";
 import CanvasController from "./Canvas.js";
 import { limits } from "./SettingsValidator.js";
 import { Settings } from "../../../Types.js";
+import { handleCreateMap } from "../../../routes/api-handlers.js";
 
 const inputs: { [key: string]: HTMLInputElement } = {
   autoRefresh: document.getElementById("auto-refresh") as HTMLInputElement,
@@ -292,9 +293,9 @@ class SettingsTabController {
       },
       body: JSON.stringify(body),
     });
-    const createdMapId = await response.json();
-    if (createdMapId > 0) console.log("Map published succesfully");
-    else console.log("Failed to publish the map");
+    const createdMapId: Awaited<ReturnType<typeof handleCreateMap>> = await response.json();
+    if (createdMapId === false) console.log("Failed to publish the map");
+    else console.log("Map published succesfully");
   };
 }
 

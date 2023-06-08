@@ -1,8 +1,5 @@
-import { Prisma } from "@prisma/client";
-import { readMaps, readMap } from "../../../src/queries/index.js";
 import { Created_mapWithRelations, MapLoaderSettings } from "../../../Types.js";
-
-type mapWithRelations = Prisma.PromiseReturnType<typeof readMap>;
+import { handleReadMaps } from "../../../routes/api-handlers.js";
 
 const mapsList = document.getElementById("maps-list") as Element;
 
@@ -21,12 +18,10 @@ class MapLoader {
   }
   async #fetchMaps() {
     this.#page++;
-    const url = `${window.location.origin}/api/maps/${this.#world}/${this.#author}/${this.#timespan}/${this.#order}/${
-      this.#page
-    }`;
+    const url = `${window.location.origin}/api/maps/${this.#world}/${this.#author}/${this.#timespan}/${this.#order}/${this.#page}`;
     this.#fetching = true;
     const result = await fetch(url);
-    const maps = (await result.json()) as Awaited<ReturnType<typeof readMaps>>;
+    const maps: Awaited<ReturnType<typeof handleReadMaps>> = await result.json();
     if (maps.length === 0) return (this.#endOfData = true);
     for (const map of maps) {
       this.#appendMap(map);
