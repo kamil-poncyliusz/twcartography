@@ -1,135 +1,78 @@
 import express from "express";
-import bcrypt from "bcryptjs";
-import { readMap, createUser, readUser, readUserByLogin, readWorlds } from "../src/queries/index.js";
-import { World } from "@prisma/client";
-import { Created_mapWithRelations, UserSessionData } from "../Types.js";
-
-interface Locals {
-  page: "index" | "maps" | "map" | "user" | "new";
-  loggedIn: boolean;
-  userId?: number;
-  userLogin?: string;
-  userRank?: number;
-  worlds?: World[];
-  map?: Created_mapWithRelations;
-  encodedSettings?: string;
-}
-
-async function getLocals(page: "index" | "maps" | "map" | "user" | "new", user: UserSessionData | undefined) {
-  const locals: Locals = {
-    page: page,
-    loggedIn: false,
-  };
-  if (user) {
-    locals.loggedIn = true;
-    locals.userId = user.id;
-    locals.userLogin = user.login;
-    locals.userRank = user.rank;
-  }
-  if (page === "maps" || page === "new") {
-    locals.worlds = await readWorlds();
-  }
-  return locals;
-}
+import { readMap, readUser, readWorlds } from "../src/queries/index.js";
+import { handleAuthentication, handleRegistration } from "./router-handlers.js";
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  const locals = await getLocals("index", req.session.user);
+  const locals = {
+    page: "index",
+    user: req.session.user,
+  };
   return res.render("index", locals);
 });
 
 router.post("/auth", async (req, res) => {
-  const login = req.body.login;
-  const password = req.body.password;
-  if (!login || !password) return res.json(false);
-  if (login.length < 3 || login.length > 24 || password.length < 8 || password.length > 24) return res.json(false);
-  const user = await readUserByLogin(login);
-  if (user === null || user === undefined) return res.json(false);
-  const hash = user.password;
-  const isValid = bcrypt.compareSync(password, hash);
-  if (!isValid) return res.json(false);
-  req.session.regenerate((err) => {
-    req.session.user = {
-      id: user.id,
-      login: user.login,
-      rank: user.rank,
-    };
-    return res.json(true);
-  });
+  const responseData = await handleAuthentication(req);
+  return res.json(responseData);
 });
 
 router.post("/logout", (req, res) => {
   req.session.destroy((err) => {
+    if (err) return res.json(false);
     return res.json(true);
   });
 });
 
+router.post("/register", async (req, res) => {
+  const responseData = await handleRegistration(req);
+  return res.json(responseData);
+});
+
 router.get("/map/:id", async (req, res) => {
-  const locals = await getLocals("map", req.session.user);
   const id = parseInt(req.params.id);
+  if (isNaN(id) || id < 1) return res.status(404).render("not-found");
   const map = await readMap(id);
   if (map === null) return res.status(404).render("not-found");
-  locals.map = map;
+  const locals = {
+    page: "map",
+    user: req.session.user,
+    map: map,
+  };
   return res.render("map", locals);
 });
 
 router.get("/maps", async (req, res) => {
-  const locals = await getLocals("maps", req.session.user);
+  const worlds = await readWorlds();
+  const locals = {
+    page: "maps",
+    user: req.session.user,
+    worlds: worlds,
+  };
   return res.render("maps", locals);
 });
 
 router.get("/new/:settings?", async (req, res) => {
-  const locals = await getLocals("new", req.session.user);
-  locals.encodedSettings = req.params.settings ?? "";
+  const worlds = await readWorlds();
+  const locals = {
+    page: "new",
+    user: req.session.user,
+    encodedSettings: req.params.settings ?? "",
+    worlds: worlds,
+  };
   res.render("new", locals);
 });
 
-router.get("/register", (req, res) => {
-  res.render("register", {});
-});
-
-router.post("/register", async (req, res) => {
-  const login = req.body.login;
-  const password = req.body.password;
-  if (!login || login.length < 3 || login.length > 24)
-    return res.json({
-      success: false,
-      message: "incorrect login",
-    });
-  if (!password || password.length < 8 || password.length > 24)
-    return res.json({
-      success: false,
-      message: "incorrect password",
-    });
-  const user = await readUserByLogin(login);
-  if (user === undefined)
-    return res.json({
-      success: false,
-      message: "database error",
-    });
-  if (user !== null)
-    return res.json({
-      success: false,
-      message: "login taken",
-    });
-  const hash = bcrypt.hashSync(password, 5);
-  const createdUser = await createUser(login, hash, 1);
-  if (createdUser === null)
-    return res.json({
-      success: false,
-      message: "database error",
-    });
-  return res.json({
-    success: true,
-  });
-});
-
 router.get("/user/:id", async (req, res) => {
-  const locals = await getLocals("user", req.session.user);
   const id = parseInt(req.params.id);
+  if (isNaN(id) || id < 1) return res.status(404).render("not-found");
   const user = await readUser(id);
   if (user === null) return res.status(404).render("not-found");
+  const locals = {
+    page: "user",
+    user: req.session.user,
+    displayedUser: user,
+  };
   return res.render("user", locals);
 });
 

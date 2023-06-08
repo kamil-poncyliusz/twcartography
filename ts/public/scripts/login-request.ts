@@ -1,3 +1,5 @@
+import { handleAuthentication } from "../../routes/router-handlers";
+
 const loginRequest = async function (e: Event) {
   e.preventDefault();
   const target = e.target as HTMLFormElement;
@@ -17,7 +19,7 @@ const loginRequest = async function (e: Event) {
       password: password,
     }),
   });
-  const success: boolean = await response.json();
+  const success: Awaited<ReturnType<typeof handleAuthentication>> = await response.json();
   if (!success) console.log("Login failed");
   else window.location.reload();
 };

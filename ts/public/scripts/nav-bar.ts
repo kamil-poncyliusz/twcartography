@@ -1,3 +1,4 @@
+import { handleRegistration } from "../../routes/router-handlers.js";
 import loginRequest from "./login-request.js";
 
 const profileButton = document.getElementById("profile-button") as HTMLButtonElement;
@@ -21,8 +22,8 @@ const register = async function (e: Event) {
     },
     body: JSON.stringify({ login: login, password: password }),
   });
-  const message: { success: boolean; message?: string } = await response.json();
-  if (!message.success) console.log(message.message);
+  const message: Awaited<ReturnType<typeof handleRegistration>> = await response.json();
+  console.log(message === true ? "Successfully registered an account" : message);
 };
 
 const logout = async function (e: Event) {

@@ -5,7 +5,7 @@ import cors from "cors";
 import helmet from "helmet";
 import { fileURLToPath } from "url";
 import router from "./routes/router.js";
-import apiRouter from "./routes/api-router.js";
+import api from "./routes/api.js";
 import admin from "./routes/admin.js";
 import { adminAuthorization } from "./src/authorization.js";
 import turnDataDownloaderDaemon from "./src/turn-data-downloader-daemon.js";
@@ -49,7 +49,7 @@ app.use(
 );
 
 app.use("/", router);
-app.use("/api", apiRouter);
+app.use("/api", api);
 app.use("/admin", adminAuthorization);
 app.use("/admin", admin);
 app.all("*", (req, res) => {

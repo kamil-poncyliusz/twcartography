@@ -6,7 +6,7 @@
       a(href="/new") Stwórz mapę
     div
       a(href="/maps") Mapy
-    if loggedIn && userRank === 10
+    if user && user.rank === 10
       div
         a(href="/admin") Panel
   else
@@ -15,10 +15,10 @@
     div
       button#marks-button Oznaczenia
   #profile
-    button#profile-button= loggedIn ? "Profil" : "Logowanie"
+    button#profile-button= user ? "Profil" : "Logowanie"
     .hidden
-      if loggedIn
-        p Zalogowany jako #{ userLogin }
+      if user
+        p Zalogowany jako #{ user.login }
         button#logout-button Wyloguj się
       else
         form#login-form
