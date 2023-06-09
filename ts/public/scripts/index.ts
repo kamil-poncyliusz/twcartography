@@ -1,6 +1,6 @@
 import "./nav-bar.js";
 import MapLoader from "./class/MapLoader.js";
-import { MapLoaderSettings } from "../../Types.js";
+import { MapLoaderSettings } from "../../src/Types.js";
 
 const mapLoaderSettings: MapLoaderSettings = {
   author: 0,

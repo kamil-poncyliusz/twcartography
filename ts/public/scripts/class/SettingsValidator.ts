@@ -1,4 +1,4 @@
-import { Settings } from "../../../Types";
+import { Settings } from "../../../src/Types";
 
 const GROUP_NAME_MAX_LENGTH = 30,
   GROUP_NAME_MIN_LENGTH = 1,
@@ -32,8 +32,7 @@ class SettingsValidator {
     return regex.test(input);
   }
   static groupName(input: string) {
-    if (typeof input !== "string" || input.length < GROUP_NAME_MIN_LENGTH || input.length > GROUP_NAME_MAX_LENGTH)
-      return false;
+    if (typeof input !== "string" || input.length < GROUP_NAME_MIN_LENGTH || input.length > GROUP_NAME_MAX_LENGTH) return false;
     for (let i = 0; i < input.length; i++) {
       for (let char = 0; char < GROUP_NAME_FORBIDDEN_CHARACTERS.length; char++) {
         if (input[i] === GROUP_NAME_FORBIDDEN_CHARACTERS[char]) return false;

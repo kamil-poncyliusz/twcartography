@@ -1,5 +1,5 @@
 import { Base64 } from "./base64.js";
-import { MarkGroup, Settings } from "../../Types.js";
+import { MarkGroup, Settings } from "../../src/Types.js";
 
 const minorSeparator = ",";
 const majorSeparator = ";";
@@ -56,19 +56,8 @@ export const decodeSettings = function (input: string) {
     markGroups.push(group);
   }
   if (settingsArray.length < 8) return false;
-  const [
-    backgroundColor,
-    displayUnmarked,
-    outputWidth,
-    scale,
-    spotsFilter,
-    spotSize,
-    trim,
-    turn,
-    unmarkedColor,
-    villageFilter,
-    world,
-  ] = settingsArray;
+  const [backgroundColor, displayUnmarked, outputWidth, scale, spotsFilter, spotSize, trim, turn, unmarkedColor, villageFilter, world] =
+    settingsArray;
   const result = {
     backgroundColor: backgroundColor,
     displayUnmarked: parseInt(displayUnmarked) === 1 ? true : false,

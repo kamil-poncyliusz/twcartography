@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import daysFromStart from "./days-from-start.js";
-import { WorldWithWorldData, WorldDataState } from "../Types.js";
+import { WorldWithWorldData, WorldDataState } from "./Types.js";
 
 const files = ["village", "player", "ally", "conquer", "kill_all_tribe", "kill_att_tribe", "kill_def_tribe"];
 

@@ -5,7 +5,7 @@ import MapGenerator from "../public/scripts/class/MapGenerator.js";
 import { encodeSettings } from "../public/scripts/settings-codec.js";
 import saveMapPng from "../src/save-map-png.js";
 import parseTurnData from "../src/parse-turn-data.js";
-import { Settings, ImageDataDummy } from "../Types.js";
+import { Settings, ImageDataDummy } from "../src/Types.js";
 import { Request } from "express";
 import { Prisma } from "@prisma/client";
 

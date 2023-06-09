@@ -26,24 +26,13 @@ html(lang="pl-PL")
           .row
             label(for="turn-input", title="Liczba dni od początku świata. '0' to godzina po starcie.") Dzień gry:
             div
-              input#turn-input(
-                type="number",
-                name="turn-input",
-                min="0",
-                max="365",
-                placeholder="wybierz",
-                autocomplete="off",
-                disabled
-              )
+              input#turn-input(type="number", name="turn-input", min="0", max="365", placeholder="wybierz", autocomplete="off", disabled)
           .row
             label(for="background-color", title="Kolor tła wyjściowej mapy.") Kolor tła:
             div
               input#background-color(type="color", name="background-color", autocomplete="off", disabled)
           .row
-            label(
-              for="scale",
-              title="Powiększenie mapy. Świat o wielkości 400x400 pól w skali 2 będzie miał rozmiar 800x800px."
-            ) Skala:
+            label(for="scale", title="Powiększenie mapy. Świat o wielkości 400x400 pól w skali 2 będzie miał rozmiar 800x800px.") Skala:
             div
               input#scale(type="number", name="scale", autocomplete="off", disabled)
           .row
@@ -58,10 +47,7 @@ html(lang="pl-PL")
             div
               input#spot-size(type="number", name="spot-size", autocomplete="off", disabled)
           .row
-            label(
-              for="spots-filter",
-              title="Terytoria o powierzchni niższej niż podana zostaną usunięte i rozdzielone miedzy sąsiadów."
-            ) Filtr plamek:
+            label(for="spots-filter", title="Terytoria o powierzchni niższej niż podana zostaną usunięte i rozdzielone miedzy sąsiadów.") Filtr plamek:
             div
               input#spots-filter(type="number", name="spots-filter", autocomplete="off", disabled)
           .row
@@ -89,14 +75,8 @@ html(lang="pl-PL")
               input#auto-refresh(type="checkbox", name="auto-refresh", autocomplete="off", disabled)
           .row
             div(title="Wklej kod ustawień, żeby odtworzyć ustawienia stworzone przez innego użytkownika.")
-              input#encoded-settings(
-                type="text",
-                name="encoded-settings",
-                autocomplete="off",
-                placeholder="kod ustawień",
-                value=encodedSettings
-              )
-          if loggedIn
+              input#encoded-settings(type="text", name="encoded-settings", autocomplete="off", placeholder="kod ustawień", value=encodedSettings)
+          if user
             .row
               div
                 input#title(type="text", name="title", placeholder="tytuł", autocomplete="off", disabled)
@@ -113,12 +93,7 @@ html(lang="pl-PL")
               tr
                 th NAZWA
                 th
-                  input#suggestions-search-input(
-                    type="text",
-                    name="suggestions-search-input",
-                    placeholder="TAG",
-                    autocomplete="off"
-                  )
+                  input#suggestions-search-input(type="text", name="suggestions-search-input", placeholder="TAG", autocomplete="off")
                 th GR
                 th WI
                 th PUNKTY

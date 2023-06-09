@@ -1,5 +1,5 @@
 import { PrismaClient, Prisma } from "@prisma/client";
-import { Created_mapWithRelations } from "../../Types";
+import { Created_mapWithRelations } from "../Types";
 
 const prisma = new PrismaClient();
 

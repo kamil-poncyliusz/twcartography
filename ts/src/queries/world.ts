@@ -1,5 +1,5 @@
 import { PrismaClient, World } from "@prisma/client";
-import { WorldWithWorldData } from "../../Types";
+import { WorldWithWorldData } from "../Types";
 
 const prisma = new PrismaClient();
 

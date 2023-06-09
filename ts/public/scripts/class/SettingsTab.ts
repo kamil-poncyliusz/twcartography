@@ -4,7 +4,7 @@ import MarkGroupsTabController from "./MarkGroupsTab.js";
 import SuggestionsTabController from "./SuggestionsTab.js";
 import CanvasController from "./Canvas.js";
 import { limits } from "./SettingsValidator.js";
-import { Settings } from "../../../Types.js";
+import { Settings } from "../../../src/Types.js";
 import { handleCreateMap } from "../../../routes/api-handlers.js";
 
 const inputs: { [key: string]: HTMLInputElement } = {

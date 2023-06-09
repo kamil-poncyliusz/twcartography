@@ -1,4 +1,4 @@
-import { Created_mapWithRelations, MapLoaderSettings } from "../../../Types.js";
+import { Created_mapWithRelations, MapLoaderSettings } from "../../../src/Types.js";
 import { handleReadMaps } from "../../../routes/api-handlers.js";
 
 const mapsList = document.getElementById("maps-list") as Element;

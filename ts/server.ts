@@ -10,7 +10,7 @@ import admin from "./routes/admin.js";
 import { adminAuthorization } from "./src/authorization.js";
 import turnDataDownloaderDaemon from "./src/turn-data-downloader-daemon.js";
 import session from "express-session";
-import { UserSessionData } from "./Types.js";
+import { UserSessionData } from "./src/Types.js";
 
 declare module "express-session" {
   interface SessionData {
@@ -44,7 +44,7 @@ app.use(
     proxy: true,
     name: "cookie",
     saveUninitialized: true,
-    cookie: { secure: process.env.HTTPS === "true", maxAge: 3600000, sameSite: "lax" },
+    cookie: { secure: process.env.SECURE_COOKIE === "true", maxAge: 3600000, sameSite: "lax" },
   })
 );
 

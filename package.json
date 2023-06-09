@@ -11,7 +11,7 @@
     "test": "jest",
     "coverage": "jest --coverage",
     "migrate": "npx prisma migrate dev",
-    "create-admin-account": "node create-admin-account.js"
+    "create-admin": "node ./src/create-admin.js"
   },
   "author": "Kamil P",
   "license": "ISC",

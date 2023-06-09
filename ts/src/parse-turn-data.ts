@@ -1,6 +1,6 @@
 import fs from "fs";
 import zlib from "zlib";
-import { ParsedTurnData } from "../Types";
+import { ParsedTurnData } from "./Types";
 
 const parseFile = function (world: number, turn: number, name: string) {
   const path = `temp/${world}/${turn}/${name}.txt.gz`;

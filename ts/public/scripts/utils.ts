@@ -1,4 +1,4 @@
-import { ParsedColor } from "../../Types";
+import { ParsedColor } from "../../src/Types";
 
 export const parseHexColor = function (color: string): ParsedColor {
   const black = { r: 0, g: 0, b: 0 };

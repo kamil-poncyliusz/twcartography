@@ -1,7 +1,7 @@
 import MapGenerator from "./MapGenerator.js";
 import SettingsValidator from "./SettingsValidator.js";
 import { distinctiveColor } from "../utils.js";
-import { MarkGroup, Settings, ParsedTurnData, Tribe } from "../../../Types.js";
+import { MarkGroup, Settings, ParsedTurnData, Tribe } from "../../../src/Types.js";
 import { handleReadTurnData, handleReadWorld } from "../../../routes/api-handlers.js";
 
 class GeneratorController {

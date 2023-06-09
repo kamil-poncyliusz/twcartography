@@ -1,6 +1,6 @@
 import fs from "fs";
 import { PNG } from "pngjs";
-import { ImageDataDummy } from "../Types";
+import { ImageDataDummy } from "./Types";
 
 const mapsPath = "public/images/maps";
 

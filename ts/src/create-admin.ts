@@ -1,4 +1,4 @@
-import { createUser, deleteAllUsers } from "./src/queries/index.js";
+import { createUser, deleteAllUsers } from "./queries/index.js";
 import bcrypt from "bcryptjs";
 
 const login = "Admin";
