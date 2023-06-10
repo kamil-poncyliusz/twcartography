@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "allowJs": false,
-    "target": "es2016",
-    "module": "ES2020",
+    "target": "es2017",
+    "module": "ES2022",
     "lib": ["esnext", "DOM"],
     "sourceMap": false,
     "esModuleInterop": true,

@@ -5,7 +5,7 @@ import MapGenerator from "../public/scripts/class/MapGenerator.js";
 import { encodeSettings } from "../public/scripts/settings-codec.js";
 import saveMapPng from "../src/save-map-png.js";
 import parseTurnData from "../src/parse-turn-data.js";
-import { Settings, ImageDataDummy } from "../src/Types.js";
+import { Settings } from "../src/Types.js";
 import { Request } from "express";
 import { Prisma } from "@prisma/client";
 
@@ -48,7 +48,7 @@ export const handleCreateMap = async function (req: Request) {
   const generator = new MapGenerator(turnData, settings);
   const createdMap = await createMap(settings.world, settings.turn, req.session.user.id, title, description, encodedSettings);
   if (!createdMap) return false;
-  const saved = await saveMapPng(createdMap.id, generator.imageData as ImageDataDummy);
+  const saved = await saveMapPng(createdMap.id, generator.imageData as ImageData);
   if (!saved) return false;
   return createdMap.id;
 };

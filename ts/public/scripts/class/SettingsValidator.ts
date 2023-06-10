@@ -1,6 +1,6 @@
 import { Settings } from "../../../src/Types";
 
-const GROUP_NAME_MAX_LENGTH = 30,
+const GROUP_NAME_MAX_LENGTH = 8,
   GROUP_NAME_MIN_LENGTH = 1,
   TURN_MAX = 365,
   TURN_MIN = 0;

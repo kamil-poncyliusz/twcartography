@@ -1,4 +1,3 @@
-import { Request } from "express";
 import { Created_map, User, World } from "@prisma/client";
 
 export interface MarkGroup {
@@ -24,11 +23,6 @@ export interface ParsedColor {
   r: number;
   g: number;
   b: number;
-}
-export interface ImageDataDummy {
-  data: Uint8ClampedArray;
-  width: number;
-  height: number;
 }
 export interface Tribe {
   id: string;
