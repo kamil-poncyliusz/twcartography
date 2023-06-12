@@ -55,7 +55,6 @@ export const distinctiveColor = function (index: number): string {
     "#A6BDD7",
     "#C10020",
     "#CEA262",
-    "#817066",
     "#007D34",
     "#F6768E",
     "#00538A",

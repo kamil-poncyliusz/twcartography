@@ -93,6 +93,7 @@ class MapGenerator {
     this.#widthModifier = this.#calcWidthModifier();
     this.#generateScaledPixels();
     this.#smoothBorders();
+    this.#drawBorders();
     this.#generateImageData();
     this.#writeLegend();
   }
@@ -180,6 +181,30 @@ class MapGenerator {
       }
     }
   }
+  #drawBorders() {
+    const margin = 2;
+    const pixels = this.#scaledPixels;
+    if (pixels.length === 0 || pixels.length < margin * 3) return;
+    const borderPixels: ScaledPixel[] = [];
+    for (let x = margin; x < pixels.length - margin; x++) {
+      for (let y = margin; y < pixels.length - margin; y++) {
+        const pixel = pixels[x][y];
+        const color = pixel.color;
+        if (
+          pixel.color !== this.#backgroundColor &&
+          ((pixels[x + 1][y].color !== color && pixels[x + 1][y].color !== this.#backgroundColor) ||
+            (pixels[x - 1][y].color !== color && pixels[x - 1][y].color !== this.#backgroundColor) ||
+            (pixels[x][y + 1].color !== color && pixels[x][y + 1].color !== this.#backgroundColor) ||
+            (pixels[x][y - 1].color !== color && pixels[x][y - 1].color !== this.#backgroundColor))
+        )
+          borderPixels.push(pixel);
+      }
+    }
+    const borderColor = parseHexColor("#808080");
+    for (let borderPixel of borderPixels) {
+      borderPixel.color = borderColor;
+    }
+  }
   #findMarkGroupOfTribe(tribeId: string) {
     for (const group of this.#settings.markGroups) {
       if (group.tribes.includes(tribeId)) return group;
@@ -226,11 +251,15 @@ class MapGenerator {
     return smallSpots;
   }
   generateRawPixels() {
+    const colors: { [key: string]: ParsedColor } = {};
+    for (let markGoup of this.#settings.markGroups) {
+      colors[markGoup.name] = parseHexColor(markGoup.color);
+    }
     for (const tribeId in this.#turnData.tribes) {
       const tribe = this.#turnData.tribes[tribeId];
       const group = this.#findMarkGroupOfTribe(tribe.id);
       if (group) {
-        const color = parseHexColor(group.color);
+        const color = colors[group.name];
         for (const village of tribe.villages) {
           if (this.#isVillageDisplayed(village)) {
             this.#printVillageSpot(village, color);
@@ -300,7 +329,7 @@ class MapGenerator {
     }
   }
   #smoothBorders() {
-    const distance = 3;
+    const distance = 2;
     const pixels = this.#scaledPixels;
     if (pixels.length === 0 || pixels.length < distance * 3) return;
     const changes: {
