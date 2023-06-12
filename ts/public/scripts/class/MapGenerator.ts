@@ -92,6 +92,7 @@ class MapGenerator {
     this.#distributeArea(smallSpots);
     this.#widthModifier = this.#calcWidthModifier();
     this.#generateScaledPixels();
+    this.#smoothBorders();
     this.#generateImageData();
     this.#writeLegend();
   }
@@ -296,6 +297,55 @@ class MapGenerator {
           pixel.counted = false;
         }
       }
+    }
+  }
+  #smoothBorders() {
+    const distance = 3;
+    const pixels = this.#scaledPixels;
+    if (pixels.length === 0 || pixels.length < distance * 3) return;
+    const changes: {
+      pixel: ScaledPixel;
+      newColor: ParsedColor;
+    }[] = [];
+    for (let x = distance; x < pixels.length - distance; x++) {
+      for (let y = distance; y < pixels.length - distance; y++) {
+        const pixel = pixels[x][y];
+        const countedColors: {
+          color: ParsedColor;
+          count: number;
+        }[] = [];
+        countedColors.push({ color: pixel.color, count: 0 });
+        for (let neighborX = x - distance; neighborX <= x + distance; neighborX++) {
+          for (let neighborY = y - distance; neighborY <= y + distance; neighborY++) {
+            const neighbor = pixels[neighborX][neighborY];
+            let incremented = false;
+            let colorIndex = 0;
+            while (!incremented) {
+              if (!countedColors[colorIndex]) {
+                countedColors.push({ color: neighbor.color, count: 1 });
+                incremented = true;
+              } else if (countedColors[colorIndex].color === neighbor.color) {
+                countedColors[colorIndex].count++;
+                incremented = true;
+              } else {
+                colorIndex++;
+              }
+            }
+          }
+        }
+        const threshold = ((distance * 2 + 1) * (distance * 2 + 1)) / 2;
+        if (countedColors[0].count < threshold) {
+          for (let countedColor of countedColors) {
+            if (countedColor.count > countedColors[0].count) {
+              changes.push({ pixel: pixel, newColor: countedColor.color });
+              break;
+            }
+          }
+        }
+      }
+    }
+    for (let change of changes) {
+      change.pixel.color = change.newColor;
     }
   }
   #writeLegend() {
