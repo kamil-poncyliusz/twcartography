@@ -1,7 +1,7 @@
-import GeneratorController from "./GeneratorController";
-import SettingsTabController from "./SettingsTab";
-import MarkGroupsTabController from "./MarkGroupsTab";
-import CanvasController from "./Canvas";
+import GeneratorController from "./GeneratorController.js";
+import SettingsTabController from "./SettingsTab.js";
+import MarkGroupsTabController from "./MarkGroupsTab.js";
+import CanvasController from "./Canvas.js";
 
 const suggestionsTableElement = document.querySelector("#mark-suggestions table") as Element;
 
@@ -35,13 +35,14 @@ class SuggestionsTabController {
     const row = cell.parentElement as HTMLTableRowElement;
     const tagCell = row.querySelector(".suggestion-tag") as HTMLTableCellElement;
     const tribeTag = tagCell.textContent as string;
-    let groupName = target.value;
-    if (groupName === "Utwórz grupę") {
-      const result = this.#generator.addMarkGroup({ name: tribeTag, color: "#FFFFFF", tribes: [] });
+    let selectedGroup = target.value;
+    if (selectedGroup === "Utwórz grupę") {
+      const groupName = tribeTag.replaceAll(",", ".").replaceAll(" ", "_");
+      const result = this.#generator.addMarkGroup({ name: groupName, color: "#FFFFFF", tribes: [] });
       if (!result) return;
-      groupName = tribeTag;
+      selectedGroup = groupName;
     }
-    const result = this.#generator.addMark(tribeTag, groupName);
+    const result = this.#generator.addMark(tribeTag, selectedGroup);
     if (!result) return;
     this.render();
     this.updateSettings();

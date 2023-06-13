@@ -67,6 +67,7 @@ class SettingsValidator {
   static settings(settings: Settings) {
     if (!SettingsValidator.color(settings.backgroundColor)) return false;
     if (!SettingsValidator.boolean(settings.displayUnmarked)) return false;
+    if (!SettingsValidator.color(settings.borderColor)) return false;
     if (!SettingsValidator.outputWidth(settings.outputWidth)) return false;
     if (!SettingsValidator.scale(settings.scale)) return false;
     if (!SettingsValidator.spotsFilter(settings.spotsFilter)) return false;

@@ -200,7 +200,7 @@ class MapGenerator {
           borderPixels.push(pixel);
       }
     }
-    const borderColor = parseHexColor("#808080");
+    const borderColor = parseHexColor(this.#settings.borderColor);
     for (let borderPixel of borderPixels) {
       borderPixel.color = borderColor;
     }

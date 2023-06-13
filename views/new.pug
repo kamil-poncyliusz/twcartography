@@ -17,75 +17,80 @@ html(lang="pl-PL")
       #settings.settings-tab
         div
           .row
-            label(for="world-select", title="Świat, z którego będą pobierane dane.") Świat:
+            label(for="world-select", title="Świat, z którego będą pobierane dane") Świat:
             div
               select#world-select(name="world", autofocus, autocomplete="off")
                 option(value="", selected, disabled, hidden) wybierz
                 each world in worlds
                   option(value=world.id) #{ world.server+world.num }
           .row
-            label(for="turn-input", title="Liczba dni od początku świata. '0' to godzina po starcie.") Dzień gry:
+            label(for="turn-input", title="Liczba dni od początku świata. '0' to godzina po starcie") Dzień gry:
             div
               input#turn-input(type="number", name="turn-input", min="0", max="365", placeholder="wybierz", autocomplete="off", disabled)
           .row
-            label(for="background-color", title="Kolor tła wyjściowej mapy.") Kolor tła:
+            label(for="background-color", title="Kolor tła wyjściowej mapy") Kolor tła:
             div
               input#background-color(type="color", name="background-color", autocomplete="off", disabled)
           .row
-            label(for="scale", title="Powiększenie mapy. Świat o wielkości 400x400 pól w skali 2 będzie miał rozmiar 800x800px.") Skala:
+            label(for="scale", title="Powiększenie mapy. Świat o wielkości 400x400 pól w skali 2 będzie miał rozmiar 800x800px") Skala:
             div
               input#scale(type="number", name="scale", autocomplete="off", disabled)
           .row
-            label(for="village-filter", title="Wioski poniżej podanej liczby punktów nie zostaną wyświetlone.") Filtr wiosek:
+            label(for="village-filter", title="Wioski poniżej podanej liczby punktów nie zostaną wyświetlone") Filtr wiosek:
             div
               input#village-filter(type="number", name="village-filter", autocomplete="off", disabled)
           .row
             label(
               for="spot-size",
-              title="Rozmiar kropki nanoszonej na mapę przez największe wioski świata. \"5\" oznacza , że wioska rozszerzy się o 5 pól w każdym kierunku finalnie tworząc koło o średnicy 5+1+5=11 pól."
+              title="Rozmiar kropki nanoszonej na mapę przez największe wioski świata. \"5\" oznacza , że wioska rozszerzy się o 5 pól w każdym kierunku finalnie tworząc koło o średnicy 5+1+5=11 pól"
             ) Maksymalna plamka:
             div
               input#spot-size(type="number", name="spot-size", autocomplete="off", disabled)
           .row
-            label(for="spots-filter", title="Terytoria o powierzchni niższej niż podana zostaną usunięte i rozdzielone miedzy sąsiadów.") Filtr plamek:
+            label(for="spots-filter", title="Terytoria o powierzchni niższej niż podana zostaną usunięte i rozdzielone miedzy sąsiadów") Filtr plamek:
             div
               input#spots-filter(type="number", name="spots-filter", autocomplete="off", disabled)
           .row
-            label(for="display-unmarked", title="Nieoznaczone plemiona zostaną wyświetlone jako dodatkowa grupa.") Wyświetl nieoznaczone:
+            label(for="display-unmarked", title="Nieoznaczone plemiona zostaną wyświetlone jako dodatkowa grupa") Wyświetl nieoznaczone:
             div
               input#display-unmarked(type="checkbox", name="display-unmarked", autocomplete="off", disabled)
           .row
-            label(for="unmarked-color", title="Kolor nieoznaczonych plemion.") Kolor nieoznaczonych:
+            label(for="unmarked-color", title="Kolor nieoznaczonych plemion") Kolor nieoznaczonych:
             div
               input#unmarked-color(type="color", name="unmarked-color", autocomplete="off", disabled)
           .row
-            label(for="trim", title="Przytnij mapę.") Przytnij:
+            label(for="trim", title="Przytnij mapę") Przytnij mapę:
             div
               input#trim(type="checkbox", name="trim", autocomplete="off", disabled) 
           .row
-            label(for="map-size", title="Rozmiar mapy przed skalowaniem.") Rozmiar mapy:
+            label(for="map-size", title="Rozmiar mapy przed skalowaniem") Rozmiar mapy:
             div
               input#output-width(type="number", name="output-width", autocomplete="off", disabled)
           .row
+            label(for="border-color", title="Kolor granic") Kolor granic:
+            div
+              input#border-color(type="color", name="border-color", autocomplete="off", disabled)
+          .row
             label(
               for="auto-refresh",
-              title="Gdy włączone, mapa będzie się automatycznie odświerzać po każdej zmianie ustawień. Wyłącz, gdy odświeżanie mapy zajmuje dużo czasu."
+              title="Gdy włączone, mapa będzie się automatycznie odświerzać po każdej zmianie ustawień. Wyłącz, gdy odświeżanie mapy zajmuje dużo czasu"
             ) Auto-odświerzanie:
             div
               input#auto-refresh(type="checkbox", name="auto-refresh", autocomplete="off", disabled)
           .row
-            div(title="Wklej kod ustawień, żeby odtworzyć ustawienia stworzone przez innego użytkownika.")
+            div(title="Wklej kod ustawień, żeby odtworzyć ustawienia stworzone przez innego użytkownika")
               input#encoded-settings(type="text", name="encoded-settings", autocomplete="off", placeholder="kod ustawień", value=encodedSettings)
           if user
-            .row
-              div
-                input#title(type="text", name="title", placeholder="tytuł", autocomplete="off", disabled)
-            .row
-              div
-                input#description(type="text", name="description", placeholder="opis", autocomplete="off", disabled)
-            .row
-              div
-                button#publish-button(disabled) Opublikuj
+            if user.rank >= 2
+              .row
+                div
+                  input#title(type="text", name="title", placeholder="tytuł", autocomplete="off", disabled)
+              .row
+                div
+                  input#description(type="text", name="description", placeholder="opis", autocomplete="off", disabled)
+              .row
+                div
+                  button#publish-button(disabled) Opublikuj
       #mark-suggestions.marks-tab.hidden
         div
           table

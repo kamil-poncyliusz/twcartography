@@ -6,6 +6,7 @@ import { handleReadTurnData, handleReadWorld } from "../../../routes/api-handler
 
 class GeneratorController {
   #backgroundColor: string = "#000000";
+  #borderColor: string = "#808080";
   data: { [key: number]: ParsedTurnData } = {};
   #displayUnmarked: boolean = false;
   info: {} = {};
@@ -25,6 +26,7 @@ class GeneratorController {
   get settings(): Settings {
     return {
       backgroundColor: this.#backgroundColor,
+      borderColor: this.#borderColor,
       displayUnmarked: this.#displayUnmarked,
       markGroups: this.markGroups,
       outputWidth: this.#outputWidth,
@@ -211,6 +213,12 @@ class GeneratorController {
     if (this.turn === -1) return false;
     if (!SettingsValidator.color(color)) return false;
     this.#backgroundColor = color;
+    return true;
+  }
+  setBorderColor(color: string) {
+    if (this.turn === -1) return false;
+    if (!SettingsValidator.color(color)) return false;
+    this.#borderColor = color;
     return true;
   }
   setDisplayUnmarked(value: boolean) {

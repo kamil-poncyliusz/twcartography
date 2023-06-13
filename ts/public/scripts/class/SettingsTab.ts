@@ -10,6 +10,7 @@ import { handleCreateMap } from "../../../routes/api-handlers.js";
 const inputs: { [key: string]: HTMLInputElement } = {
   autoRefresh: document.getElementById("auto-refresh") as HTMLInputElement,
   backgroundColor: document.getElementById("background-color") as HTMLInputElement,
+  borderColor: document.getElementById("border-color") as HTMLInputElement,
   displayUnmarked: document.getElementById("display-unmarked") as HTMLInputElement,
   outputWidth: document.getElementById("output-width") as HTMLInputElement,
   scale: document.getElementById("scale") as HTMLInputElement,
@@ -39,6 +40,7 @@ class SettingsTabController {
     this.#worldSelect = worldSelect;
     this.#inputs.autoRefresh.addEventListener("input", this.autoRefreshChange);
     this.#inputs.backgroundColor.addEventListener("input", this.backgroundColorChange);
+    this.#inputs.borderColor.addEventListener("input", this.borderColorChange);
     this.#inputs.displayUnmarked.addEventListener("input", this.displayUnmarkedChange);
     this.#inputs.outputWidth.addEventListener("input", this.outputWidthChange);
     this.#inputs.scale.addEventListener("input", this.scaleChange);
@@ -139,6 +141,17 @@ class SettingsTabController {
     this.renderCanvas();
     this.update();
     this.#inputs.backgroundColor.classList.remove("is-invalid");
+  };
+  borderColorChange = (e: Event) => {
+    const target = e.target as HTMLInputElement;
+    const result = this.#generator.setBorderColor(target.value);
+    if (!result) {
+      this.#inputs.borderColor.classList.add("is-invalid");
+      return;
+    }
+    this.renderCanvas();
+    this.update();
+    this.#inputs.borderColor.classList.remove("is-invalid");
   };
   displayUnmarkedChange = (e: Event) => {
     const target = e.target as HTMLInputElement;

@@ -7,6 +7,7 @@ export interface MarkGroup {
 }
 export interface Settings {
   backgroundColor: string;
+  borderColor: string;
   displayUnmarked: boolean;
   markGroups: MarkGroup[];
   outputWidth: number;
