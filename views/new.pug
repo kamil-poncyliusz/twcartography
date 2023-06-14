@@ -54,9 +54,6 @@ html(lang="pl-PL")
             label(for="display-unmarked", title="Nieoznaczone plemiona zostaną wyświetlone jako dodatkowa grupa") Wyświetl nieoznaczone:
             div
               input#display-unmarked(type="checkbox", name="display-unmarked", autocomplete="off", disabled)
-          .row
-            label(for="unmarked-color", title="Kolor nieoznaczonych plemion") Kolor nieoznaczonych:
-            div
               input#unmarked-color(type="color", name="unmarked-color", autocomplete="off", disabled)
           .row
             label(for="trim", title="Przytnij mapę") Przytnij mapę:
@@ -77,6 +74,7 @@ html(lang="pl-PL")
             ) Auto-odświerzanie:
             div
               input#auto-refresh(type="checkbox", name="auto-refresh", autocomplete="off", disabled)
+              button#generate(type="button", disabled) Generuj
           .row
             div(title="Wklej kod ustawień, żeby odtworzyć ustawienia stworzone przez innego użytkownika")
               input#encoded-settings(type="text", name="encoded-settings", autocomplete="off", placeholder="kod ustawień", value=encodedSettings)

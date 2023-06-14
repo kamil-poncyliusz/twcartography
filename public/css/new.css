@@ -76,6 +76,19 @@ body {
   height: fit-content;
   cursor: help;
 }
+.row > div {
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 0.5rem;
+}
+.row > div > * {
+  flex-basis: 0;
+  flex-grow: 1;
+}
+.row > div > input[type="checkbox"] {
+  flex-basis: 2.5rem;
+  flex-grow: 0;
+}
 
 #suggestions-search-input {
   width: 5rem;

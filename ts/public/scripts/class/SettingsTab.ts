@@ -26,18 +26,21 @@ const encodedSettingsInput = document.getElementById("encoded-settings") as HTML
 const publishButton = document.getElementById("publish-button") as HTMLButtonElement | null;
 const titleInput = document.getElementById("title") as HTMLInputElement;
 const worldSelect = document.getElementById("world-select") as HTMLSelectElement;
+const generate = document.getElementById("generate") as HTMLButtonElement;
 
 class SettingsTabController {
   #generator: GeneratorController;
   #canvasObject: CanvasController | undefined;
   #markGroupsObject: MarkGroupsTabController | undefined;
   #suggestionsObject: SuggestionsTabController | undefined;
+  #generateButton: HTMLButtonElement;
   #worldSelect: HTMLSelectElement;
   #inputs;
   constructor(mapGeneratorObject: GeneratorController) {
     this.#generator = mapGeneratorObject;
+    this.#generateButton = generate;
+    this.#generateButton.addEventListener("click", this.generate);
     this.#inputs = inputs;
-    this.#worldSelect = worldSelect;
     this.#inputs.autoRefresh.addEventListener("input", this.autoRefreshChange);
     this.#inputs.backgroundColor.addEventListener("input", this.backgroundColorChange);
     this.#inputs.borderColor.addEventListener("input", this.borderColorChange);
@@ -50,6 +53,7 @@ class SettingsTabController {
     this.#inputs.turn.addEventListener("input", this.turnChange);
     this.#inputs.unmarkedColor.addEventListener("input", this.unmarkedColorChange);
     this.#inputs.villageFilter.addEventListener("input", this.villageFilterChange);
+    this.#worldSelect = worldSelect;
     this.#worldSelect.addEventListener("change", this.worldChange);
     encodedSettingsInput.addEventListener("input", this.encodedSettingsChange);
     encodedSettingsInput.addEventListener("click", (e: Event) => {
@@ -64,6 +68,7 @@ class SettingsTabController {
       const setting = key as keyof typeof inputs;
       inputs[setting].disabled = value;
     }
+    this.#generateButton.disabled = value;
     if (publishButton !== null) {
       titleInput.disabled = value;
       descriptionInput.disabled = value;
@@ -104,6 +109,7 @@ class SettingsTabController {
       this.disabled = false;
       if (!this.#inputs.displayUnmarked.checked) this.#inputs.unmarkedColor.disabled = true;
       if (this.#inputs.trim.checked) this.#inputs.outputWidth.disabled = true;
+      if (this.#inputs.autoRefresh.checked) this.#generateButton.disabled = true;
       encodedSettingsInput.value = encodedSettings;
     }
     for (let setting in limits.min) {
@@ -125,6 +131,9 @@ class SettingsTabController {
   renderSuggestions() {
     if (this.#suggestionsObject) this.#suggestionsObject.render();
   }
+  generate = (e: Event) => {
+    if (this.#canvasObject) this.#canvasObject.render();
+  };
   autoRefreshChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
     const value = target.checked;
