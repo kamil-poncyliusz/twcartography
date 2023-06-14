@@ -212,7 +212,7 @@ class MapGenerator {
     if (this.#settings.displayUnmarked) {
       return {
         tribes: [],
-        name: "",
+        name: "Unmarked",
         color: this.#settings.unmarkedColor,
       };
     }
@@ -255,11 +255,12 @@ class MapGenerator {
     for (let markGoup of this.#settings.markGroups) {
       colors[markGoup.name] = parseHexColor(markGoup.color);
     }
+    const unmarkedColor = parseHexColor(this.#settings.unmarkedColor);
     for (const tribeId in this.#turnData.tribes) {
       const tribe = this.#turnData.tribes[tribeId];
       const group = this.#findMarkGroupOfTribe(tribe.id);
       if (group) {
-        const color = colors[group.name];
+        const color = colors[group.name] ? colors[group.name] : unmarkedColor;
         for (const village of tribe.villages) {
           if (this.#isVillageDisplayed(village)) {
             this.#printVillageSpot(village, color);
