@@ -9,14 +9,14 @@ const min: { [key: string]: number } = {
   outputWidth: 100,
   scale: 1,
   spotsFilter: 1,
-  spotSize: 2,
+  spotSizeStep: 100,
   villageFilter: 20,
 };
 const max: { [key: string]: number } = {
   outputWidth: 1000,
   scale: 5,
   spotsFilter: 400,
-  spotSize: 20,
+  spotSizeStep: 12154,
   villageFilter: 12154,
 };
 
@@ -52,8 +52,8 @@ class SettingsValidator {
     if (typeof input !== "number" || input < min.spotsFilter || input > max.spotsFilter) return false;
     return true;
   }
-  static spotSize(input: number) {
-    if (typeof input !== "number" || input < min.spotSize || input > max.spotSize) return false;
+  static spotSizeStep(input: number) {
+    if (typeof input !== "number" || input < min.spotSizeStep || input > max.spotSizeStep) return false;
     return true;
   }
   static turn(input: number) {
@@ -71,7 +71,7 @@ class SettingsValidator {
     if (!SettingsValidator.outputWidth(settings.outputWidth)) return false;
     if (!SettingsValidator.scale(settings.scale)) return false;
     if (!SettingsValidator.spotsFilter(settings.spotsFilter)) return false;
-    if (!SettingsValidator.spotSize(settings.spotSize)) return false;
+    if (!SettingsValidator.spotSizeStep(settings.spotSizeStep)) return false;
     if (!SettingsValidator.boolean(settings.trim)) return false;
     if (!SettingsValidator.color(settings.unmarkedColor)) return false;
     if (!SettingsValidator.villageFilter(settings.villageFilter)) return false;

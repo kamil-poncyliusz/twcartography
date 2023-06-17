@@ -23,7 +23,7 @@ export const encodeSettings = function (settings: Settings): string {
   result += settings.outputWidth + minorSeparator;
   result += settings.scale + minorSeparator;
   result += settings.spotsFilter + minorSeparator;
-  result += settings.spotSize + minorSeparator;
+  result += settings.spotSizeStep + minorSeparator;
   result += Number(settings.trim) + minorSeparator;
   result += settings.turn + minorSeparator;
   result += settings.unmarkedColor + minorSeparator;
@@ -57,8 +57,20 @@ export const decodeSettings = function (input: string) {
     markGroups.push(group);
   }
   if (settingsArray.length < 8) return false;
-  const [backgroundColor, borderColor, displayUnmarked, outputWidth, scale, spotsFilter, spotSize, trim, turn, unmarkedColor, villageFilter, world] =
-    settingsArray;
+  const [
+    backgroundColor,
+    borderColor,
+    displayUnmarked,
+    outputWidth,
+    scale,
+    spotsFilter,
+    spotSizeStep,
+    trim,
+    turn,
+    unmarkedColor,
+    villageFilter,
+    world,
+  ] = settingsArray;
   const result = {
     backgroundColor: backgroundColor,
     borderColor: borderColor,
@@ -67,7 +79,7 @@ export const decodeSettings = function (input: string) {
     outputWidth: parseInt(outputWidth),
     scale: parseInt(scale),
     spotsFilter: parseInt(spotsFilter),
-    spotSize: parseInt(spotSize),
+    spotSizeStep: parseInt(spotSizeStep),
     trim: parseInt(trim) === 1 ? true : false,
     turn: parseInt(turn),
     unmarkedColor: unmarkedColor,

@@ -15,7 +15,7 @@ class GeneratorController {
   #spotsFilter: number = 8;
   #scale: number = 2;
   #server: string = "";
-  #spotSize: number = 5;
+  #spotSizeStep: number = 500;
   #trim: boolean = true;
   turn: number = -1;
   #unmarkedColor: string = "#808080";
@@ -31,7 +31,7 @@ class GeneratorController {
       outputWidth: this.#outputWidth,
       scale: this.#scale,
       spotsFilter: this.#spotsFilter,
-      spotSize: this.#spotSize,
+      spotSizeStep: this.#spotSizeStep,
       trim: this.#trim,
       turn: this.turn,
       unmarkedColor: this.#unmarkedColor,
@@ -78,7 +78,7 @@ class GeneratorController {
     this.setOutputWidth(settings.outputWidth);
     this.setScale(settings.scale);
     this.setSpotsFilter(settings.spotsFilter);
-    this.setSpotSize(settings.spotSize);
+    this.setSpotSizeStep(settings.spotSizeStep);
     this.setTrim(settings.trim);
     this.setUnmarkedColor(settings.unmarkedColor);
     this.setVillageFilter(settings.villageFilter);
@@ -244,10 +244,10 @@ class GeneratorController {
     this.#spotsFilter = value;
     return true;
   }
-  setSpotSize(value: number) {
+  setSpotSizeStep(value: number) {
     if (this.turn === -1) return false;
-    if (!SettingsValidator.spotSize(value)) return false;
-    this.#spotSize = value;
+    if (!SettingsValidator.spotSizeStep(value)) return false;
+    this.#spotSizeStep = value;
     return true;
   }
   setTrim(value: boolean) {

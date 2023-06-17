@@ -13,7 +13,7 @@ export interface Settings {
   outputWidth: number;
   scale: number;
   spotsFilter: number;
-  spotSize: number;
+  spotSizeStep: number;
   trim: boolean;
   turn: number;
   unmarkedColor: string;

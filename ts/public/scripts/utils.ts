@@ -11,7 +11,7 @@ export const calcExpansionArray = function (n: number) {
   if (n < 0) return [];
   if (n === 0) return [[{ x: 0, y: 0 }]];
   const result: { x: number; y: number }[][] = [];
-  for (let i = 0; i < n; i++) {
+  for (let i = 0; i <= n; i++) {
     result.push([]);
   }
   let distance: number;
@@ -19,7 +19,7 @@ export const calcExpansionArray = function (n: number) {
     for (let j = n * -1; j <= n; j++) {
       distance = Math.hypot(i, j);
       distance = Math.round(distance);
-      if (distance < n) result[distance].push({ x: i, y: j });
+      if (distance <= n) result[distance].push({ x: i, y: j });
     }
   }
   return result;

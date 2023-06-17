@@ -40,12 +40,9 @@ html(lang="pl-PL")
             div
               input#village-filter(type="number", name="village-filter", autocomplete="off", disabled)
           .row
-            label(
-              for="spot-size",
-              title="Rozmiar kropki nanoszonej na mapę przez największe wioski świata. \"5\" oznacza , że wioska rozszerzy się o 5 pól w każdym kierunku finalnie tworząc koło o średnicy 5+1+5=11 pól"
-            ) Maksymalna plamka:
+            label(for="spot-size-step", title="Ile punktów potrzeba, aby plamka wioski zwiększyła promień o 1") Regulacja plamki:
             div
-              input#spot-size(type="number", name="spot-size", autocomplete="off", disabled)
+              input#spot-size-step(type="number", name="spot-size-step", autocomplete="off", disabled)
           .row
             label(for="spots-filter", title="Terytoria o powierzchni niższej niż podana zostaną usunięte i rozdzielone miedzy sąsiadów") Filtr plamek:
             div

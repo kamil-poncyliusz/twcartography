@@ -71,7 +71,7 @@ class MapGenerator {
     this.#turnData = data;
     this.#settings = settings;
     this.#backgroundColor = parseHexColor(settings.backgroundColor);
-    this.#expansionArray = calcExpansionArray(settings.spotSize);
+    this.#expansionArray = calcExpansionArray(settings.spotSizeStep);
     this.#offset = (1000 - data.width) / 2;
     this.#legend = new Legend(this.#settings.markGroups);
     for (let i = 0; i < this.#turnData.width; i++) {
@@ -143,15 +143,22 @@ class MapGenerator {
     return 0;
   }
   #calcSpotSize(villagePoints: number) {
-    const settings = this.#settings;
+    // const settings = this.#settings;
+    // const minSize = 2;
+    // const maxSize = settings.spotSizeStep;
+    // const minPoints = settings.villageFilter;
+    // const maxPoints = this.#turnData.topVillagePoints;
+    // if (villagePoints <= minPoints) return minSize;
+    // if (villagePoints >= maxPoints) return maxSize;
+    // const size = Math.floor(((villagePoints - minPoints) / (maxPoints - minPoints)) * (maxSize - minSize + 1)) + minSize;
+    // return size;
+    const maxSize = 15;
     const minSize = 2;
-    const maxSize = settings.spotSize;
-    const minPoints = settings.villageFilter;
-    const maxPoints = this.#turnData.topVillagePoints;
-    if (villagePoints <= minPoints) return minSize;
-    if (villagePoints >= maxPoints) return maxSize;
-    const size = Math.floor(((villagePoints - minPoints) / (maxPoints - minPoints)) * (maxSize - minSize + 1)) + minSize;
-    return size;
+    const minPoints = this.#settings.villageFilter;
+    const spotSizeStep = this.#settings.spotSizeStep;
+    const result = minSize + Math.floor((villagePoints - minPoints) / spotSizeStep);
+    if (result > maxSize) return maxSize;
+    return result;
   }
   #distributeArea(area: RawPixel[]) {
     const pixels = this.#rawPixels;
@@ -318,7 +325,7 @@ class MapGenerator {
     const x = village.x - this.#offset;
     const y = village.y - this.#offset;
     const spotSize = this.#calcSpotSize(village.points);
-    for (let d = 0; d < spotSize; d++) {
+    for (let d = 0; d <= spotSize; d++) {
       for (let expansion of this.#expansionArray[d]) {
         const pixel = this.#rawPixels[x + expansion.x][y + expansion.y];
         if (spotSize - d > pixel.priority) {

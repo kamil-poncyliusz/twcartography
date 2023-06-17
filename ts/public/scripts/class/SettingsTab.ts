@@ -15,7 +15,7 @@ const inputs: { [key: string]: HTMLInputElement } = {
   outputWidth: document.getElementById("output-width") as HTMLInputElement,
   scale: document.getElementById("scale") as HTMLInputElement,
   spotsFilter: document.getElementById("spots-filter") as HTMLInputElement,
-  spotSize: document.getElementById("spot-size") as HTMLInputElement,
+  spotSizeStep: document.getElementById("spot-size-step") as HTMLInputElement,
   trim: document.getElementById("trim") as HTMLInputElement,
   turn: document.getElementById("turn-input") as HTMLInputElement,
   unmarkedColor: document.getElementById("unmarked-color") as HTMLInputElement,
@@ -48,7 +48,7 @@ class SettingsTabController {
     this.#inputs.outputWidth.addEventListener("input", this.outputWidthChange);
     this.#inputs.scale.addEventListener("input", this.scaleChange);
     this.#inputs.spotsFilter.addEventListener("input", this.spotsFilterChange);
-    this.#inputs.spotSize.addEventListener("input", this.spotSizeChange);
+    this.#inputs.spotSizeStep.addEventListener("input", this.spotSizeStepChange);
     this.#inputs.trim.addEventListener("input", this.trimChange);
     this.#inputs.turn.addEventListener("input", this.turnChange);
     this.#inputs.unmarkedColor.addEventListener("input", this.unmarkedColorChange);
@@ -233,17 +233,17 @@ class SettingsTabController {
     this.update();
     this.#inputs.spotsFilter.classList.remove("is-invalid");
   };
-  spotSizeChange = (e: Event) => {
+  spotSizeStepChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
     const value = Number(target.value);
-    const result = this.#generator.setSpotSize(value);
+    const result = this.#generator.setSpotSizeStep(value);
     if (!result) {
-      this.#inputs.spotSize.classList.add("is-invalid");
+      this.#inputs.spotSizeStep.classList.add("is-invalid");
       return;
     }
     this.renderCanvas();
     this.update();
-    this.#inputs.spotSize.classList.remove("is-invalid");
+    this.#inputs.spotSizeStep.classList.remove("is-invalid");
   };
   trimChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
