@@ -1,7 +1,8 @@
-import CanvasController from "./Canvas";
-import GeneratorController from "./GeneratorController";
-import SettingsTabController from "./SettingsTab";
-import SuggestionsTabController from "./SuggestionsTab";
+import { randomColor, randomInt } from "../utils.js";
+import CanvasController from "./Canvas.js";
+import GeneratorController from "./GeneratorController.js";
+import SettingsTabController from "./SettingsTab.js";
+import SuggestionsTabController from "./SuggestionsTab.js";
 
 const markGroupsTableElement = document.querySelector("#mark-groups table") as Element;
 
@@ -39,7 +40,8 @@ class MarkGroupsTabController {
       const players = group.tribes.reduce((sum, tribeId) => sum + tribes[tribeId].players, 0);
       const villages = group.tribes.reduce((sum, tribeId) => sum + tribes[tribeId].villages.length, 0);
       const points = group.tribes.reduce((sum, tribeId) => sum + tribes[tribeId].points, 0);
-      content = `<td class='group-tribes'>${content}</td><td class='group-name'>${group.name}</td><td><input type='color' value='${group.color}'></td>`;
+      content = `<td class='group-tribes'>${content}</td><td class='group-name'>${group.name}</td>`;
+      content += `<td><input type='color' title='Kliknij prawym aby wylosować kolor' value='${group.color}'></td>`;
       content += `<td>${group.tribes.length}</td><td>${players}</td><td>${villages}</td><td>${points}</td>`;
       content += `<td><button class='delete-group delete-button'>X</button></td>`;
       newRow.innerHTML = content;
@@ -53,6 +55,7 @@ class MarkGroupsTabController {
     });
     body.querySelectorAll("input[type=color]").forEach((colorInput) => {
       colorInput.addEventListener("change", this.changeGroupColor);
+      colorInput.addEventListener("contextmenu", this.randomizeColor);
     });
     body.querySelectorAll(".delete-group").forEach((deleteGroupButton) => {
       deleteGroupButton.addEventListener("click", this.deleteMarkGroup);
@@ -87,6 +90,20 @@ class MarkGroupsTabController {
     const row = cell.parentElement as HTMLTableRowElement;
     const nameCell = row.querySelector(".group-name") as HTMLTableCellElement;
     const name = nameCell.textContent as string;
+    const result = this.#generator.changeMarkGroupColor(name, color);
+    if (!result) return;
+    this.render();
+    this.updateSettings();
+    this.renderCanvas();
+  };
+  randomizeColor = (e: Event) => {
+    e.preventDefault();
+    const target = e.target as HTMLInputElement;
+    const cell = target.parentElement as HTMLTableCellElement;
+    const row = cell.parentElement as HTMLTableRowElement;
+    const nameCell = row.querySelector(".group-name") as HTMLTableCellElement;
+    const name = nameCell.textContent as string;
+    const color = randomColor();
     const result = this.#generator.changeMarkGroupColor(name, color);
     if (!result) return;
     this.render();

@@ -72,3 +72,59 @@ export const distinctiveColor = function (index: number): string {
   if (index >= 0 && index < colors.length) return colors[index];
   return "#808080";
 };
+
+export const randomInt = function (min: number, max: number) {
+  return min + Math.floor(Math.random() * (max - min + 1));
+};
+
+export const randomColor = function () {
+  const minSaturation = 40;
+  const maxSaturation = 80;
+  const minLightness = 15;
+  const maxLightness = 45;
+  const hue = Math.floor(Math.random() * 360);
+  const saturation = randomInt(minSaturation, maxSaturation) / 100;
+  const lightness = randomInt(minLightness, maxLightness) / 100;
+  const c = (1 - Math.abs(2 * lightness - 1)) * saturation;
+  const x = c * (1 - Math.abs(((hue / 60) % 2) - 1));
+  const m = lightness - c / 2;
+  let r = 0,
+    g = 0,
+    b = 0;
+  if (0 <= hue && hue < 60) {
+    r = c;
+    g = x;
+    b = 0;
+  } else if (60 <= hue && hue < 120) {
+    r = x;
+    g = c;
+    b = 0;
+  } else if (120 <= hue && hue < 180) {
+    r = 0;
+    g = c;
+    b = x;
+  } else if (180 <= hue && hue < 240) {
+    r = 0;
+    g = x;
+    b = c;
+  } else if (240 <= hue && hue < 300) {
+    r = x;
+    g = 0;
+    b = c;
+  } else if (300 <= hue && hue < 360) {
+    r = c;
+    g = 0;
+    b = x;
+  }
+  const red = Math.round((r + m) * 255).toString(16);
+  const green = Math.round((g + m) * 255).toString(16);
+  const blue = Math.round((b + m) * 255).toString(16);
+  let result = "#";
+  if (red.length === 1) result += "0";
+  result += red;
+  if (green.length === 1) result += "0";
+  result += green;
+  if (blue.length === 1) result += "0";
+  result += blue;
+  return result;
+};

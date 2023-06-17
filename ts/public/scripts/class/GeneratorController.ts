@@ -1,15 +1,15 @@
 import MapGenerator from "./MapGenerator.js";
 import SettingsValidator from "./SettingsValidator.js";
-import { distinctiveColor } from "../utils.js";
+import { randomColor } from "../utils.js";
 import { MarkGroup, Settings, ParsedTurnData, Tribe } from "../../../src/Types.js";
 import { handleReadTurnData, handleReadWorld } from "../../../routes/api-handlers.js";
 
 class GeneratorController {
-  #backgroundColor: string = "#000000";
+  #backgroundColor: string = "#202020";
   #borderColor: string = "#808080";
   data: { [key: number]: ParsedTurnData } = {};
   #displayUnmarked: boolean = false;
-  info: {} = {};
+  latestTurn: number = -1;
   markGroups: MarkGroup[] = [];
   #outputWidth: number = 500;
   #spotsFilter: number = 8;
@@ -21,7 +21,6 @@ class GeneratorController {
   #unmarkedColor: string = "#808080";
   #villageFilter: number = 1000;
   world: number = 0;
-  #worldStartTimestamp: number = 0;
   constructor() {}
   get settings(): Settings {
     return {
@@ -57,7 +56,7 @@ class GeneratorController {
     if (!this.world || !this.turn) return false;
     if (!SettingsValidator.groupName(group.name) || !SettingsValidator.color(group.color)) return false;
     if (this.groupNameTaken(group.name)) return false;
-    if (group.color === "#FFFFFF") group.color = distinctiveColor(this.markGroups.length);
+    if (group.color === "#FFFFFF") group.color = randomColor();
     const newGroup: MarkGroup = {
       tribes: [],
       name: group.name,
@@ -141,7 +140,7 @@ class GeneratorController {
     if (!worldInfo) return false;
     this.#server = worldInfo.server + worldInfo.num;
     this.world = world;
-    this.#worldStartTimestamp = worldInfo.start_timestamp;
+    this.latestTurn = Math.floor((Date.now() - worldInfo.start_timestamp * 1000) / 1000 / 60 / 60 / 24);
     return true;
   }
   deleteMark(groupName: string, tribeTag: string) {

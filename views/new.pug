@@ -26,13 +26,13 @@ html(lang="pl-PL")
           .row
             label(for="turn-input", title="Liczba dni od początku świata. '0' to godzina po starcie") Dzień gry:
             div
-              input#turn-input(type="number", name="turn-input", min="0", max="365", placeholder="wybierz", autocomplete="off", disabled)
+              input#turn-input(type="number", name="turn-input", min="0", max="365", placeholder="-", autocomplete="off", disabled)
           .row
             label(for="background-color", title="Kolor tła wyjściowej mapy") Kolor tła:
             div
               input#background-color(type="color", name="background-color", autocomplete="off", disabled)
           .row
-            label(for="scale", title="Powiększenie mapy. Świat o wielkości 400x400 pól w skali 2 będzie miał rozmiar 800x800px") Skala:
+            label(for="scale", title="Powiększenie mapy. Świat o wielkości 400x400 pól w skali 3 będzie miał rozmiar 1200x1200px") Skala:
             div
               input#scale(type="number", name="scale", autocomplete="off", disabled)
           .row
@@ -56,12 +56,9 @@ html(lang="pl-PL")
               input#display-unmarked(type="checkbox", name="display-unmarked", autocomplete="off", disabled)
               input#unmarked-color(type="color", name="unmarked-color", autocomplete="off", disabled)
           .row
-            label(for="trim", title="Przytnij mapę") Przytnij mapę:
+            label(for="trim", title="Puste brzegi mapy zostaną przycięte automatycznie - odznacz żeby ustawić rozmiar samodzielnie") Przytnij mapę:
             div
               input#trim(type="checkbox", name="trim", autocomplete="off", disabled) 
-          .row
-            label(for="map-size", title="Rozmiar mapy przed skalowaniem") Rozmiar mapy:
-            div
               input#output-width(type="number", name="output-width", autocomplete="off", disabled)
           .row
             label(for="border-color", title="Kolor granic") Kolor granic:
@@ -116,7 +113,7 @@ html(lang="pl-PL")
               tr
                 th LISTA
                 th NAZWA
-                th KOLOR
+                th(title="Kliknij prawym na kolor aby wylosować ponownie") KOLOR
                 th PL
                 th GR
                 th WI

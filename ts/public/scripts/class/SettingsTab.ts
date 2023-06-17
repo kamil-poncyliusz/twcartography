@@ -112,6 +112,8 @@ class SettingsTabController {
       if (this.#inputs.autoRefresh.checked) this.#generateButton.disabled = true;
       encodedSettingsInput.value = encodedSettings;
     }
+    const turnPlaceholder = this.#generator.latestTurn >= 0 ? `0-${this.#generator.latestTurn}` : "-";
+    this.#inputs.turn.setAttribute("placeholder", turnPlaceholder);
     for (let setting in limits.min) {
       this.#inputs[setting].setAttribute("min", String(limits.min[setting]));
       this.#inputs[setting].setAttribute("placeholder", String(limits.min[setting]) + "-");
