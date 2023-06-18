@@ -3,6 +3,7 @@ import {
   handleCreateMap,
   handleCreateTurnData,
   handleCreateWorld,
+  handleDeleteMap,
   handleDeleteWorld,
   handleReadMaps,
   handleReadTurnData,
@@ -22,6 +23,10 @@ api.get("/world-data/:world/:turn", async (req, res) => {
 });
 api.post("/map/create", async (req, res) => {
   const responseData = await handleCreateMap(req);
+  return res.json(responseData);
+});
+api.post("/map/delete", async (req, res) => {
+  const responseData = await handleDeleteMap(req);
   return res.json(responseData);
 });
 api.get("/maps/:world/:author/:timespan/:order/:page", async (req, res) => {

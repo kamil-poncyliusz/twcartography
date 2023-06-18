@@ -49,6 +49,7 @@ const turnDataDownloaderDaemon = async function () {
     const rule = `${serverStart.getMinutes()} ${serverStart.getHours()} * * *`;
     scheduler.scheduleJob(rule, async function () {
       const turn = daysFromStart(serverStart);
+      if (turn < 0 || turn > 365) return;
       const success = await downloadWorldData(world, turn);
       if (success) {
         console.log(`Downloading turn ${turn} of ${world.server}${world.num} completed`);
