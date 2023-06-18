@@ -134,7 +134,7 @@ class SettingsTabController {
     if (this.#suggestionsObject) this.#suggestionsObject.render();
   }
   generate = (e: Event) => {
-    if (this.#canvasObject) this.#canvasObject.render();
+    if (this.#canvasObject) this.#canvasObject.forceRender();
   };
   autoRefreshChange = (e: Event) => {
     const target = e.target as HTMLInputElement;

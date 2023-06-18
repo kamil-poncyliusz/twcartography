@@ -10,7 +10,7 @@ class CanvasController {
     canvasElement.addEventListener("mousedown", this.dragStart);
     canvasElement.addEventListener("mouseup", this.dragEnd);
   }
-  render = () => {
+  render() {
     if (this.autoRefresh) {
       const imageData = this.#generator.getMapImageData() as ImageData;
       const ctx = canvasElement.getContext("2d");
@@ -18,7 +18,12 @@ class CanvasController {
       canvasElement.height = imageData.width;
       if (ctx) ctx.putImageData(imageData, 0, 0);
     }
-  };
+  }
+  forceRender() {
+    this.autoRefresh = true;
+    this.render();
+    this.autoRefresh = false;
+  }
   dragEnd = (e: Event) => {
     const target = e.target as HTMLCanvasElement;
     target.removeEventListener("mousemove", this.dragMove);

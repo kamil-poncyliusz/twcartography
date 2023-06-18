@@ -15,11 +15,11 @@ class GeneratorController {
   #spotsFilter: number = 8;
   #scale: number = 2;
   #server: string = "";
-  #spotSizeStep: number = 500;
+  #spotSizeStep: number = 1000;
   #trim: boolean = true;
   turn: number = -1;
   #unmarkedColor: string = "#808080";
-  #villageFilter: number = 1000;
+  #villageFilter: number = 3000;
   world: number = 0;
   constructor() {}
   get settings(): Settings {
@@ -55,7 +55,7 @@ class GeneratorController {
   addMarkGroup(group: MarkGroup) {
     if (!this.world || !this.turn) return false;
     if (!SettingsValidator.groupName(group.name) || !SettingsValidator.color(group.color)) return false;
-    if (this.groupNameTaken(group.name)) return false;
+    if (this.isGroupNameTaken(group.name)) return false;
     if (group.color === "#FFFFFF") group.color = randomColor();
     const newGroup: MarkGroup = {
       tribes: [],
@@ -111,7 +111,7 @@ class GeneratorController {
     if (groupIndex === -1) return false;
     const group = this.markGroups[groupIndex];
     if (!SettingsValidator.groupName(name)) return false;
-    if (this.groupNameTaken(name)) return false;
+    if (this.isGroupNameTaken(name)) return false;
     group.name = name;
     return true;
   }
@@ -202,7 +202,7 @@ class GeneratorController {
     suggestions.splice(limit);
     return suggestions;
   }
-  groupNameTaken(name: string) {
+  isGroupNameTaken(name: string) {
     for (const group of this.markGroups) {
       if (group.name === name) return true;
     }

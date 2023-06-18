@@ -78,10 +78,10 @@ export const randomInt = function (min: number, max: number) {
 };
 
 export const randomColor = function () {
-  const minSaturation = 40;
-  const maxSaturation = 80;
-  const minLightness = 15;
-  const maxLightness = 45;
+  const minSaturation = 45;
+  const maxSaturation = 90;
+  const minLightness = 20;
+  const maxLightness = 60;
   const hue = Math.floor(Math.random() * 360);
   const saturation = randomInt(minSaturation, maxSaturation) / 100;
   const lightness = randomInt(minLightness, maxLightness) / 100;

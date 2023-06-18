@@ -143,6 +143,7 @@ class MarkGroupsTabController {
     }
     this.render();
     this.renderSuggestions();
+    this.renderCanvas();
   };
 }
 

@@ -118,7 +118,7 @@ class MapGenerator {
     const margin = 10;
     if (!this.#settings.trim) {
       if (this.#settings.outputWidth === 0) return 0;
-      return this.#settings.outputWidth - this.#turnData.width;
+      return Math.round((this.#settings.outputWidth - this.#turnData.width) / 2);
     }
     for (let width = 0; width < this.#rawPixels.length / 2; width++) {
       let x = width;
