@@ -1,5 +1,5 @@
 import fs from "fs";
-import { readMaps, createMap, readWorldData, createWorld, readWorld, createWorldData, updateUserRank } from "../src/queries/index.js";
+import { readMaps, createMap, readWorldData, createWorld, readWorld, createWorldData, updateUserRank, deleteWorld } from "../src/queries/index.js";
 import SettingsValidator from "../public/scripts/class/SettingsValidator.js";
 import MapGenerator from "../public/scripts/class/MapGenerator.js";
 import { encodeSettings } from "../public/scripts/settings-codec.js";
@@ -95,4 +95,11 @@ export const handleUpdateUserRank = async function (req: Request) {
   if (typeof id !== "number" || id <= 0 || typeof rank !== "number" || rank < 0) return false;
   const success = await updateUserRank(id, rank);
   return success;
+};
+export const handleDeleteWorld = async function (req: Request) {
+  if (!req.session.user || req.session.user.rank < 10) return false;
+  const worldId = req.body.id;
+  if (typeof worldId !== "number" || isNaN(worldId) || worldId < 1) return false;
+  const isDeleted = await deleteWorld(worldId);
+  return isDeleted;
 };

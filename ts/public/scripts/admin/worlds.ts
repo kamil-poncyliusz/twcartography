@@ -1,6 +1,7 @@
-import { handleCreateWorld } from "../../../routes/api-handlers.js";
+import { handleCreateWorld, handleDeleteWorld } from "../../../routes/api-handlers.js";
 
 const createWorldForm = document.querySelector("form") as HTMLFormElement;
+const deleteWorldButtons = document.querySelectorAll(".delete-world-button");
 
 const sendCreateWorldRequest = async function (server: string, num: string, domain: string, timestamp: number) {
   const url = `${window.location.origin}/api/world/create`;
@@ -21,6 +22,21 @@ const sendCreateWorldRequest = async function (server: string, num: string, doma
   return createdMapId;
 };
 
+const sendDeleteWorldRequest = async function (worldId: number) {
+  const url = `${window.location.origin}/api/world/delete`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      id: worldId,
+    }),
+  });
+  const success: Awaited<ReturnType<typeof handleDeleteWorld>> = await response.json();
+  return success;
+};
+
 const createWorld = async function (e: Event) {
   e.preventDefault();
   const form = e.target as HTMLFormElement;
@@ -39,4 +55,19 @@ const createWorld = async function (e: Event) {
   else window.location.reload();
 };
 
+const deleteWorld = async function (e: Event) {
+  const target = e.target as HTMLButtonElement;
+  const worldIdString = target.dataset.worldId;
+  if (worldIdString === undefined) return;
+  const worldId = parseInt(worldIdString);
+  if (isNaN(worldId) || worldId < 1) return;
+  const isDeleted = await sendDeleteWorldRequest(worldId);
+  if (isDeleted) window.location.reload();
+  else console.log("Failed to delete world with ID", worldId);
+};
+
 createWorldForm.addEventListener("submit", createWorld);
+deleteWorldButtons.forEach((button) => {
+  console.log("eventListener Added");
+  button.addEventListener("click", deleteWorld);
+});

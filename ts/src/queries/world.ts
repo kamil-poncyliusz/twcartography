@@ -70,7 +70,7 @@ export const deleteWorld = async function (id: number) {
     })
     .catch((err) => {
       console.error("Prisma error:", err);
-      return null;
+      return false;
     });
-  return result;
+  return true;
 };
