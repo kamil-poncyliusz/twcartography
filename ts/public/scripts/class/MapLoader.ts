@@ -18,8 +18,8 @@ class MapLoader {
   }
   async #fetchMaps() {
     this.#page++;
-    const url = `${window.location.origin}/api/maps/${this.#world}/${this.#author}/${this.#timespan}/${this.#order}/${this.#page}`;
     this.#fetching = true;
+    const url = `${window.location.origin}/api/maps/${this.#world}/${this.#author}/${this.#timespan}/${this.#order}/${this.#page}`;
     const result = await fetch(url);
     const maps: Awaited<ReturnType<typeof handleReadMaps>> = await result.json();
     if (maps.length === 0) return (this.#endOfData = true);

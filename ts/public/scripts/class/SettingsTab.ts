@@ -6,6 +6,7 @@ import CanvasController from "./Canvas.js";
 import { limits } from "./SettingsValidator.js";
 import { Settings } from "../../../src/Types.js";
 import { handleCreateMap } from "../../../routes/api-handlers.js";
+import { postRequest } from "../requests.js";
 
 const inputs: { [key: string]: HTMLInputElement } = {
   autoRefresh: document.getElementById("auto-refresh") as HTMLInputElement,
@@ -301,23 +302,15 @@ class SettingsTabController {
     this.#inputs.turn.value = "";
   };
   publishMap = async (e: Event) => {
-    const url = `${window.location.origin}/api/map/create`;
     const settings = this.#generator.settings;
     const title = titleInput.value;
     const description = descriptionInput.value;
-    const body = {
+    const payload = {
       settings: settings,
       title: title,
       description: description,
     };
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-    const createdMapId: Awaited<ReturnType<typeof handleCreateMap>> = await response.json();
+    const createdMapId: Awaited<ReturnType<typeof handleCreateMap>> = await postRequest("api/map/create", payload);
     if (createdMapId === false) console.log("Failed to publish the map");
     else console.log("Map published succesfully");
   };

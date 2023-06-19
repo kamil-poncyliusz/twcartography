@@ -1,6 +1,6 @@
 import express from "express";
 import { readMap, readUser, readWorlds } from "../src/queries/index.js";
-import { handleAuthentication, handleRegistration } from "./router-handlers.js";
+import { handleAuthentication, handleLogout, handleRegistration } from "./router-handlers.js";
 
 const router = express.Router();
 
@@ -17,11 +17,9 @@ router.post("/auth", async (req, res) => {
   return res.json(responseData);
 });
 
-router.post("/logout", (req, res) => {
-  req.session.destroy((err) => {
-    if (err) return res.json(false);
-    return res.json(true);
-  });
+router.post("/logout", async (req, res) => {
+  const responseData = await handleLogout(req);
+  res.json(responseData);
 });
 
 router.post("/register", async (req, res) => {

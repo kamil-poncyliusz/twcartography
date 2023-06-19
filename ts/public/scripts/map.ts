@@ -1,29 +1,15 @@
-import { handleDeleteMap } from "../../routes/api-handlers.js";
 import "./nav-bar.js";
+import { handleDeleteMap } from "../../routes/api-handlers.js";
+import { postRequest } from "./requests.js";
 
 const settingsInput = document.getElementById("settings");
 const deleteMapButton = document.getElementById("delete-map-button");
-
-const sendDeleteMapRequest = async function (mapId: number) {
-  const url = `${window.location.origin}/api/map/delete`;
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      id: mapId,
-    }),
-  });
-  const success: Awaited<ReturnType<typeof handleDeleteMap>> = await response.json();
-  return success;
-};
 
 const deleteMap = async function () {
   const idString = window.location.pathname.split("/")[2];
   const id = parseInt(idString);
   if (typeof id !== "number" || isNaN(id) || id < 1) return;
-  const isDeleted = await sendDeleteMapRequest(id);
+  const isDeleted: Awaited<ReturnType<typeof handleDeleteMap>> = await postRequest("api/map/delete", { id: id });
   if (isDeleted) window.location.href = `${window.location.origin}/maps`;
   else console.log("Failed to delete this map");
 };

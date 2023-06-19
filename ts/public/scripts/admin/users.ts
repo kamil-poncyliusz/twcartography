@@ -1,4 +1,5 @@
 import { handleUpdateUserRank } from "../../../routes/api-handlers.js";
+import { postRequest } from "../requests.js";
 
 const selectElements = document.querySelectorAll("select.change-rank");
 
@@ -10,20 +11,15 @@ const changeUserRank = async function (e: Event) {
     const id = parseInt(idString);
     const rank = parseInt(rankString);
     if (id >= 1 && rank >= 0) {
-      const url = `${window.location.origin}/api/user/update/rank`;
       const payload = { id: id, rank: rank };
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-      const success: Awaited<ReturnType<typeof handleUpdateUserRank>> = await response.json();
-      if (success) return window.location.reload();
+      const response: Awaited<ReturnType<typeof handleUpdateUserRank>> = await postRequest("api/user/update/rank", payload);
+      if (response) return window.location.reload();
+      else {
+        target.classList.add("is-invalid");
+        console.log("Failed to change user rank");
+      }
     }
   }
-  target.classList.add("is-invalid");
 };
 
 selectElements.forEach((selectElement) => {
