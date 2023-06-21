@@ -40,7 +40,7 @@ export const findWorldDataFiles = function () {
 export const getWorldDataState = function (worldsWithWorldData: WorldWithWorldData[], worldDataFiles: ReturnType<typeof findWorldDataFiles>) {
   const worldDataState: WorldDataState[] = [];
   for (const world of worldsWithWorldData) {
-    const startTimestamp = new Date(world.start_timestamp * 1000);
+    const startTimestamp = new Date(world.startTimestamp * 1000);
     const numberOfTurns = daysFromStart(startTimestamp);
     const addedWorld: WorldDataState = {
       id: world.id,
@@ -52,7 +52,7 @@ export const getWorldDataState = function (worldsWithWorldData: WorldWithWorldDa
           hasFiles: false,
         })),
     };
-    for (const worldDataTurn of world.world_data) {
+    for (const worldDataTurn of world.worldData) {
       const currentTurn = addedWorld.turns[worldDataTurn.turn];
       if (currentTurn) currentTurn.id = worldDataTurn.id;
     }

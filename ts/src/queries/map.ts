@@ -1,11 +1,11 @@
 import { PrismaClient, Prisma } from "@prisma/client";
-import { Created_mapWithRelations } from "../Types";
+import { CreatedMapWithRelations } from "../Types";
 
 const prisma = new PrismaClient();
 
 export const readMap = async function (id: number) {
   if (typeof id !== "number" || id <= 0) return null;
-  const result = await prisma.created_map
+  const result = await prisma.createdMap
     .findUnique({
       where: {
         id: id,
@@ -28,7 +28,7 @@ export const readMaps = async function (
   order: string,
   timespan: string | undefined,
   world: number | undefined
-): Promise<Created_mapWithRelations[]> {
+): Promise<CreatedMapWithRelations[]> {
   const mapsPerPage = 5;
   const now = Date.now();
   if (author === 0) author = undefined;
@@ -46,24 +46,21 @@ export const readMaps = async function (
     case "any":
       timespan = undefined;
   }
-  const orders: { [key: string]: Prisma.Created_mapOrderByWithRelationInput } = {
+  const orders: { [key: string]: Prisma.CreatedMapOrderByWithRelationInput } = {
     newest: {
-      created_at: "desc",
+      createdAt: "desc",
     },
     oldest: {
-      created_at: "asc",
-    },
-    views: {
-      views: "desc",
+      createdAt: "asc",
     },
   };
 
-  const result = await prisma.created_map
+  const result = await prisma.createdMap
     .findMany({
       where: {
-        author_id: author,
-        world_id: world,
-        created_at: {
+        authorId: author,
+        worldId: world,
+        createdAt: {
           gte: timespan,
         },
       },
@@ -83,15 +80,16 @@ export const readMaps = async function (
 };
 
 export const createMap = async function (worldId: number, turn: number, authorId: number, title: string, description: string, settings: string) {
-  const result = await prisma.created_map
+  const result = await prisma.createdMap
     .create({
       data: {
-        world_id: worldId,
+        worldId: worldId,
         turn: turn,
-        author_id: authorId,
+        authorId: authorId,
         title: title,
         description: description,
-        settings: settings,
+        encodedSettings: settings,
+        position: turn,
       },
     })
     .catch((err) => {
@@ -102,7 +100,7 @@ export const createMap = async function (worldId: number, turn: number, authorId
 };
 
 export const deleteMap = async function (id: number) {
-  const result = await prisma.created_map
+  const result = await prisma.createdMap
     .delete({
       where: {
         id: id,

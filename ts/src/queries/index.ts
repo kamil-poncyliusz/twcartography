@@ -1,7 +1,8 @@
 import * as map from "./map.js";
 import * as user from "./user.js";
 import * as world from "./world.js";
-import * as worldData from "./world-data.js";
+import * as turnData from "./turn-data.js";
+// import * as collection from "./collection.js";
 
 export const createMap = map.createMap;
 export const deleteMap = map.deleteMap;
@@ -22,6 +23,9 @@ export const readWorld = world.readWorld;
 export const readWorlds = world.readWorlds;
 export const readWorldsWithWorldData = world.readWorldsWithWorldData;
 
-export const createWorldData = worldData.createWorldData;
-export const deleteWorldData = worldData.deleteWorldData;
-export const readWorldData = worldData.readWorldData;
+export const createTurnData = turnData.createTurnData;
+export const deleteTurnData = turnData.deleteTurnData;
+export const readTurnData = turnData.readTurnData;
+
+// export const readCollection = collection.readCollection;
+// export const createCollection = collection.createCollection;

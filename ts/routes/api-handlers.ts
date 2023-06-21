@@ -2,10 +2,10 @@ import fs from "fs";
 import {
   readMaps,
   createMap,
-  readWorldData,
+  readTurnData,
   createWorld,
   readWorld,
-  createWorldData,
+  createTurnData,
   updateUserRank,
   deleteWorld,
   deleteMap,
@@ -40,7 +40,7 @@ export const handleReadTurnData = async function (req: Request) {
   const worldId = parseInt(req.params.world);
   const turn = parseInt(req.params.turn);
   if (isNaN(worldId) || isNaN(turn) || worldId < 1 || turn < 0 || turn > 365) return false;
-  const data = await readWorldData(worldId, turn);
+  const data = await readTurnData(worldId, turn);
   if (data === null) return false;
   return data;
 };
@@ -53,7 +53,7 @@ export const handleCreateMap = async function (req: Request) {
   const encodedSettings = encodeSettings(settings);
   if (typeof title !== "string" || title.length === 0 || title.length > 20) return false;
   if (typeof description !== "string" || description.length > 100) return false;
-  const turnData = await readWorldData(settings.world, settings.turn);
+  const turnData = await readTurnData(settings.world, settings.turn);
   if (turnData === null) return false;
   const generator = new MapGenerator(turnData, settings);
   const createdMap = await createMap(settings.world, settings.turn, req.session.user.id, title, description, encodedSettings);
@@ -94,7 +94,7 @@ export const handleCreateTurnData = async function (req: Request) {
   const worldDataFilesPath = `temp/${world}/${turn}`;
   if (!fs.existsSync(worldDataFilesPath)) return false;
   const parsedTurnData = parseTurnData(world, turn);
-  const createdWorldData = await createWorldData(world, turn, parsedTurnData);
+  const createdWorldData = await createTurnData(world, turn, parsedTurnData);
   if (!createdWorldData) return false;
   return true;
 };

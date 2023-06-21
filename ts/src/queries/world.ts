@@ -29,7 +29,7 @@ export const readWorldsWithWorldData = async function (): Promise<WorldWithWorld
   const result = await prisma.world
     .findMany({
       include: {
-        world_data: {
+        worldData: {
           select: {
             id: true,
             turn: true,
@@ -51,7 +51,7 @@ export const createWorld = async function (server: string, num: string, domain: 
         server: server,
         num: num,
         domain: domain,
-        start_timestamp: startTimestamp,
+        startTimestamp: startTimestamp,
       },
     })
     .catch((err) => {

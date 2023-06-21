@@ -133,14 +133,15 @@ class GeneratorController {
     return true;
   }
   async changeWorld(world: number) {
-    const response = await fetch(`${window.location.origin}/api/world/${world}`);
+    const url = `${window.location.origin}/api/world/${world}`;
+    const response = await fetch(url);
     const worldInfo: Awaited<ReturnType<typeof handleReadWorld>> = await response.json();
     this.data = {};
     this.turn = -1;
     if (!worldInfo) return false;
     this.#server = worldInfo.server + worldInfo.num;
     this.world = world;
-    this.latestTurn = Math.floor((Date.now() - worldInfo.start_timestamp * 1000) / 1000 / 60 / 60 / 24);
+    this.latestTurn = Math.floor((Date.now() - worldInfo.startTimestamp * 1000) / 1000 / 60 / 60 / 24);
     return true;
   }
   deleteMark(groupName: string, tribeTag: string) {

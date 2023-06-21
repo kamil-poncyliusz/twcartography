@@ -23,11 +23,11 @@ html(lang="pl-PL")
         div
           span= `Stworzona przez `
           a.label-button(href=`/user/${map.author.id}`) #{ map.author.login }
-          span= ` ${map.created_at.toLocaleDateString()}`
+          span= ` ${map.createdAt.toLocaleDateString()}`
         div
-          input#settings(type="text", name="settings", value=map.settings, readonly)
+          input#settings(type="text", name="settings", value=map.encodedSettings, readonly)
         div
-          a.a-button(href=`/new/${map.settings}`) Stwórz mapę na podstawie tych ustawień
+          a.a-button(href=`/new/${map.encodedSettings}`) Stwórz mapę na podstawie tych ustawień
         if user && user.rank === 10
           div
             button#delete-map-button(type="button") Usuń mapę

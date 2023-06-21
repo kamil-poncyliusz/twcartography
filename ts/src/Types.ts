@@ -1,4 +1,4 @@
-import { Created_map, User, World } from "@prisma/client";
+import { CreatedMap, User, World } from "@prisma/client";
 
 export interface MarkGroup {
   tribes: string[];
@@ -54,11 +54,11 @@ export interface MapLoaderSettings {
   timespan: string;
   world: number;
 }
-export type Created_mapWithRelations = Created_map & {
+export type CreatedMapWithRelations = CreatedMap & {
   author: User;
   world: World;
 };
-export type WorldWithWorldData = World & { world_data: { id: number; turn: number }[] };
+export type WorldWithWorldData = World & { worldData: { id: number; turn: number }[] };
 export interface TurnDataState {
   id: number;
   hasFiles: boolean;

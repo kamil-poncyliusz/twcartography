@@ -7,44 +7,62 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Created_map {
-  id          Int      @id @default(autoincrement())
-  world_id    Int
-  turn        Int
-  created_at  DateTime @default(now()) @db.Timestamptz(0)
-  author_id   Int
-  title       String   @db.VarChar(20)
-  description String   @db.VarChar(100)
-  views       Int      @default(0)
-  settings    String
-  author      User    @relation(fields: [author_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  world       World   @relation(fields: [world_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+model CreatedMap {
+  id               Int         @id @default(autoincrement())
+  worldId          Int
+  turn             Int
+  authorId         Int
+  createdAt        DateTime     @default(now()) @db.Timestamptz(0)
+  title            String      @db.VarChar(20)
+  description      String      @db.VarChar(200)
+  encodedSettings  String
+  // collectionId  Int
+  position         Int
+  author           User        @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  world            World       @relation(fields: [worldId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  // collection       Collection  @relation(fields: [collectionId], references: [id], onDelete:Cascade, onUpdate: Cascade)
+  @@map("maps")
 }
 
 model User {
-  id       Int           @id @default(autoincrement())
-  login    String        @unique @db.VarChar(20)
-  password String        @db.Char(60)
-  rank     Int           @default(0)
-  maps     Created_map[]
+  id          Int          @id @default(autoincrement())
+  login       String       @unique @db.VarChar(20)
+  password    String       @db.Char(60)
+  rank        Int          @default(0)
+  maps        CreatedMap[]
+  collections Collection[]
 }
 
-model WorldData {
-  world_id Int
+model TurnData {
+  id       Int            @id @default(autoincrement())
+  worldId  Int
   turn     Int
-  data     Json   @db.Json
-  id       Int    @id @default(autoincrement())
-  world    World  @relation(fields: [world_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  @@index([world_id, turn], name:"world_turn")
+  data     Json           @db.Json
+  world    World          @relation(fields: [worldId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@index([worldId, turn], name:"worldTurn")
 }
 
 model World {
-  id              Int            @id @default(autoincrement())
+  id              Int           @id @default(autoincrement())
   server          String
   num             String
-  start_timestamp Int
+  startTimestamp  Int
   domain          String
-  maps            Created_map[]
-  world_data      WorldData[]
-  @@index([server,num], name: "full_name")
+  maps            CreatedMap[]
+  worldData       TurnData[]
+  collections     Collection[]
+  @@index([server,num], name: "fullName")
+}
+
+model Collection {
+  id          Int           @id @default(autoincrement())
+  worldId     Int
+  authorId    Int
+  createdAt   DateTime      @default(now()) @db.Timestamptz(0)
+  title       String        @db.VarChar(30)
+  description String        @db.VarChar(500)
+  views       Int           @default(0)
+  world       World         @relation(fields: [worldId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  // maps        CreatedMap[]
+  author      User          @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }

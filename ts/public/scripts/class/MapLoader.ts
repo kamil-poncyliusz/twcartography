@@ -1,4 +1,4 @@
-import { Created_mapWithRelations, MapLoaderSettings } from "../../../src/Types.js";
+import { CreatedMapWithRelations, MapLoaderSettings } from "../../../src/Types.js";
 import { handleReadMaps } from "../../../routes/api-handlers.js";
 
 const mapsList = document.getElementById("maps-list") as Element;
@@ -29,9 +29,9 @@ class MapLoader {
     this.#fetching = false;
     return;
   }
-  #appendMap(map: Created_mapWithRelations) {
+  #appendMap(map: CreatedMapWithRelations) {
     if (map !== null) {
-      const createdAt = new Date(map.created_at).toLocaleDateString();
+      const createdAt = new Date(map.createdAt).toLocaleDateString();
       const newNode = document.createElement("div");
       newNode.classList.add("map");
       let content = `<h1>${map.title}</h1>`;
