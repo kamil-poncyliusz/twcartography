@@ -1,6 +1,7 @@
 import express from "express";
-import { readMap, readUser, readWorlds } from "../src/queries/index.js";
+import { readMap, readUser, readUserCollections, readWorlds } from "../src/queries/index.js";
 import { handleAuthentication, handleLogout, handleRegistration } from "./router-handlers.js";
+import { Collection } from "@prisma/client";
 
 const router = express.Router();
 
@@ -57,7 +58,12 @@ router.get("/new/:settings?", async (req, res) => {
     user: req.session.user,
     encodedSettings: req.params.settings ?? "",
     worlds: worlds,
+    collections: [] as Collection[],
   };
+  if (req.session.user && req.session.user.rank >= 2) {
+    const collections = await readUserCollections(req.session.user.id);
+    locals.collections = collections;
+  }
   res.render("new", locals);
 });
 

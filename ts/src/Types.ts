@@ -73,3 +73,9 @@ export interface UserSessionData {
   login: string;
   rank: number;
 }
+export interface CreateMapRequestPayload {
+  collection: number;
+  description: string;
+  settings: Settings;
+  title: string;
+}

@@ -82,6 +82,13 @@ html(lang="pl-PL")
                   input#description(type="text", name="description", placeholder="opis", autocomplete="off", disabled)
               .row
                 div
+                  select#collection(name="collection", autocomplete="off")
+                    option(value="", selected, disabled, hidden) wybierz
+                    option(value="0") Utwórz nową
+                    each collection in collections
+                      option(value=collection.id) #{ collection.title }
+              .row
+                div
                   button#publish-button(disabled) Opublikuj
       #mark-suggestions.marks-tab.hidden
         div

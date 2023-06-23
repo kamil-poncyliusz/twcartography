@@ -2,7 +2,7 @@ import * as map from "./map.js";
 import * as user from "./user.js";
 import * as world from "./world.js";
 import * as turnData from "./turn-data.js";
-// import * as collection from "./collection.js";
+import * as collection from "./collection.js";
 
 export const createMap = map.createMap;
 export const deleteMap = map.deleteMap;
@@ -27,5 +27,6 @@ export const createTurnData = turnData.createTurnData;
 export const deleteTurnData = turnData.deleteTurnData;
 export const readTurnData = turnData.readTurnData;
 
-// export const readCollection = collection.readCollection;
-// export const createCollection = collection.createCollection;
+export const readCollection = collection.readCollection;
+export const createCollection = collection.createCollection;
+export const readUserCollections = collection.readUserCollections;

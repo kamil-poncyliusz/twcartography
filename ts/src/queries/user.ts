@@ -8,6 +8,9 @@ export const readUser = async function (id: number) {
       where: {
         id: id,
       },
+      include: {
+        collections: true,
+      },
     })
     .catch((err) => {
       console.error("Prisma error:", err);

@@ -9,15 +9,16 @@ import {
   updateUserRank,
   deleteWorld,
   deleteMap,
+  createCollection,
 } from "../src/queries/index.js";
-import SettingsValidator from "../public/scripts/class/SettingsValidator.js";
 import MapGenerator from "../public/scripts/class/MapGenerator.js";
 import { encodeSettings } from "../public/scripts/settings-codec.js";
 import saveMapPng from "../src/save-map-png.js";
 import parseTurnData from "../src/parse-turn-data.js";
-import { Settings } from "../src/Types.js";
+import { CreateMapRequestPayload } from "../src/Types.js";
 import { Request } from "express";
 import { Prisma } from "@prisma/client";
+import { CreateMapRequestValidationCode, validateCreateMapRequest } from "../public/scripts/requestValidators.js";
 
 type mapsWithRelations = Prisma.PromiseReturnType<typeof readMaps>;
 
@@ -46,17 +47,34 @@ export const handleReadTurnData = async function (req: Request) {
 };
 export const handleCreateMap = async function (req: Request) {
   if (!req.session.user || req.session.user.rank < 2) return false;
-  const settings = req.body.settings as Settings;
-  const title = req.body.title;
-  const description = req.body.description;
-  if (!SettingsValidator.settings(settings)) return false;
+  const authorId = req.session.user.id;
+  const payload: CreateMapRequestPayload = {
+    settings: req.body.settings,
+    title: req.body.title,
+    description: req.body.description,
+    collection: req.body.collection,
+  };
+  const settings = payload.settings;
   const encodedSettings = encodeSettings(settings);
-  if (typeof title !== "string" || title.length === 0 || title.length > 20) return false;
-  if (typeof description !== "string" || description.length > 100) return false;
+  const payloadValidationCode = validateCreateMapRequest(payload);
+  if (payloadValidationCode !== CreateMapRequestValidationCode.Ok) return false;
   const turnData = await readTurnData(settings.world, settings.turn);
   if (turnData === null) return false;
   const generator = new MapGenerator(turnData, settings);
-  const createdMap = await createMap(settings.world, settings.turn, req.session.user.id, title, description, encodedSettings);
+  if (payload.collection === 0) {
+    const createdCollection = await createCollection(settings.world, authorId, payload.title, payload.description);
+    if (!createdCollection) return false;
+    payload.collection = createdCollection.id;
+  }
+  const createdMap = await createMap(
+    settings.world,
+    settings.turn,
+    authorId,
+    payload.title,
+    payload.description,
+    encodedSettings,
+    payload.collection
+  );
   if (!createdMap) return false;
   const saved = await saveMapPng(createdMap.id, generator.imageData as ImageData);
   if (!saved) return false;

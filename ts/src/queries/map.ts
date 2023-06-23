@@ -79,7 +79,15 @@ export const readMaps = async function (
   return result;
 };
 
-export const createMap = async function (worldId: number, turn: number, authorId: number, title: string, description: string, settings: string) {
+export const createMap = async function (
+  worldId: number,
+  turn: number,
+  authorId: number,
+  title: string,
+  description: string,
+  settings: string,
+  collection: number
+) {
   const result = await prisma.createdMap
     .create({
       data: {
@@ -89,6 +97,7 @@ export const createMap = async function (worldId: number, turn: number, authorId
         title: title,
         description: description,
         encodedSettings: settings,
+        collectionId: collection,
         position: turn,
       },
     })

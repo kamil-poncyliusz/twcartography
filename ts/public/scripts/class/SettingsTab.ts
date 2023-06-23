@@ -4,9 +4,10 @@ import MarkGroupsTabController from "./MarkGroupsTab.js";
 import SuggestionsTabController from "./SuggestionsTab.js";
 import CanvasController from "./Canvas.js";
 import { limits } from "./SettingsValidator.js";
-import { Settings } from "../../../src/Types.js";
+import { CreateMapRequestPayload, Settings } from "../../../src/Types.js";
 import { handleCreateMap } from "../../../routes/api-handlers.js";
 import { postRequest } from "../requests.js";
+import { CreateMapRequestValidationCode, validateCreateMapRequest } from "../requestValidators.js";
 
 const inputs: { [key: string]: HTMLInputElement } = {
   autoRefresh: document.getElementById("auto-refresh") as HTMLInputElement,
@@ -24,6 +25,7 @@ const inputs: { [key: string]: HTMLInputElement } = {
 };
 const descriptionInput = document.getElementById("description") as HTMLInputElement;
 const encodedSettingsInput = document.getElementById("encoded-settings") as HTMLInputElement;
+const collectionSelect = document.getElementById("collection") as HTMLSelectElement;
 const publishButton = document.getElementById("publish-button") as HTMLButtonElement | null;
 const titleInput = document.getElementById("title") as HTMLInputElement;
 const worldSelect = document.getElementById("world-select") as HTMLSelectElement;
@@ -305,14 +307,37 @@ class SettingsTabController {
     const settings = this.#generator.settings;
     const title = titleInput.value;
     const description = descriptionInput.value;
-    const payload = {
+    const collection = parseInt(collectionSelect.value);
+    const payload: CreateMapRequestPayload = {
       settings: settings,
       title: title,
       description: description,
+      collection: collection,
     };
-    const createdMapId: Awaited<ReturnType<typeof handleCreateMap>> = await postRequest("api/map/create", payload);
-    if (createdMapId === false) console.log("Failed to publish the map");
-    else console.log("Map published succesfully");
+    const payloadValidationCode = validateCreateMapRequest(payload);
+    switch (payloadValidationCode) {
+      case CreateMapRequestValidationCode.InvalidCollection: {
+        collectionSelect.classList.add("is-invalid");
+        break;
+      }
+      case CreateMapRequestValidationCode.InvalidDescription: {
+        descriptionInput.classList.add("is-invalid");
+        break;
+      }
+      case CreateMapRequestValidationCode.InvalidSettings: {
+        console.log("Publish map: Invalid settings");
+        break;
+      }
+      case CreateMapRequestValidationCode.InvalidTitle: {
+        titleInput.classList.add("is-invalid");
+        break;
+      }
+      case CreateMapRequestValidationCode.Ok: {
+        const createdMapId: Awaited<ReturnType<typeof handleCreateMap>> = await postRequest("api/map/create", payload);
+        if (createdMapId === false) console.log("Failed to publish the map");
+        else console.log("Map published succesfully");
+      }
+    }
   };
 }
 

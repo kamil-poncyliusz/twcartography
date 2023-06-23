@@ -19,7 +19,7 @@
     .hidden
       if user
         p Zalogowany jako #{ user.login }
-        button#logout-button Wyloguj się
+        button#logout-button(type="button") Wyloguj się
       else
         form#login-form
           input#login(type="text", name="login", autocomplete="off", placeholder="login")
