@@ -24,7 +24,8 @@ html(lang="pl-PL")
           span= `Stworzona przez `
           a.label-button(href=`/user/${map.author.id}`) #{ map.author.login }
           span= ` ${map.createdAt.toLocaleDateString()}`
-        p= `${map.collectionId}`
+        div
+          a.label-button(href=`/collection/${map.collectionId}`) Kolekcja
         div
           input#settings(type="text", name="settings", value=map.encodedSettings, readonly)
         div

@@ -1,5 +1,5 @@
 import express from "express";
-import { readMap, readUser, readUserCollections, readWorlds } from "../src/queries/index.js";
+import { readCollection, readMap, readUser, readUserCollections, readWorlds } from "../src/queries/index.js";
 import { handleAuthentication, handleLogout, handleRegistration } from "./router-handlers.js";
 import { Collection } from "@prisma/client";
 
@@ -78,6 +78,19 @@ router.get("/user/:id", async (req, res) => {
     displayedUser: user,
   };
   return res.render("user", locals);
+});
+
+router.get("/collection/:id", async (req, res) => {
+  const id = parseInt(req.params.id);
+  if (isNaN(id) || id < 1) return res.status(404).render("not-found");
+  const collection = await readCollection(id);
+  if (collection === null) return res.status(404).render("not-found");
+  const locals = {
+    page: "collection",
+    user: req.session.user,
+    collection: collection,
+  };
+  return res.render("collection", locals);
 });
 
 export default router;

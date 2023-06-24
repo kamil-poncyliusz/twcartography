@@ -33,7 +33,7 @@ class MapLoader {
     if (map !== null) {
       const createdAt = new Date(map.createdAt).toLocaleDateString();
       const newNode = document.createElement("div");
-      newNode.classList.add("map");
+      newNode.classList.add("map-card");
       let content = `<h1>${map.title}</h1>`;
       content += `<h2>${map.description}</h2>`;
       content += `<p>${map.turn} dzień świata ${map.world.server + map.world.num}</p>`;

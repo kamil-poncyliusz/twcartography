@@ -185,39 +185,38 @@ main {
   flex-direction: column;
   width: 50rem;
 }
-.map {
+.map-card {
   background-color: var(--accent);
   padding: 0;
   margin-bottom: 0.5rem;
-  border-radius: 1rem;
   overflow: hidden;
 }
-.map:hover {
+.map-card:hover {
   background-color: var(--light-accent);
 }
-.map > a {
+.map-card > a {
   display: flex;
   flex-direction: row;
   padding: 0;
   border: none;
 }
-.map > a > div:first-child {
+.map-card > a > div:first-child {
   height: 20rem;
   flex: 0 0 20rem;
   overflow: hidden;
 }
-.map > a > div:last-child {
+.map-card > a > div:last-child {
   display: block;
   width: 0;
   height: 20rem;
   flex: 1 0 0;
   padding: 0.5rem;
 }
-.map img {
+.map-card img {
   width: 20rem;
   height: 20rem;
   object-fit: fill;
 }
-.map > a > div:last-child > * {
+.map-card > a > div:last-child > * {
   margin-bottom: 0.5rem;
 }

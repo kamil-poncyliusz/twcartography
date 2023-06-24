@@ -1,0 +1,76 @@
+html,
+body {
+  height: 100%;
+}
+
+#wrapper {
+  width: 100%;
+  height: calc(100% - 2rem);
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  overflow: hidden;
+}
+#maps {
+  width: 70%;
+  height: 100%;
+  padding: 1rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.5rem;
+}
+.map-tile {
+  width: 10rem;
+  height: 10rem;
+  border: 1px solid var(--accent);
+  cursor: pointer;
+}
+.map-tile:hover {
+  border: 1px solid var(--light-accent);
+}
+.map-tile > img {
+  width: 100%;
+  height: 100%;
+}
+#map-view {
+  width: auto;
+  height: auto;
+  aspect-ratio: 1/1;
+}
+#map-view > img {
+  width: 100%;
+  height: 100%;
+}
+#info {
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+  height: 100%;
+  background-color: var(--section);
+  color: var(--font);
+  border-top: 3px solid var(--background);
+}
+#info > * {
+  padding: 0.5rem;
+}
+#info input {
+  padding: 0.5rem;
+  width: 100%;
+  border-radius: 0.5rem;
+}
+.a-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  font-size: 1.25rem;
+}
+/* #delete-collection-button {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 1.25rem;
+  line-height: 1.25rem;
+} */
