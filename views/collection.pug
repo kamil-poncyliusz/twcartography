@@ -14,9 +14,15 @@ html(lang="pl-PL")
   body
     include nav-bar.pug
     #wrapper
-      #maps
+      #map-enlarged
+        #image-wrapper
+          img(src="", alt="map")
+        button#previous-map(type="button") <
+        button#next-map(type="button") >
+        button#hide-enlarged-map(type="button") X
+      #map-tiles
         each map in collection.maps
-          .map-tile(title=map.title)
+          .map-tile(title=map.title, data-id=map.id, data-title=map.title, data-description=map.description)
             img(src=`../images/maps/${map.id}.png`, alt="map")
       #info
         p#title= collection.title
