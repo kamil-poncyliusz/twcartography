@@ -4,6 +4,8 @@ const enlargedMapImage = document.querySelector("#image-wrapper > img");
 const hideEnlargedMapButton = document.getElementById("hide-enlarged-map");
 const previousMapButton = document.getElementById("previous-map");
 const nextMapButton = document.getElementById("next-map");
+const mapTitle = document.getElementById("map-title");
+const mapDescription = document.getElementById("map-description");
 
 let currentEnlargedMap: HTMLDivElement | null = null;
 
@@ -16,6 +18,7 @@ const viewEnlargedMap = function () {
   const src = `../images/maps/${id}.png`;
   if (enlargedMapImage) enlargedMapImage.setAttribute("src", src);
   if (enlargedMap) enlargedMap.style.visibility = "visible";
+  updateMapInfo();
 };
 const hideEnlargedMap = function () {
   if (enlargedMap) enlargedMap.style.visibility = "hidden";
@@ -34,16 +37,37 @@ const viewPreviousMap = function () {
   else currentEnlargedMap = mapTiles[0] as HTMLDivElement;
   viewEnlargedMap();
 };
+const updateMapInfo = function () {
+  if (!currentEnlargedMap) return;
+  const title = currentEnlargedMap.dataset.title;
+  const description = currentEnlargedMap.dataset.description;
+  if (!title || !description || !mapTitle || !mapDescription) return;
+  mapTitle.innerHTML = title;
+  mapDescription.innerHTML = description;
+};
 const handleMapTileClick = function (e: Event) {
   let target = e.target as HTMLDivElement;
   if (target.tagName === "IMG") target = target.closest("div[data-id]") as HTMLDivElement;
-  if (!target) return;
-  const id = parseInt(target.dataset.id ?? "");
-  const title = target.dataset.title;
-  const description = target.dataset.description;
-  if (!id || isNaN(id) || !title || !description) return;
+  if (!target || !target.dataset.id || !target.dataset.title || !target.dataset.description) return;
   currentEnlargedMap = target;
   viewEnlargedMap();
+};
+const useKeyboardShortcut = function (e: KeyboardEvent) {
+  const keyCode = e.code;
+  switch (keyCode) {
+    case "ArrowLeft": {
+      viewPreviousMap();
+      break;
+    }
+    case "ArrowRight": {
+      viewNextMap();
+      break;
+    }
+    case "Escape": {
+      hideEnlargedMap();
+      break;
+    }
+  }
 };
 
 mapTiles.forEach((mapTile) => {
@@ -52,3 +76,4 @@ mapTiles.forEach((mapTile) => {
 if (hideEnlargedMapButton) hideEnlargedMapButton.addEventListener("click", hideEnlargedMap);
 if (nextMapButton) nextMapButton.addEventListener("click", viewNextMap);
 if (previousMapButton) previousMapButton.addEventListener("click", viewPreviousMap);
+document.body.addEventListener("keydown", useKeyboardShortcut);

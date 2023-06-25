@@ -65,6 +65,7 @@ class SettingsValidator {
     return true;
   }
   static settings(settings: Settings) {
+    if (typeof settings !== "object") return false;
     if (!SettingsValidator.color(settings.backgroundColor)) return false;
     if (!SettingsValidator.boolean(settings.displayUnmarked)) return false;
     if (!SettingsValidator.color(settings.borderColor)) return false;

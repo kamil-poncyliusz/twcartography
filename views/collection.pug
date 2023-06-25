@@ -25,13 +25,13 @@ html(lang="pl-PL")
           .map-tile(title=map.title, data-id=map.id, data-title=map.title, data-description=map.description)
             img(src=`../images/maps/${map.id}.png`, alt="map")
       #info
-        p#title= collection.title
-        p#description= collection.description
+        p#collection-title= collection.title
         div
           span= `Stworzona przez `
           a.label-button(href=`/user/${collection.author.id}`) #{ collection.author.login }
           span= ` ${collection.createdAt.toLocaleDateString()}`
-        p#map-title Title
-        p#map-description Description
+        p#collection-description= collection.description
+        p#map-title -
+        p#map-description -
         //- div
         //-   input#settings(type="text", name="settings", value="", readonly)

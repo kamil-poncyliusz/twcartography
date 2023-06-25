@@ -24,17 +24,25 @@ body {
   left: 0;
   background-color: var(--background);
 }
-#previous-map {
+#previous-map,
+#next-map {
+  width: 3rem;
+  height: 9rem;
   position: absolute;
+  top: calc(50% - 4.5rem);
+  font-size: 2rem;
+}
+#previous-map {
   left: 0;
-  top: 50%;
 }
 #next-map {
-  position: absolute;
   right: 0;
-  top: 50%;
 }
 #hide-enlarged-map {
+  width: 3rem;
+  height: 3rem;
+  line-height: 2rem;
+  font-size: 2rem;
   position: absolute;
   top: 0;
   right: 0;
@@ -56,7 +64,8 @@ body {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 0.5rem 0.5rem;
+  gap: 1rem 1rem;
+  overflow: scroll;
 }
 .map-tile {
   width: 10rem;
@@ -81,6 +90,18 @@ body {
 }
 #info > * {
   padding: 0.5rem;
+}
+#collection-title {
+  font-size: 2rem;
+  font-weight: 600;
+}
+#map-title {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+#collection-description,
+#map-description {
+  font-style: italic;
 }
 #info input {
   padding: 0.5rem;
