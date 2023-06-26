@@ -1,5 +1,9 @@
 import { ParsedColor } from "../../src/Types";
 
+const randomInt = function (min: number, max: number) {
+  return min + Math.floor(Math.random() * (max - min + 1));
+};
+
 export const parseHexColor = function (color: string): ParsedColor {
   const black = { r: 0, g: 0, b: 0 };
   const regex = new RegExp("^#[A-Fa-f0-9]{6}$");
@@ -73,11 +77,7 @@ export const distinctiveColor = function (index: number): string {
   return "#808080";
 };
 
-export const randomInt = function (min: number, max: number) {
-  return min + Math.floor(Math.random() * (max - min + 1));
-};
-
-export const randomColor = function () {
+export const randomizeGroupColor = function () {
   const minSaturation = 45;
   const maxSaturation = 90;
   const minLightness = 20;

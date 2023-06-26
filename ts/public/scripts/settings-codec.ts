@@ -11,8 +11,8 @@ export const encodeSettings = function (settings: Settings): string {
   }
   for (const group of settings.markGroups) {
     result += group.name + minorSeparator + group.color;
-    for (const tribeId of group.tribes) {
-      result += minorSeparator + tribeId;
+    for (const tribeID of group.tribes) {
+      result += minorSeparator + tribeID;
     }
     result += majorSeparator;
   }

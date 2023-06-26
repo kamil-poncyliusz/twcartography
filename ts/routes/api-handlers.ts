@@ -37,6 +37,7 @@ export const handleReadWorld = async function (req: Request) {
   if (data === null) return false;
   return data;
 };
+
 export const handleReadTurnData = async function (req: Request) {
   const worldId = parseInt(req.params.world);
   const turn = parseInt(req.params.turn);
@@ -45,6 +46,7 @@ export const handleReadTurnData = async function (req: Request) {
   if (data === null) return false;
   return data;
 };
+
 export const handleCreateMap = async function (req: Request) {
   if (!req.session.user || req.session.user.rank < 2) return false;
   const authorId = req.session.user.id;
@@ -80,18 +82,20 @@ export const handleCreateMap = async function (req: Request) {
   if (!saved) return false;
   return createdMap.id;
 };
+
 export const handleReadMaps = async function (req: Request) {
   const world = parseInt(req.params.world);
   const author = parseInt(req.params.author);
   const page = parseInt(req.params.page);
   const timespans = ["day", "week", "month", "any"];
-  const orders = ["newest", "oldest", "views"];
+  const orders = ["newest", "oldest"];
   if (!(world >= 0 && author >= 0 && page >= 1)) return [];
   if (!timespans.includes(req.params.timespan)) return [];
   if (!orders.includes(req.params.order)) return [];
   const maps = await readMaps(page, author, req.params.order, req.params.timespan, world);
   return maps;
 };
+
 export const handleCreateWorld = async function (req: Request) {
   if (!req.session.user || req.session.user.rank < 10) return false;
   if (!isWorldCreateBodyValid(req.body)) return false;
@@ -104,6 +108,7 @@ export const handleCreateWorld = async function (req: Request) {
   console.log("Stworzono świat o id", createdWorld.id);
   return createdWorld.id;
 };
+
 export const handleCreateTurnData = async function (req: Request) {
   if (!req.session.user || req.session.user.rank < 10) return false;
   const world = parseInt(req.params.world);
@@ -116,6 +121,7 @@ export const handleCreateTurnData = async function (req: Request) {
   if (!createdWorldData) return false;
   return true;
 };
+
 export const handleUpdateUserRank = async function (req: Request) {
   if (!req.session.user || req.session.user.rank < 10) return false;
   const id = req.body.id;
@@ -124,6 +130,7 @@ export const handleUpdateUserRank = async function (req: Request) {
   const success = await updateUserRank(id, rank);
   return success;
 };
+
 export const handleDeleteWorld = async function (req: Request) {
   if (!req.session.user || req.session.user.rank < 10) return false;
   const worldId = req.body.id;
@@ -131,6 +138,7 @@ export const handleDeleteWorld = async function (req: Request) {
   const isDeleted = await deleteWorld(worldId);
   return isDeleted;
 };
+
 export const handleDeleteMap = async function (req: Request) {
   if (!req.session.user || req.session.user.rank < 10) return false;
   const mapId = req.body.id;

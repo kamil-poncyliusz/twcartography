@@ -2,7 +2,7 @@ import GeneratorController from "./GeneratorController.js";
 import { decodeSettings, encodeSettings } from "../settings-codec.js";
 import MarkGroupsTabController from "./MarkGroupsTab.js";
 import SuggestionsTabController from "./SuggestionsTab.js";
-import CanvasController from "./Canvas.js";
+import CanvasController from "./CanvasController.js";
 import { limits } from "./SettingsValidator.js";
 import { CreateMapRequestPayload, Settings } from "../../../src/Types.js";
 import { handleCreateMap } from "../../../routes/api-handlers.js";
@@ -23,11 +23,11 @@ const inputs: { [key: string]: HTMLInputElement } = {
   unmarkedColor: document.getElementById("unmarked-color") as HTMLInputElement,
   villageFilter: document.getElementById("village-filter") as HTMLInputElement,
 };
-const descriptionInput = document.getElementById("description") as HTMLInputElement;
+const descriptionInput = document.getElementById("description") as HTMLInputElement | null;
 const encodedSettingsInput = document.getElementById("encoded-settings") as HTMLInputElement;
-const collectionSelect = document.getElementById("collection") as HTMLSelectElement;
+const collectionSelect = document.getElementById("collection") as HTMLSelectElement | null;
 const publishButton = document.getElementById("publish-button") as HTMLButtonElement | null;
-const titleInput = document.getElementById("title") as HTMLInputElement;
+const titleInput = document.getElementById("title") as HTMLInputElement | null;
 const worldSelect = document.getElementById("world-select") as HTMLSelectElement;
 const generate = document.getElementById("generate") as HTMLButtonElement;
 
@@ -73,8 +73,8 @@ class SettingsTabController {
     }
     this.#generateButton.disabled = value;
     if (publishButton !== null) {
-      titleInput.disabled = value;
-      descriptionInput.disabled = value;
+      if (titleInput) titleInput.disabled = value;
+      if (descriptionInput) descriptionInput.disabled = value;
       publishButton.disabled = value;
     }
   }
@@ -147,8 +147,8 @@ class SettingsTabController {
   };
   backgroundColorChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
-    const result = this.#generator.setBackgroundColor(target.value);
-    if (!result) {
+    const isChanged = this.#generator.setBackgroundColor(target.value);
+    if (!isChanged) {
       this.#inputs.backgroundColor.classList.add("is-invalid");
       return;
     }
@@ -158,8 +158,8 @@ class SettingsTabController {
   };
   borderColorChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
-    const result = this.#generator.setBorderColor(target.value);
-    if (!result) {
+    const isChanged = this.#generator.setBorderColor(target.value);
+    if (!isChanged) {
       this.#inputs.borderColor.classList.add("is-invalid");
       return;
     }
@@ -170,8 +170,8 @@ class SettingsTabController {
   displayUnmarkedChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
     const value = target.checked;
-    const result = this.#generator.setDisplayUnmarked(value);
-    if (!result) {
+    const isChanged = this.#generator.setDisplayUnmarked(value);
+    if (!isChanged) {
       this.#inputs.displayUnmarked.classList.add("is-invalid");
       return;
     }
@@ -203,8 +203,8 @@ class SettingsTabController {
   outputWidthChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
     const value = Number(target.value);
-    const result = this.#generator.setOutputWidth(value);
-    if (!result) {
+    const isChanged = this.#generator.setOutputWidth(value);
+    if (!isChanged) {
       this.#inputs.outputWidth.classList.add("is-invalid");
       return;
     }
@@ -215,8 +215,8 @@ class SettingsTabController {
   scaleChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
     const value = Number(target.value);
-    const result = this.#generator.setScale(value);
-    if (!result) {
+    const isChanged = this.#generator.setScale(value);
+    if (!isChanged) {
       this.#inputs.scale.classList.add("is-invalid");
       return;
     }
@@ -227,8 +227,8 @@ class SettingsTabController {
   spotsFilterChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
     const value = Number(target.value);
-    const result = this.#generator.setSpotsFilter(value);
-    if (!result) {
+    const isChanged = this.#generator.setSpotsFilter(value);
+    if (!isChanged) {
       this.#inputs.spotsFilter.classList.add("is-invalid");
       return;
     }
@@ -239,8 +239,8 @@ class SettingsTabController {
   spotSizeStepChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
     const value = Number(target.value);
-    const result = this.#generator.setSpotSizeStep(value);
-    if (!result) {
+    const isChanged = this.#generator.setSpotSizeStep(value);
+    if (!isChanged) {
       this.#inputs.spotSizeStep.classList.add("is-invalid");
       return;
     }
@@ -251,8 +251,8 @@ class SettingsTabController {
   trimChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
     const value = target.checked;
-    const result = this.#generator.setTrim(value);
-    if (!result) {
+    const isChanged = this.#generator.setTrim(value);
+    if (!isChanged) {
       this.#inputs.trim.classList.add("is-invalid");
       return;
     }
@@ -263,8 +263,8 @@ class SettingsTabController {
   turnChange = async (e: Event) => {
     const target = e.target as HTMLInputElement;
     const turn = parseInt(target.value);
-    const result = await this.#generator.changeTurn(turn);
-    if (!result) return this.#inputs.turn.classList.add("is-invalid");
+    const isChanged = await this.#generator.changeTurn(turn);
+    if (!isChanged) return this.#inputs.turn.classList.add("is-invalid");
     this.renderSuggestions();
     this.renderMarkGroups();
     this.renderCanvas();
@@ -273,8 +273,8 @@ class SettingsTabController {
   };
   unmarkedColorChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
-    const result = this.#generator.setUnmarkedColor(target.value);
-    if (!result) {
+    const isChanged = this.#generator.setUnmarkedColor(target.value);
+    if (!isChanged) {
       this.#inputs.unmarkedColor.classList.add("is-invalid");
       return;
     }
@@ -285,8 +285,8 @@ class SettingsTabController {
   villageFilterChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
     const value = Number(target.value);
-    const result = this.#generator.setVillageFilter(value);
-    if (!result) {
+    const isChanged = this.#generator.setVillageFilter(value);
+    if (!isChanged) {
       this.#inputs.villageFilter.classList.add("is-invalid");
       return;
     }
@@ -297,14 +297,15 @@ class SettingsTabController {
   worldChange = async (e: Event) => {
     const target = e.target as HTMLSelectElement;
     const world = parseInt(target.value);
-    const result = await this.#generator.changeWorld(world);
-    if (!result) return worldSelect.classList.add("is-invalid");
+    const isChanged = await this.#generator.changeWorld(world);
+    if (!isChanged) return worldSelect.classList.add("is-invalid");
     worldSelect.classList.remove("is-invalid");
     this.update();
     this.#inputs.turn.value = "";
   };
   publishMap = async (e: Event) => {
     const settings = this.#generator.settings;
+    if (!titleInput || !descriptionInput || !collectionSelect) return;
     const title = titleInput.value;
     const description = descriptionInput.value;
     const collection = parseInt(collectionSelect.value);

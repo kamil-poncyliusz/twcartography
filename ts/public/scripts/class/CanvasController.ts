@@ -3,16 +3,17 @@ import GeneratorController from "./GeneratorController";
 const canvasElement = document.getElementById("map-canvas") as HTMLCanvasElement;
 
 class CanvasController {
-  #generator;
+  #generatorController;
   autoRefresh: boolean = true;
-  constructor(mapGeneratorObject: GeneratorController) {
-    this.#generator = mapGeneratorObject;
+  constructor(generatorControllerObject: GeneratorController) {
+    this.#generatorController = generatorControllerObject;
     canvasElement.addEventListener("mousedown", this.dragStart);
     canvasElement.addEventListener("mouseup", this.dragEnd);
   }
   render() {
     if (this.autoRefresh) {
-      const imageData = this.#generator.getMapImageData() as ImageData;
+      const imageData = this.#generatorController.getMapImageData();
+      if (!imageData) return;
       const ctx = canvasElement.getContext("2d");
       canvasElement.width = imageData.width;
       canvasElement.height = imageData.width;

@@ -52,20 +52,20 @@ const parseTurnData = function (world_id: number, turn: number) {
   }
   const playersData = parseFile(world_id, turn, "player");
   for (let i = 0; i < playersData.length; i++) {
-    const [id, name, tribeId, villages, points, rank] = playersData[i].split(",");
-    playerTribeIds[id] = tribeId;
+    const [id, name, tribeID, villages, points, rank] = playersData[i].split(",");
+    playerTribeIds[id] = tribeID;
   }
   const villagesData = parseFile(world_id, turn, "village");
   for (let i = 0; i < villagesData.length; i++) {
     const [id, name, x, y, playerId, points, rank] = villagesData[i].split(",");
     if (parseInt(playerId) > 0) {
-      const tribeId = playerTribeIds[playerId];
-      const tribe = parsedData.tribes[tribeId];
-      if (tribe === undefined) console.log("Parser:", tribeId, "village data tribe undefined");
+      const tribeID = playerTribeIds[playerId];
+      const tribe = parsedData.tribes[tribeID];
+      if (tribe === undefined) console.log("Parser:", tribeID, "village data tribe undefined");
       else {
         const pointsNumber = parseInt(points);
         tribe.villages.push({
-          tribeId: tribeId,
+          tribeID: tribeID,
           x: parseInt(x),
           y: parseInt(y),
           points: pointsNumber,
@@ -107,8 +107,8 @@ const parseTurnData = function (world_id: number, turn: number) {
   }
   let maxDistance = 0;
   let distance = 0;
-  for (let tribeId in parsedData.tribes) {
-    const tribe = parsedData.tribes[tribeId];
+  for (let tribeID in parsedData.tribes) {
+    const tribe = parsedData.tribes[tribeID];
     for (const village of tribe.villages) {
       distance = Math.abs(500 - village.x);
       if (distance > maxDistance) maxDistance = distance;

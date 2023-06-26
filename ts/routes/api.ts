@@ -17,7 +17,7 @@ api.get("/world/:id", async (req, res) => {
   const responseData = await handleReadWorld(req);
   return res.json(responseData);
 });
-api.get("/world-data/:world/:turn", async (req, res) => {
+api.get("/turn-data/:world/:turn", async (req, res) => {
   const responseData = await handleReadTurnData(req);
   return res.json(responseData);
 });

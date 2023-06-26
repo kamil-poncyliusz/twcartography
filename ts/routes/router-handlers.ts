@@ -39,6 +39,7 @@ export const handleAuthentication = async function (req: Request) {
   });
   return isSessionCreated;
 };
+
 export const handleLogout = async function (req: Request) {
   const loggedOut = await new Promise((resolve) => {
     req.session.destroy((err) => {

@@ -8,6 +8,7 @@ const mapTitle = document.getElementById("map-title");
 const mapDescription = document.getElementById("map-description");
 
 let currentEnlargedMap: HTMLDivElement | null = null;
+const mapImagesPath = "/images/maps";
 
 const viewEnlargedMap = function () {
   if (!currentEnlargedMap) return;
@@ -15,14 +16,16 @@ const viewEnlargedMap = function () {
   const title = currentEnlargedMap.dataset.title;
   const description = currentEnlargedMap.dataset.description;
   if (isNaN(id) || !title || !description) return;
-  const src = `../images/maps/${id}.png`;
+  const src = `${mapImagesPath}/${id}.png`;
   if (enlargedMapImage) enlargedMapImage.setAttribute("src", src);
   if (enlargedMap) enlargedMap.style.visibility = "visible";
   updateMapInfo();
 };
+
 const hideEnlargedMap = function () {
   if (enlargedMap) enlargedMap.style.visibility = "hidden";
 };
+
 const viewNextMap = function () {
   if (!currentEnlargedMap) return;
   const nextSibling = currentEnlargedMap.nextElementSibling as HTMLDivElement | null;
@@ -30,6 +33,7 @@ const viewNextMap = function () {
   else currentEnlargedMap = mapTiles[mapTiles.length - 1] as HTMLDivElement;
   viewEnlargedMap();
 };
+
 const viewPreviousMap = function () {
   if (!currentEnlargedMap) return;
   const previousSibling = currentEnlargedMap.previousElementSibling as HTMLDivElement | null;
@@ -37,6 +41,7 @@ const viewPreviousMap = function () {
   else currentEnlargedMap = mapTiles[0] as HTMLDivElement;
   viewEnlargedMap();
 };
+
 const updateMapInfo = function () {
   if (!currentEnlargedMap) return;
   const title = currentEnlargedMap.dataset.title;
@@ -45,6 +50,7 @@ const updateMapInfo = function () {
   mapTitle.innerHTML = title;
   mapDescription.innerHTML = description;
 };
+
 const handleMapTileClick = function (e: Event) {
   let target = e.target as HTMLDivElement;
   if (target.tagName === "IMG") target = target.closest("div[data-id]") as HTMLDivElement;
@@ -52,6 +58,7 @@ const handleMapTileClick = function (e: Event) {
   currentEnlargedMap = target;
   viewEnlargedMap();
 };
+
 const useKeyboardShortcut = function (e: KeyboardEvent) {
   const keyCode = e.code;
   switch (keyCode) {

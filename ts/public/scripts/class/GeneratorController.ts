@@ -1,12 +1,17 @@
 import MapGenerator from "./MapGenerator.js";
 import SettingsValidator from "./SettingsValidator.js";
-import { randomColor } from "../utils.js";
+import { randomizeGroupColor } from "../utils.js";
 import { MarkGroup, Settings, ParsedTurnData, Tribe } from "../../../src/Types.js";
 import { handleReadTurnData, handleReadWorld } from "../../../routes/api-handlers.js";
 
+const DEFAULT_BACKGROUND_COLOR = "#202020";
+const DEFAULT_BORDER_COLOR = "#808080";
+const DEFAULT_UNMARKED_COLOR = "#808080";
+const MAX_TRIBE_SUGGESTIONS = 20;
+
 class GeneratorController {
-  #backgroundColor: string = "#202020";
-  #borderColor: string = "#808080";
+  #backgroundColor: string = DEFAULT_BACKGROUND_COLOR;
+  #borderColor: string = DEFAULT_BORDER_COLOR;
   data: { [key: number]: ParsedTurnData } = {};
   #displayUnmarked: boolean = false;
   latestTurn: number = -1;
@@ -18,7 +23,7 @@ class GeneratorController {
   #spotSizeStep: number = 1000;
   #trim: boolean = true;
   turn: number = -1;
-  #unmarkedColor: string = "#808080";
+  #unmarkedColor: string = DEFAULT_UNMARKED_COLOR;
   #villageFilter: number = 3000;
   world: number = 0;
   constructor() {}
@@ -44,19 +49,19 @@ class GeneratorController {
     return this.data[this.turn].tribes;
   }
   addMark(tribeTag: string, groupName: string) {
-    if (!this.world || !this.turn) return false;
+    if (this.turn === -1) return false;
     const group = this.markGroups.find((element) => element.name === groupName);
-    if (group === undefined) return false;
+    if (!group) return false;
     const tribe = this.findTribe(tribeTag);
     if (!tribe) return false;
     group.tribes.push(tribe.id);
     return true;
   }
   addMarkGroup(group: MarkGroup) {
-    if (!this.world || !this.turn) return false;
+    if (this.turn === -1) return false;
     if (!SettingsValidator.groupName(group.name) || !SettingsValidator.color(group.color)) return false;
     if (this.isGroupNameTaken(group.name)) return false;
-    if (group.color === "#FFFFFF") group.color = randomColor();
+    if (group.color === "#FFFFFE") group.color = randomizeGroupColor();
     const newGroup: MarkGroup = {
       tribes: [],
       name: group.name,
@@ -68,10 +73,10 @@ class GeneratorController {
   async applySettings(settings: Settings) {
     if (!SettingsValidator.settings(settings)) return false;
     if (settings.world !== this.world) {
-      const result = await this.changeWorld(settings.world);
-      if (!result) return false;
-      const res = await this.changeTurn(settings.turn);
-      if (!res) return false;
+      const isWorldChanged = await this.changeWorld(settings.world);
+      if (!isWorldChanged) return false;
+      const isTurnChanged = await this.changeTurn(settings.turn);
+      if (!isTurnChanged) return false;
     }
     this.setBackgroundColor(settings.backgroundColor);
     this.setDisplayUnmarked(settings.displayUnmarked);
@@ -89,15 +94,15 @@ class GeneratorController {
         name: group.name,
         color: group.color,
       });
-      for (let tribeId of group.tribes) {
-        const tribe = this.tribes[tribeId];
+      for (let tribeID of group.tribes) {
+        const tribe = this.tribes[tribeID];
         if (tribe) this.addMark(tribe.tag, group.name);
       }
     }
     return true;
   }
   changeMarkGroupColor(name: string, color: string) {
-    if (!this.world || !this.turn) return false;
+    if (this.turn === -1) return false;
     const groupIndex = this.markGroups.findIndex((element) => element.name === name);
     if (groupIndex === -1) return false;
     if (!SettingsValidator.color(color)) return false;
@@ -105,14 +110,14 @@ class GeneratorController {
     group.color = color;
     return true;
   }
-  changeMarkGroupName(oldName: string, name: string) {
-    if (!this.world || !this.turn) return false;
+  changeMarkGroupName(oldName: string, newName: string) {
+    if (this.turn === -1) return false;
     const groupIndex = this.markGroups.findIndex((element) => element.name === oldName);
     if (groupIndex === -1) return false;
     const group = this.markGroups[groupIndex];
-    if (!SettingsValidator.groupName(name)) return false;
-    if (this.isGroupNameTaken(name)) return false;
-    group.name = name;
+    if (!SettingsValidator.groupName(newName)) return false;
+    if (this.isGroupNameTaken(newName)) return false;
+    group.name = newName;
     return true;
   }
   async changeTurn(turn: number): Promise<boolean> {
@@ -124,8 +129,8 @@ class GeneratorController {
     this.turn = turn;
     for (let group of this.markGroups) {
       for (let tribeIndex = group.tribes.length - 1; tribeIndex >= 0; tribeIndex--) {
-        const tribeId = group.tribes[tribeIndex];
-        if (!this.tribes[tribeId]) {
+        const tribeID = group.tribes[tribeIndex];
+        if (!this.tribes[tribeID]) {
           group.tribes.splice(tribeIndex, 1);
         }
       }
@@ -145,10 +150,10 @@ class GeneratorController {
     return true;
   }
   deleteMark(groupName: string, tribeTag: string) {
-    if (!this.world || !this.turn) return false;
+    if (this.turn === -1) return false;
     const group = this.markGroups.find((element) => element.name === groupName);
     if (group === undefined) return false;
-    const tribeIndex = group.tribes.findIndex((tribeId) => this.tribes[tribeId].tag === tribeTag);
+    const tribeIndex = group.tribes.findIndex((tribeID) => this.tribes[tribeID].tag === tribeTag);
     if (tribeIndex === -1) return false;
     group.tribes.splice(tribeIndex, 1);
     return true;
@@ -162,8 +167,8 @@ class GeneratorController {
   async fetchTurnData(turn: number) {
     if (this.world === 0) return false;
     if (!SettingsValidator.turn(turn)) return false;
-    if (this.data[turn] !== undefined) return true;
-    const url = `${window.location.origin}/api/world-data/${this.world}/${turn}`;
+    if (typeof this.data[turn] === "object") return true;
+    const url = `${window.location.origin}/api/turn-data/${this.world}/${turn}`;
     const response = await fetch(url);
     const turnData: Awaited<ReturnType<typeof handleReadTurnData>> = await response.json();
     if (!turnData) return false;
@@ -172,26 +177,29 @@ class GeneratorController {
   }
   findTribe(tag: string) {
     if (!this.tribes) return false;
-    for (const tribeId in this.tribes) {
-      if (this.tribes[tribeId].tag === tag) return this.tribes[tribeId];
+    for (const tribeID in this.tribes) {
+      if (this.tribes[tribeID].tag === tag) return this.tribes[tribeID];
     }
     return false;
   }
   getMapImageData() {
+    if (!SettingsValidator.settings(this.settings)) return false;
+    if (typeof this.data[this.turn] !== "object") return false;
     const generator = new MapGenerator(this.data[this.turn], this.settings);
-    return generator.imageData as ImageData;
+    if (!generator.imageData) return false;
+    return generator.imageData;
   }
-  getSuggestions(tag: string, limit = 20) {
+  getSuggestions(tag: string, limit = MAX_TRIBE_SUGGESTIONS) {
     const tribes = this.tribes;
     if (!tribes) return false;
     const suggestions: Tribe[] = [];
-    for (const tribeId in tribes) {
-      if (tribes[tribeId].tag.includes(tag) || tag === "") suggestions.push(tribes[tribeId]);
+    for (const tribeID in tribes) {
+      if (tribes[tribeID].tag.includes(tag) || tag === "") suggestions.push(tribes[tribeID]);
     }
     for (const group of this.markGroups) {
-      for (const tribeId of group.tribes) {
+      for (const tribeID of group.tribes) {
         for (let i = 0; i < suggestions.length; i++) {
-          if (tribeId === suggestions[i].id) suggestions.splice(i, 1);
+          if (tribeID === suggestions[i].id) suggestions.splice(i, 1);
         }
       }
     }

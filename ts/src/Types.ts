@@ -37,7 +37,7 @@ export interface Tribe {
   villages: Village[];
 }
 export interface Village {
-  tribeId: string;
+  tribeID: string;
   x: number;
   y: number;
   points: number;

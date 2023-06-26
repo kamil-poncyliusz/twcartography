@@ -1,5 +1,5 @@
-import { randomColor, randomInt } from "../utils.js";
-import CanvasController from "./Canvas.js";
+import { randomizeGroupColor } from "../utils.js";
+import CanvasController from "./CanvasController.js";
 import GeneratorController from "./GeneratorController.js";
 import SettingsTabController from "./SettingsTab.js";
 import SuggestionsTabController from "./SuggestionsTab.js";
@@ -33,13 +33,13 @@ class MarkGroupsTabController {
     for (let group of groups) {
       const newRow = document.createElement("tr");
       let content = "";
-      for (let tribeId of group.tribes) {
-        const tribe = tribes[tribeId];
+      for (let tribeID of group.tribes) {
+        const tribe = tribes[tribeID];
         content += `<p class='mark label-button delete-button' title='${tribe.name}'>${tribe.tag}</p>`;
       }
-      const players = group.tribes.reduce((sum, tribeId) => sum + tribes[tribeId].players, 0);
-      const villages = group.tribes.reduce((sum, tribeId) => sum + tribes[tribeId].villages.length, 0);
-      const points = group.tribes.reduce((sum, tribeId) => sum + tribes[tribeId].points, 0);
+      const players = group.tribes.reduce((sum, tribeID) => sum + tribes[tribeID].players, 0);
+      const villages = group.tribes.reduce((sum, tribeID) => sum + tribes[tribeID].villages.length, 0);
+      const points = group.tribes.reduce((sum, tribeID) => sum + tribes[tribeID].points, 0);
       content = `<td class='group-tribes'>${content}</td><td class='group-name'>${group.name}</td>`;
       content += `<td><input type='color' title='Kliknij prawym aby wylosować kolor' value='${group.color}'></td>`;
       content += `<td>${group.tribes.length}</td><td>${players}</td><td>${villages}</td><td>${points}</td>`;
@@ -76,8 +76,8 @@ class MarkGroupsTabController {
     const row = cell.parentElement as HTMLTableRowElement;
     const nameCell = row.querySelector(".group-name") as HTMLTableCellElement;
     const name = nameCell.textContent as string;
-    const result = this.#generator.deleteMarkGroup(name);
-    if (!result) return;
+    const isDeleted = this.#generator.deleteMarkGroup(name);
+    if (!isDeleted) return;
     this.render();
     this.updateSettings();
     this.renderSuggestions();
@@ -90,8 +90,8 @@ class MarkGroupsTabController {
     const row = cell.parentElement as HTMLTableRowElement;
     const nameCell = row.querySelector(".group-name") as HTMLTableCellElement;
     const name = nameCell.textContent as string;
-    const result = this.#generator.changeMarkGroupColor(name, color);
-    if (!result) return;
+    const isChanged = this.#generator.changeMarkGroupColor(name, color);
+    if (!isChanged) return;
     this.render();
     this.updateSettings();
     this.renderCanvas();
@@ -101,11 +101,11 @@ class MarkGroupsTabController {
     const target = e.target as HTMLInputElement;
     const cell = target.parentElement as HTMLTableCellElement;
     const row = cell.parentElement as HTMLTableRowElement;
-    const nameCell = row.querySelector(".group-name") as HTMLTableCellElement;
-    const name = nameCell.textContent as string;
-    const color = randomColor();
-    const result = this.#generator.changeMarkGroupColor(name, color);
-    if (!result) return;
+    const groupNameCell = row.querySelector(".group-name") as HTMLTableCellElement;
+    const name = groupNameCell.textContent as string;
+    const color = randomizeGroupColor();
+    const isChanged = this.#generator.changeMarkGroupColor(name, color);
+    if (!isChanged) return;
     this.render();
     this.updateSettings();
     this.renderCanvas();
@@ -117,8 +117,8 @@ class MarkGroupsTabController {
     const tribeTag = target.textContent as string;
     const nameCell = row.querySelector(".group-name") as HTMLTableCellElement;
     const groupName = nameCell.textContent as string;
-    const result = this.#generator.deleteMark(groupName, tribeTag);
-    if (!result) return;
+    const isDeleted = this.#generator.deleteMark(groupName, tribeTag);
+    if (!isDeleted) return;
     this.render();
     this.updateSettings();
     this.renderSuggestions();
@@ -135,10 +135,10 @@ class MarkGroupsTabController {
   };
   changeGroupName = (e: Event) => {
     const target = e.target as HTMLInputElement;
-    const name = target.value;
+    const newName = target.value;
     const oldName = target.dataset.oldName as string;
-    const result = this.#generator.changeMarkGroupName(oldName, name);
-    if (!result) {
+    const isChanged = this.#generator.changeMarkGroupName(oldName, newName);
+    if (!isChanged) {
       //
     }
     this.render();
