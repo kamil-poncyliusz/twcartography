@@ -21,6 +21,8 @@ const parseTurnData = function (world_id: number, turn: number) {
     conquer: {},
     tribes: {},
     width: 1000,
+    averageVillagePoints: 0,
+    medianVillagePoints: 0,
     topVillagePoints: 0,
   };
   parsedData.tribes["0"] = {
@@ -56,14 +58,16 @@ const parseTurnData = function (world_id: number, turn: number) {
     playerTribeIds[id] = tribeID;
   }
   const villagesData = parseFile(world_id, turn, "village");
+  const villagePointsArray: number[] = [];
   for (let i = 0; i < villagesData.length; i++) {
     const [id, name, x, y, playerId, points, rank] = villagesData[i].split(",");
+    const pointsNumber = +points;
+    villagePointsArray.push(pointsNumber);
     if (parseInt(playerId) > 0) {
       const tribeID = playerTribeIds[playerId];
       const tribe = parsedData.tribes[tribeID];
       if (tribe === undefined) console.log("Parser:", tribeID, "village data tribe undefined");
       else {
-        const pointsNumber = parseInt(points);
         tribe.villages.push({
           tribeID: tribeID,
           x: parseInt(x),
@@ -74,6 +78,14 @@ const parseTurnData = function (world_id: number, turn: number) {
       }
     }
   }
+  villagePointsArray.sort((a, b) => b - a);
+  const medianIndex = Math.floor(villagePointsArray.length / 2);
+  parsedData.medianVillagePoints = villagePointsArray[medianIndex];
+  let villagePointsSum = 0;
+  for (let i = 0; i < villagePointsArray.length; i++) {
+    villagePointsSum += villagePointsArray[i];
+  }
+  parsedData.averageVillagePoints = Math.round(villagePointsSum / villagePointsArray.length);
   const killAllData = parseFile(world_id, turn, "kill_all_tribe");
   for (let i = 0; i < killAllData.length; i++) {
     const [rank, id, score] = killAllData[i].split(",");

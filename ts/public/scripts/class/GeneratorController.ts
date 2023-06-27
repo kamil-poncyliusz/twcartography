@@ -135,6 +135,14 @@ class GeneratorController {
         }
       }
     }
+    console.log(
+      "Average:",
+      this.data[this.turn].averageVillagePoints,
+      "Median:",
+      this.data[this.turn].medianVillagePoints,
+      "Top",
+      this.data[this.turn].topVillagePoints
+    );
     return true;
   }
   async changeWorld(world: number) {

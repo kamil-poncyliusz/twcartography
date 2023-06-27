@@ -46,6 +46,8 @@ export interface ParsedTurnData {
   conquer: Object;
   tribes: { [key: string]: Tribe };
   width: number;
+  averageVillagePoints: number;
+  medianVillagePoints: number;
   topVillagePoints: number;
 }
 export interface MapLoaderSettings {
