@@ -13,11 +13,9 @@ export interface Settings {
   outputWidth: number;
   scale: number;
   spotsFilter: number;
-  spotSizeStep: number;
   trim: boolean;
   turn: number;
   unmarkedColor: string;
-  villageFilter: number;
   world: number;
 }
 export interface ParsedColor {

@@ -17,11 +17,9 @@ const inputs: { [key: string]: HTMLInputElement } = {
   outputWidth: document.getElementById("output-width") as HTMLInputElement,
   scale: document.getElementById("scale") as HTMLInputElement,
   spotsFilter: document.getElementById("spots-filter") as HTMLInputElement,
-  spotSizeStep: document.getElementById("spot-size-step") as HTMLInputElement,
   trim: document.getElementById("trim") as HTMLInputElement,
   turn: document.getElementById("turn-input") as HTMLInputElement,
   unmarkedColor: document.getElementById("unmarked-color") as HTMLInputElement,
-  villageFilter: document.getElementById("village-filter") as HTMLInputElement,
 };
 const descriptionInput = document.getElementById("description") as HTMLInputElement | null;
 const encodedSettingsInput = document.getElementById("encoded-settings") as HTMLInputElement;
@@ -51,11 +49,9 @@ class SettingsTabController {
     this.#inputs.outputWidth.addEventListener("input", this.outputWidthChange);
     this.#inputs.scale.addEventListener("input", this.scaleChange);
     this.#inputs.spotsFilter.addEventListener("input", this.spotsFilterChange);
-    this.#inputs.spotSizeStep.addEventListener("input", this.spotSizeStepChange);
     this.#inputs.trim.addEventListener("input", this.trimChange);
     this.#inputs.turn.addEventListener("input", this.turnChange);
     this.#inputs.unmarkedColor.addEventListener("input", this.unmarkedColorChange);
-    this.#inputs.villageFilter.addEventListener("input", this.villageFilterChange);
     this.#worldSelect = worldSelect;
     this.#worldSelect.addEventListener("change", this.worldChange);
     encodedSettingsInput.addEventListener("input", this.encodedSettingsChange);
@@ -236,18 +232,6 @@ class SettingsTabController {
     this.update();
     this.#inputs.spotsFilter.classList.remove("is-invalid");
   };
-  spotSizeStepChange = (e: Event) => {
-    const target = e.target as HTMLInputElement;
-    const value = Number(target.value);
-    const isChanged = this.#generator.setSpotSizeStep(value);
-    if (!isChanged) {
-      this.#inputs.spotSizeStep.classList.add("is-invalid");
-      return;
-    }
-    this.renderCanvas();
-    this.update();
-    this.#inputs.spotSizeStep.classList.remove("is-invalid");
-  };
   trimChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
     const value = target.checked;
@@ -281,18 +265,6 @@ class SettingsTabController {
     this.renderCanvas();
     this.update();
     this.#inputs.unmarkedColor.classList.remove("is-invalid");
-  };
-  villageFilterChange = (e: Event) => {
-    const target = e.target as HTMLInputElement;
-    const value = Number(target.value);
-    const isChanged = this.#generator.setVillageFilter(value);
-    if (!isChanged) {
-      this.#inputs.villageFilter.classList.add("is-invalid");
-      return;
-    }
-    this.renderCanvas();
-    this.update();
-    this.#inputs.villageFilter.classList.remove("is-invalid");
   };
   worldChange = async (e: Event) => {
     const target = e.target as HTMLSelectElement;

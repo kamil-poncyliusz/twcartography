@@ -9,15 +9,11 @@ const min: { [key: string]: number } = {
   outputWidth: 100,
   scale: 1,
   spotsFilter: 1,
-  spotSizeStep: 100,
-  villageFilter: 20,
 };
 const max: { [key: string]: number } = {
   outputWidth: 1000,
   scale: 5,
   spotsFilter: 400,
-  spotSizeStep: 12154,
-  villageFilter: 12154,
 };
 
 const GROUP_NAME_FORBIDDEN_CHARACTERS = "#^,;";
@@ -52,16 +48,8 @@ class SettingsValidator {
     if (typeof input !== "number" || input < min.spotsFilter || input > max.spotsFilter) return false;
     return true;
   }
-  static spotSizeStep(input: number) {
-    if (typeof input !== "number" || input < min.spotSizeStep || input > max.spotSizeStep) return false;
-    return true;
-  }
   static turn(input: number) {
     if (typeof input !== "number" || isNaN(input) || input < TURN_MIN || input > TURN_MAX) return false;
-    return true;
-  }
-  static villageFilter(input: number) {
-    if (typeof input !== "number" || input < min.villageFilter || input > max.villageFilter) return false;
     return true;
   }
   static settings(settings: Settings) {
@@ -72,10 +60,8 @@ class SettingsValidator {
     if (!SettingsValidator.outputWidth(settings.outputWidth)) return false;
     if (!SettingsValidator.scale(settings.scale)) return false;
     if (!SettingsValidator.spotsFilter(settings.spotsFilter)) return false;
-    if (!SettingsValidator.spotSizeStep(settings.spotSizeStep)) return false;
     if (!SettingsValidator.boolean(settings.trim)) return false;
     if (!SettingsValidator.color(settings.unmarkedColor)) return false;
-    if (!SettingsValidator.villageFilter(settings.villageFilter)) return false;
     const groupNames: string[] = [];
     const tribes: string[] = [];
     for (const group of settings.markGroups) {

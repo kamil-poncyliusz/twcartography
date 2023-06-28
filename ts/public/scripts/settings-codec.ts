@@ -23,11 +23,9 @@ export const encodeSettings = function (settings: Settings): string {
   result += settings.outputWidth + minorSeparator;
   result += settings.scale + minorSeparator;
   result += settings.spotsFilter + minorSeparator;
-  result += settings.spotSizeStep + minorSeparator;
   result += Number(settings.trim) + minorSeparator;
   result += settings.turn + minorSeparator;
   result += settings.unmarkedColor + minorSeparator;
-  result += settings.villageFilter + minorSeparator;
   result += settings.world;
   const encoded = Base64.encode(result);
   return encodeURIComponent(encoded);
@@ -57,20 +55,7 @@ export const decodeSettings = function (input: string) {
     markGroups.push(group);
   }
   if (settingsArray.length < 8) return false;
-  const [
-    backgroundColor,
-    borderColor,
-    displayUnmarked,
-    outputWidth,
-    scale,
-    spotsFilter,
-    spotSizeStep,
-    trim,
-    turn,
-    unmarkedColor,
-    villageFilter,
-    world,
-  ] = settingsArray;
+  const [backgroundColor, borderColor, displayUnmarked, outputWidth, scale, spotsFilter, trim, turn, unmarkedColor, world] = settingsArray;
   const result = {
     backgroundColor: backgroundColor,
     borderColor: borderColor,
@@ -79,11 +64,9 @@ export const decodeSettings = function (input: string) {
     outputWidth: parseInt(outputWidth),
     scale: parseInt(scale),
     spotsFilter: parseInt(spotsFilter),
-    spotSizeStep: parseInt(spotSizeStep),
     trim: parseInt(trim) === 1 ? true : false,
     turn: parseInt(turn),
     unmarkedColor: unmarkedColor,
-    villageFilter: parseInt(villageFilter),
     world: parseInt(world),
   };
   return result;

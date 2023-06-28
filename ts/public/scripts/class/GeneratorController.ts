@@ -20,11 +20,9 @@ class GeneratorController {
   #spotsFilter: number = 8;
   #scale: number = 2;
   #server: string = "";
-  #spotSizeStep: number = 1000;
   #trim: boolean = true;
   turn: number = -1;
   #unmarkedColor: string = DEFAULT_UNMARKED_COLOR;
-  #villageFilter: number = 3000;
   world: number = 0;
   constructor() {}
   get settings(): Settings {
@@ -36,11 +34,9 @@ class GeneratorController {
       outputWidth: this.#outputWidth,
       scale: this.#scale,
       spotsFilter: this.#spotsFilter,
-      spotSizeStep: this.#spotSizeStep,
       trim: this.#trim,
       turn: this.turn,
       unmarkedColor: this.#unmarkedColor,
-      villageFilter: this.#villageFilter,
       world: this.world,
     };
   }
@@ -83,10 +79,8 @@ class GeneratorController {
     this.setOutputWidth(settings.outputWidth);
     this.setScale(settings.scale);
     this.setSpotsFilter(settings.spotsFilter);
-    this.setSpotSizeStep(settings.spotSizeStep);
     this.setTrim(settings.trim);
     this.setUnmarkedColor(settings.unmarkedColor);
-    this.setVillageFilter(settings.villageFilter);
     this.markGroups = [];
     for (let group of settings.markGroups) {
       this.addMarkGroup({
@@ -135,14 +129,6 @@ class GeneratorController {
         }
       }
     }
-    console.log(
-      "Average:",
-      this.data[this.turn].averageVillagePoints,
-      "Median:",
-      this.data[this.turn].medianVillagePoints,
-      "Top",
-      this.data[this.turn].topVillagePoints
-    );
     return true;
   }
   async changeWorld(world: number) {
@@ -261,12 +247,6 @@ class GeneratorController {
     this.#spotsFilter = value;
     return true;
   }
-  setSpotSizeStep(value: number) {
-    if (this.turn === -1) return false;
-    if (!SettingsValidator.spotSizeStep(value)) return false;
-    this.#spotSizeStep = value;
-    return true;
-  }
   setTrim(value: boolean) {
     if (this.turn === -1) return false;
     if (!SettingsValidator.boolean(value)) return false;
@@ -277,12 +257,6 @@ class GeneratorController {
     if (this.turn === -1) return false;
     if (!SettingsValidator.color(color)) return false;
     this.#unmarkedColor = color;
-    return true;
-  }
-  setVillageFilter(value: number) {
-    if (this.turn === -1) return false;
-    if (!SettingsValidator.villageFilter(value)) return false;
-    this.#villageFilter = value;
     return true;
   }
 }

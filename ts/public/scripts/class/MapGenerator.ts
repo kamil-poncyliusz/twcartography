@@ -69,13 +69,20 @@ class MapGenerator {
   #rawPixels: RawPixel[][] = [];
   #scaledPixels: ScaledPixel[][] = [];
   #settings: Settings;
+  #spotSizeStep: number;
   #turnData: ParsedTurnData;
+  #maxSpotSize: number;
+  #villageFilter: number;
   #widthModifier: number = 0;
   constructor(data: ParsedTurnData, settings: Settings) {
     this.#turnData = data;
     this.#settings = settings;
     this.#backgroundColor = parseHexColor(settings.backgroundColor);
-    this.#expansionArray = calcExpansionArray(settings.spotSizeStep);
+    this.#maxSpotSize = 5 + Math.ceil(((12164 - data.averageVillagePoints) / 12164) * 7);
+    this.#villageFilter = Math.min(Math.floor(data.averageVillagePoints * 0.9), 3000);
+    this.#spotSizeStep = Math.round((data.topVillagePoints - this.#villageFilter) / this.#maxSpotSize);
+    // console.log("Filter:", this.#villageFilter, "Step:", this.#spotSizeStep, "Median:", data.medianVillagePoints, "Max spot:", this.#maxSpotSize);
+    this.#expansionArray = calcExpansionArray(15);
     this.#offset = (1000 - data.width) / 2;
     this.#legend = new Legend(this.#settings.markGroups);
     this.generateRawPixels();
@@ -134,19 +141,10 @@ class MapGenerator {
     return 0;
   }
   #calcSpotSize(villagePoints: number) {
-    // const settings = this.#settings;
-    // const minSize = 2;
-    // const maxSize = settings.spotSizeStep;
-    // const minPoints = settings.villageFilter;
-    // const maxPoints = this.#turnData.topVillagePoints;
-    // if (villagePoints <= minPoints) return minSize;
-    // if (villagePoints >= maxPoints) return maxSize;
-    // const size = Math.floor(((villagePoints - minPoints) / (maxPoints - minPoints)) * (maxSize - minSize + 1)) + minSize;
-    // return size;
-    const maxSize = 15;
-    const minSize = 2;
-    const minPoints = this.#settings.villageFilter;
-    const spotSizeStep = this.#settings.spotSizeStep;
+    const maxSize = this.#maxSpotSize;
+    const minSize = 1;
+    const minPoints = this.#villageFilter;
+    const spotSizeStep = this.#spotSizeStep;
     const result = minSize + Math.floor((villagePoints - minPoints) / spotSizeStep);
     if (result > maxSize) return maxSize;
     return result;
@@ -273,7 +271,7 @@ class MapGenerator {
       if (group) {
         const color = colors[group.name] ?? unmarkedColor;
         for (const village of tribe.villages) {
-          if (village.points >= this.#settings.villageFilter) {
+          if (village.points >= this.#villageFilter) {
             this.#printVillageSpot(village, color);
             this.#legend.add(group.name, village.x, village.y);
           }
