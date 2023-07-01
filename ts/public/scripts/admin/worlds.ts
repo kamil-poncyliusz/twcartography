@@ -34,7 +34,7 @@ const createWorld = async function (e: Event) {
     domain: domainInput.value,
     timestamp: parseInt(timestampInput.value),
   };
-  const createdWorldId: Awaited<ReturnType<typeof handleCreateWorld>> = await postRequest("api/world/create", payload);
+  const createdWorldId: Awaited<ReturnType<typeof handleCreateWorld>> = await postRequest("/api/world/create", payload);
   if (createdWorldId === false) console.log("Failed to create a world");
   else window.location.reload();
 };

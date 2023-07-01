@@ -12,7 +12,7 @@ const changeUserRank = async function (e: Event) {
     const rank = parseInt(rankString);
     if (id >= 1 && rank >= 0) {
       const payload = { id: id, rank: rank };
-      const response: Awaited<ReturnType<typeof handleUpdateUserRank>> = await postRequest("api/user/update/rank", payload);
+      const response: Awaited<ReturnType<typeof handleUpdateUserRank>> = await postRequest("/api/user/update/rank", payload);
       if (response) return window.location.reload();
       else {
         target.classList.add("is-invalid");

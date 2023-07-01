@@ -25,7 +25,10 @@ html(lang="pl-PL")
           .map-tile(title=map.title, data-id=map.id, data-title=map.title, data-description=map.description)
             img(src=`/images/maps/${map.id}.png`, alt="map")
       #info
-        p#collection-title= collection.title
+        div
+          span#collection-title= collection.title
+          if user && user.rank === 10
+            button#delete-collection(type="button") usuń
         div
           span= `Stworzona przez `
           a.label-button(href=`/user/${collection.author.id}`) #{ collection.author.login }

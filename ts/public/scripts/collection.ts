@@ -1,3 +1,7 @@
+import { handleDeleteCollection } from "../../routes/api-handlers.js";
+import "./nav-bar.js";
+import { postRequest } from "./requests.js";
+
 const mapTiles = document.querySelectorAll("#map-tiles > .map-tile");
 const enlargedMap = document.getElementById("map-enlarged");
 const enlargedMapImage = document.querySelector("#image-wrapper > img");
@@ -6,6 +10,7 @@ const previousMapButton = document.getElementById("previous-map");
 const nextMapButton = document.getElementById("next-map");
 const mapTitle = document.getElementById("map-title");
 const mapDescription = document.getElementById("map-description");
+const deleteCollectionButton = document.getElementById("delete-collection");
 
 let currentEnlargedMap: HTMLDivElement | null = null;
 const mapImagesPath = "/images/maps";
@@ -77,10 +82,22 @@ const useKeyboardShortcut = function (e: KeyboardEvent) {
   }
 };
 
+const sendDeleteCollectionRequest = async function () {
+  const id = parseInt(window.location.pathname.split("/")[2]);
+  if (isNaN(id) || id <= 0) return;
+  const payload = {
+    id: id,
+  };
+  const isDeleted: Awaited<ReturnType<typeof handleDeleteCollection>> = await postRequest("/api/collection/delete", payload);
+  if (isDeleted) window.location.href = "/";
+  else console.log("Failed to delete this collection");
+};
+
 mapTiles.forEach((mapTile) => {
   mapTile.addEventListener("click", handleMapTileClick);
 });
 if (hideEnlargedMapButton) hideEnlargedMapButton.addEventListener("click", hideEnlargedMap);
 if (nextMapButton) nextMapButton.addEventListener("click", viewNextMap);
 if (previousMapButton) previousMapButton.addEventListener("click", viewPreviousMap);
+if (deleteCollectionButton) deleteCollectionButton.addEventListener("click", sendDeleteCollectionRequest);
 document.body.addEventListener("keydown", useKeyboardShortcut);

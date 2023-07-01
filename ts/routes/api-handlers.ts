@@ -10,6 +10,7 @@ import {
   deleteWorld,
   deleteMap,
   createCollection,
+  deleteCollection,
 } from "../src/queries/index.js";
 import MapGenerator from "../public/scripts/class/MapGenerator.js";
 import { encodeSettings } from "../public/scripts/settings-codec.js";
@@ -144,5 +145,13 @@ export const handleDeleteMap = async function (req: Request) {
   const mapId = req.body.id;
   if (typeof mapId !== "number" || isNaN(mapId) || mapId < 1) return false;
   const isDeleted = await deleteMap(mapId);
+  return isDeleted;
+};
+
+export const handleDeleteCollection = async function (req: Request) {
+  if (!req.session.user || req.session.user.rank < 10) return false;
+  const id = req.body.id;
+  if (typeof id !== "number" || id <= 0) return false;
+  const isDeleted = await deleteCollection(id);
   return isDeleted;
 };

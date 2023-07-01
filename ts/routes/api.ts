@@ -3,6 +3,7 @@ import {
   handleCreateMap,
   handleCreateTurnData,
   handleCreateWorld,
+  handleDeleteCollection,
   handleDeleteMap,
   handleDeleteWorld,
   handleReadMaps,
@@ -47,6 +48,10 @@ api.post("/user/update/rank", async (req, res) => {
 });
 api.post("/world/delete", async (req, res) => {
   const responseData = await handleDeleteWorld(req);
+  return res.json(responseData);
+});
+api.post("/collection/delete", async (req, res) => {
+  const responseData = await handleDeleteCollection(req);
   return res.json(responseData);
 });
 

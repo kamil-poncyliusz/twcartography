@@ -54,3 +54,17 @@ export const createCollection = async function (world: number, author: number, t
     });
   return result;
 };
+
+export const deleteCollection = async function (id: number) {
+  const result = await prisma.collection
+    .delete({
+      where: {
+        id: id,
+      },
+    })
+    .catch((err) => {
+      console.error("Prisma error:", err);
+      return false;
+    });
+  return true;
+};

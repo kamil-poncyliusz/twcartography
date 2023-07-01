@@ -9,7 +9,7 @@ const deleteMap = async function () {
   const idString = window.location.pathname.split("/")[2];
   const id = parseInt(idString);
   if (typeof id !== "number" || isNaN(id) || id < 1) return;
-  const isDeleted: Awaited<ReturnType<typeof handleDeleteMap>> = await postRequest("api/map/delete", { id: id });
+  const isDeleted: Awaited<ReturnType<typeof handleDeleteMap>> = await postRequest("/api/map/delete", { id: id });
   if (isDeleted) window.location.href = `${window.location.origin}/maps`;
   else console.log("Failed to delete this map");
 };

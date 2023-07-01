@@ -306,7 +306,7 @@ class SettingsTabController {
         break;
       }
       case CreateMapRequestValidationCode.Ok: {
-        const createdMapId: Awaited<ReturnType<typeof handleCreateMap>> = await postRequest("api/map/create", payload);
+        const createdMapId: Awaited<ReturnType<typeof handleCreateMap>> = await postRequest("/api/map/create", payload);
         if (createdMapId === false) console.log("Failed to publish the map");
         else console.log("Map published succesfully");
       }

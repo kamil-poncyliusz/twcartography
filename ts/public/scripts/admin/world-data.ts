@@ -7,7 +7,7 @@ const createTurnData = async function (e: Event) {
   const target = e.target as HTMLButtonElement;
   const world = Number(target.dataset.world);
   const turn = Number(target.dataset.turn);
-  const endpoint = `api/world-data/create/${world}/${turn}`;
+  const endpoint = `/api/world-data/create/${world}/${turn}`;
   const isCreated: Awaited<ReturnType<typeof handleCreateTurnData>> = await postRequest(endpoint, {});
   if (isCreated) window.location.reload();
   else console.log("Failed to create turn data");

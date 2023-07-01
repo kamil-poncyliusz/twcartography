@@ -1,6 +1,6 @@
 export const postRequest = async function (endpoint: string, body: { [key: string]: any }) {
   try {
-    const url = `${window.location.origin}/${endpoint}`;
+    const url = `${window.location.origin}${endpoint}`;
     const response = await fetch(url, {
       method: "POST",
       headers: {
