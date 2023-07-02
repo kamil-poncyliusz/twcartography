@@ -9,6 +9,7 @@ import {
   handleReadMaps,
   handleReadTurnData,
   handleReadWorld,
+  handleUpdateCollection,
   handleUpdateUserRank,
 } from "./api-handlers.js";
 
@@ -52,6 +53,10 @@ api.post("/world/delete", async (req, res) => {
 });
 api.post("/collection/delete", async (req, res) => {
   const responseData = await handleDeleteCollection(req);
+  return res.json(responseData);
+});
+api.post("/collection/update", async (req, res) => {
+  const responseData = await handleUpdateCollection(req);
   return res.json(responseData);
 });
 

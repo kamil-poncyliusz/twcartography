@@ -16,7 +16,7 @@ html(lang="pl-PL")
     #wrapper
       #map-enlarged
         #image-wrapper
-          img(src="", alt="map")
+          img(alt="map")
         button#previous-map(type="button") <
         button#next-map(type="button") >
         button#hide-enlarged-map(type="button") X
@@ -27,14 +27,24 @@ html(lang="pl-PL")
       #info
         div
           span#collection-title= collection.title
-          if user && user.rank === 10
+          if user && user.id === collection.authorId
+            input#collection-title-edit-input.hidden(type="text", name="collection-title-input", autocomplete="off", placeholder="Tytuł")
+            button#edit-collection-title(type="button", data-edit-mode="false") edytuj
+          if user && (user.id === collection.authorId || user.rank === 10)
             button#delete-collection(type="button") usuń
         div
           span= `Stworzona przez `
           a.label-button(href=`/user/${collection.author.id}`) #{ collection.author.login }
           span= ` ${collection.createdAt.toLocaleDateString()}`
-        p#collection-description= collection.description
-        p#map-title -
-        p#map-description -
+        div
+          span#collection-description= collection.description
+          if user && user.id === collection.authorId
+            textarea#collection-description-edit-textarea.hidden(name="collection-description-textarea", cols="30", rows="5") 
+            button#edit-collection-description(type="button", data-edit-mode="false") edytuj
+        div
+          span#map-title ...
+          if user && (user.id === collection.authorId || user.rank === 10)
+            button#delete-map.hidden(type="button") usuń
+        p#map-description ...
         //- div
         //-   input#settings(type="text", name="settings", value="", readonly)

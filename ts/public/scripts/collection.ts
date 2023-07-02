@@ -11,6 +11,13 @@ const nextMapButton = document.getElementById("next-map");
 const mapTitle = document.getElementById("map-title");
 const mapDescription = document.getElementById("map-description");
 const deleteCollectionButton = document.getElementById("delete-collection");
+const deleteMapButton = document.getElementById("delete-map");
+const collectionTitle = document.getElementById("collection-title");
+const collectionDescription = document.getElementById("collection-description");
+const editCollectionTitleButton = document.getElementById("edit-collection-title");
+const editCollectionDescriptionButton = document.getElementById("edit-collection-description");
+const collectionTitleEditInput = document.getElementById("collection-title-edit-input") as HTMLInputElement | undefined;
+const collectionDescriptionEditTextarea = document.getElementById("collection-description-edit-textarea") as HTMLTextAreaElement | undefined;
 
 let currentEnlargedMap: HTMLDivElement | null = null;
 const mapImagesPath = "/images/maps";
@@ -29,6 +36,8 @@ const viewEnlargedMap = function () {
 
 const hideEnlargedMap = function () {
   if (enlargedMap) enlargedMap.style.visibility = "hidden";
+  currentEnlargedMap = null;
+  updateMapInfo();
 };
 
 const viewNextMap = function () {
@@ -48,12 +57,18 @@ const viewPreviousMap = function () {
 };
 
 const updateMapInfo = function () {
-  if (!currentEnlargedMap) return;
-  const title = currentEnlargedMap.dataset.title;
-  const description = currentEnlargedMap.dataset.description;
-  if (!title || !description || !mapTitle || !mapDescription) return;
+  let title = "...";
+  let description = "...";
+  if (currentEnlargedMap) {
+    title = currentEnlargedMap.dataset.title ?? "...";
+    description = currentEnlargedMap.dataset.description ?? "...";
+  }
+  if (!mapTitle || !mapDescription) return;
   mapTitle.innerHTML = title;
   mapDescription.innerHTML = description;
+  if (!deleteMapButton) return;
+  if (currentEnlargedMap) deleteMapButton.classList.remove("hidden");
+  else deleteMapButton.classList.add("hidden");
 };
 
 const handleMapTileClick = function (e: Event) {
@@ -93,6 +108,82 @@ const sendDeleteCollectionRequest = async function () {
   else console.log("Failed to delete this collection");
 };
 
+const sendDeleteMapRequest = async function () {
+  if (!currentEnlargedMap) return;
+  const id = parseInt(currentEnlargedMap.dataset.id ?? "");
+  if (isNaN(id) || id <= 0) return;
+  const payload = {
+    id: id,
+  };
+  const isDeleted = await postRequest("/api/map/delete", payload);
+  if (isDeleted) window.location.reload();
+  else console.log("Failed to delete this map");
+};
+
+const editCollectionTitle = async function () {
+  if (!editCollectionTitleButton || !editCollectionTitleButton.dataset.editMode || !collectionTitle || !collectionTitleEditInput) return;
+  const editMode: boolean = JSON.parse(editCollectionTitleButton.dataset.editMode);
+  if (editMode) {
+    const collectionID = parseInt(window.location.pathname.split("/")[2]);
+    if (!(collectionID > 0)) return;
+    const newTitle = collectionTitleEditInput.value;
+    if (newTitle.length === 0 || newTitle.length > 15) {
+      collectionTitleEditInput.classList.add("is-invalid");
+      return;
+    }
+    const isUpdated = await postRequest("/api/collection/update", { id: collectionID, title: newTitle });
+    if (!isUpdated) return;
+    collectionTitle.innerHTML = newTitle;
+    collectionTitle.classList.remove("hidden");
+    collectionTitleEditInput.classList.add("hidden");
+    collectionTitleEditInput.classList.remove("is-invalid");
+    editCollectionTitleButton.innerHTML = "edytuj";
+    editCollectionTitleButton.dataset.editMode = JSON.stringify(false);
+  } else {
+    const currentTitle = collectionTitle.textContent as string;
+    collectionTitle.classList.add("hidden");
+    collectionTitleEditInput.value = currentTitle;
+    collectionTitleEditInput.classList.remove("hidden");
+    editCollectionTitleButton.innerHTML = "zapisz";
+    editCollectionTitleButton.dataset.editMode = JSON.stringify(true);
+  }
+};
+
+const editCollectionDescription = async function () {
+  if (
+    !editCollectionDescriptionButton ||
+    !editCollectionDescriptionButton.dataset.editMode ||
+    !collectionDescription ||
+    !collectionDescriptionEditTextarea
+  )
+    return;
+  const editMode: boolean = JSON.parse(editCollectionDescriptionButton.dataset.editMode);
+  if (editMode) {
+    const collectionID = parseInt(window.location.pathname.split("/")[2]);
+    if (!(collectionID > 0)) return;
+    const newDescription = collectionDescriptionEditTextarea.value;
+    if (newDescription.length > 500) {
+      collectionDescriptionEditTextarea.classList.add("is-invalid");
+      return;
+    }
+    const isUpdated = await postRequest("/api/collection/update", { id: collectionID, description: newDescription });
+    if (!isUpdated) return;
+    collectionDescription.innerHTML = newDescription;
+    collectionDescription.classList.remove("hidden");
+    collectionDescriptionEditTextarea.classList.add("hidden");
+    collectionDescriptionEditTextarea.classList.remove("is-invalid");
+    editCollectionDescriptionButton.innerHTML = "edytuj";
+    editCollectionDescriptionButton.dataset.editMode = JSON.stringify(false);
+  } else {
+    const currentTitle = collectionDescription.textContent as string;
+    collectionDescription.classList.add("hidden");
+    collectionDescriptionEditTextarea.value = currentTitle;
+    collectionDescriptionEditTextarea.classList.remove("hidden");
+    editCollectionDescriptionButton.innerHTML = "zapisz";
+    editCollectionDescriptionButton.dataset.editMode = JSON.stringify(true);
+  }
+};
+
 mapTiles.forEach((mapTile) => {
   mapTile.addEventListener("click", handleMapTileClick);
 });
@@ -100,4 +191,7 @@ if (hideEnlargedMapButton) hideEnlargedMapButton.addEventListener("click", hideE
 if (nextMapButton) nextMapButton.addEventListener("click", viewNextMap);
 if (previousMapButton) previousMapButton.addEventListener("click", viewPreviousMap);
 if (deleteCollectionButton) deleteCollectionButton.addEventListener("click", sendDeleteCollectionRequest);
+if (deleteMapButton) deleteMapButton.addEventListener("click", sendDeleteMapRequest);
+if (editCollectionTitleButton) editCollectionTitleButton.addEventListener("click", editCollectionTitle);
+if (editCollectionDescriptionButton) editCollectionDescriptionButton.addEventListener("click", editCollectionDescription);
 document.body.addEventListener("keydown", useKeyboardShortcut);

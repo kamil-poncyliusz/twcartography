@@ -1,5 +1,4 @@
 import { PrismaClient, Prisma, Collection } from "@prisma/client";
-import { decodeSettings } from "../../public/scripts/settings-codec.js";
 
 const prisma = new PrismaClient();
 
@@ -55,9 +54,24 @@ export const createCollection = async function (world: number, author: number, t
   return result;
 };
 
-export const deleteCollection = async function (id: number) {
+export const deleteCollection = async function (id: number): Promise<boolean> {
   const result = await prisma.collection
     .delete({
+      where: {
+        id: id,
+      },
+    })
+    .catch((err) => {
+      console.error("Prisma error:", err);
+      return false;
+    });
+  return true;
+};
+
+export const updateCollection = async function (id: number, data: { title?: string; description?: string; views?: number }) {
+  const result = await prisma.collection
+    .update({
+      data: data,
       where: {
         id: id,
       },

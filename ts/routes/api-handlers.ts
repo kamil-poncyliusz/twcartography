@@ -11,6 +11,8 @@ import {
   deleteMap,
   createCollection,
   deleteCollection,
+  updateCollection,
+  readCollection,
 } from "../src/queries/index.js";
 import MapGenerator from "../public/scripts/class/MapGenerator.js";
 import { encodeSettings } from "../public/scripts/settings-codec.js";
@@ -23,11 +25,12 @@ import { CreateMapRequestValidationCode, validateCreateMapRequest } from "../pub
 
 type mapsWithRelations = Prisma.PromiseReturnType<typeof readMaps>;
 
-const isWorldCreateBodyValid = function (row: any) {
-  if (!row.server || typeof row.server !== "string" || row.server === "") return false;
-  if (!row.num || typeof row.num !== "string" || row.num === "") return false;
-  if (!row.domain || typeof row.domain !== "string" || row.domain === "") return false;
-  if (!row.timestamp || typeof row.timestamp !== "number" || row.timestamp <= 0) return false;
+const isWorldCreatePayloadValid = function (fields: any) {
+  if (typeof fields !== "object") return false;
+  if (typeof fields.server !== "string" || fields.server === "") return false;
+  if (typeof fields.num !== "string" || fields.num === "") return false;
+  if (typeof fields.domain !== "string" || fields.domain === "") return false;
+  if (typeof fields.timestamp !== "number" || fields.timestamp <= 0) return false;
   return true;
 };
 
@@ -99,7 +102,7 @@ export const handleReadMaps = async function (req: Request) {
 
 export const handleCreateWorld = async function (req: Request) {
   if (!req.session.user || req.session.user.rank < 10) return false;
-  if (!isWorldCreateBodyValid(req.body)) return false;
+  if (!isWorldCreatePayloadValid(req.body)) return false;
   const server = req.body.server as string;
   const num = req.body.num as string;
   const domain = req.body.domain as string;
@@ -143,7 +146,7 @@ export const handleDeleteWorld = async function (req: Request) {
 export const handleDeleteMap = async function (req: Request) {
   if (!req.session.user || req.session.user.rank < 10) return false;
   const mapId = req.body.id;
-  if (typeof mapId !== "number" || isNaN(mapId) || mapId < 1) return false;
+  if (typeof mapId !== "number" || isNaN(mapId) || mapId <= 0) return false;
   const isDeleted = await deleteMap(mapId);
   return isDeleted;
 };
@@ -154,4 +157,25 @@ export const handleDeleteCollection = async function (req: Request) {
   if (typeof id !== "number" || id <= 0) return false;
   const isDeleted = await deleteCollection(id);
   return isDeleted;
+};
+
+export const handleUpdateCollection = async function (req: Request) {
+  const id = req.body.id;
+  if (!req.session.user || typeof id !== "number" || id <= 0) return false;
+  const collection = await readCollection(id);
+  if (!collection || collection.author.id !== req.session.user.id) return false;
+  const title = req.body.title;
+  const description = req.body.description;
+  const views = req.body.views;
+  if (typeof title === "string" && title.length > 0 && title.length <= 15) {
+    const isUpdated = await updateCollection(id, { title: title });
+    return isUpdated;
+  } else if (typeof description === "string" && description.length <= 500) {
+    const isUpdated = await updateCollection(id, { description: description });
+    return isUpdated;
+  } else if (typeof views === "number" && views >= 0) {
+    const isUpdated = await updateCollection(id, { views: views });
+    return isUpdated;
+  }
+  return false;
 };

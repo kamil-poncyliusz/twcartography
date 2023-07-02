@@ -31,3 +31,4 @@ export const readCollection = collection.readCollection;
 export const createCollection = collection.createCollection;
 export const readUserCollections = collection.readUserCollections;
 export const deleteCollection = collection.deleteCollection;
+export const updateCollection = collection.updateCollection;
