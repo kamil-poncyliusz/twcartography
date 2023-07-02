@@ -1,6 +1,7 @@
 import { handleDeleteCollection } from "../../routes/api-handlers.js";
 import "./nav-bar.js";
 import { postRequest } from "./requests.js";
+import { isValidCollectionDescription, isValidCollectionTitle, isValidID } from "./validators.js";
 
 const mapTiles = document.querySelectorAll("#map-tiles > .map-tile");
 const enlargedMap = document.getElementById("map-enlarged");
@@ -99,7 +100,7 @@ const useKeyboardShortcut = function (e: KeyboardEvent) {
 
 const sendDeleteCollectionRequest = async function () {
   const id = parseInt(window.location.pathname.split("/")[2]);
-  if (isNaN(id) || id <= 0) return;
+  if (!isValidID(id)) return;
   const payload = {
     id: id,
   };
@@ -111,7 +112,7 @@ const sendDeleteCollectionRequest = async function () {
 const sendDeleteMapRequest = async function () {
   if (!currentEnlargedMap) return;
   const id = parseInt(currentEnlargedMap.dataset.id ?? "");
-  if (isNaN(id) || id <= 0) return;
+  if (!isValidID(id)) return;
   const payload = {
     id: id,
   };
@@ -125,9 +126,9 @@ const editCollectionTitle = async function () {
   const editMode: boolean = JSON.parse(editCollectionTitleButton.dataset.editMode);
   if (editMode) {
     const collectionID = parseInt(window.location.pathname.split("/")[2]);
-    if (!(collectionID > 0)) return;
     const newTitle = collectionTitleEditInput.value;
-    if (newTitle.length === 0 || newTitle.length > 15) {
+    if (!isValidID(collectionID)) return;
+    if (!isValidCollectionTitle(newTitle)) {
       collectionTitleEditInput.classList.add("is-invalid");
       return;
     }
@@ -160,9 +161,9 @@ const editCollectionDescription = async function () {
   const editMode: boolean = JSON.parse(editCollectionDescriptionButton.dataset.editMode);
   if (editMode) {
     const collectionID = parseInt(window.location.pathname.split("/")[2]);
-    if (!(collectionID > 0)) return;
+    if (!isValidID(collectionID)) return;
     const newDescription = collectionDescriptionEditTextarea.value;
-    if (newDescription.length > 500) {
+    if (!isValidCollectionDescription(newDescription)) {
       collectionDescriptionEditTextarea.classList.add("is-invalid");
       return;
     }

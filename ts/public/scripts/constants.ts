@@ -44,3 +44,5 @@ export const SETTINGS_LIMITS = {
 export const GROUP_NAME_FORBIDDEN_CHARACTERS = "#^,;";
 export const GROUP_NAME_MAX_LENGTH = 8;
 export const GROUP_NAME_MIN_LENGTH = 1;
+
+export const VALID_USER_RANKS = [0, 1, 2, 10];

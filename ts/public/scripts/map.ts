@@ -1,14 +1,14 @@
 import "./nav-bar.js";
 import { handleDeleteMap } from "../../routes/api-handlers.js";
 import { postRequest } from "./requests.js";
+import { isValidID } from "./validators.js";
 
 const settingsInput = document.getElementById("settings");
 const deleteMapButton = document.getElementById("delete-map-button");
 
 const deleteMap = async function () {
-  const idString = window.location.pathname.split("/")[2];
-  const id = parseInt(idString);
-  if (typeof id !== "number" || isNaN(id) || id < 1) return;
+  const id = parseInt(window.location.pathname.split("/")[2] ?? "");
+  if (!isValidID(id)) return;
   const isDeleted: Awaited<ReturnType<typeof handleDeleteMap>> = await postRequest("/api/map/delete", { id: id });
   if (isDeleted) window.location.href = `${window.location.origin}/maps`;
   else console.log("Failed to delete this map");

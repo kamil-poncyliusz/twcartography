@@ -5,7 +5,7 @@ import SuggestionsTabController from "./SuggestionsTab.js";
 import CanvasController from "./CanvasController.js";
 import { handleCreateMap } from "../../../routes/api-handlers.js";
 import { postRequest } from "../requests.js";
-import { CreateMapRequestValidationCode, validateCreateMapRequest } from "../requestValidators.js";
+import { CreateMapRequestValidationCode, validateCreateMapRequest } from "../validators.js";
 import { SETTINGS_LIMITS as LIMITS } from "../constants.js";
 import { CreateMapRequestPayload, Settings } from "../../../src/Types.js";
 

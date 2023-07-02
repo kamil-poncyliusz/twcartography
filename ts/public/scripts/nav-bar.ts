@@ -1,19 +1,20 @@
 import { handleAuthentication, handleLogout, handleRegistration } from "../../routes/router-handlers.js";
 import { postRequest } from "./requests.js";
+import { isValidLogin, isValidPassword } from "./validators.js";
 
 const profileButton = document.getElementById("profile-button");
-const loginForm = document.getElementById("login-form");
-const logoutButton = document.getElementById("logout-button");
-const registerButton = document.getElementById("register-button");
+const loginForm = document.getElementById("login-form") as HTMLFormElement | null;
+const logoutButton = document.getElementById("logout-button") as HTMLButtonElement | null;
+const registerButton = document.getElementById("register-button") as HTMLButtonElement | null;
+const loginInput = loginForm?.querySelector("#login") as HTMLInputElement | null;
+const passwordInput = loginForm?.querySelector("#password") as HTMLInputElement | null;
 
 const loginRequest = async function (e: Event) {
   e.preventDefault();
-  const target = e.target as HTMLFormElement;
-  const loginInput = target.querySelector("#login") as HTMLInputElement;
-  const passwordInput = target.querySelector("#password") as HTMLInputElement;
+  if (!loginInput || !passwordInput) return;
   const login = loginInput.value;
   const password = passwordInput.value;
-  if (login.length < 2 || password.length < 8) return;
+  if (!isValidLogin(login) || !isValidPassword(password)) return;
   const payload = {
     login: login,
     password: password,
@@ -24,13 +25,10 @@ const loginRequest = async function (e: Event) {
 };
 
 const registerRequest = async function (e: Event) {
-  if (!loginForm) return;
-  const loginInput = loginForm.querySelector("#login") as HTMLInputElement;
-  const passwordInput = loginForm.querySelector("#password") as HTMLInputElement;
   if (!loginInput || !passwordInput) return;
   const login = loginInput.value;
   const password = passwordInput.value;
-  if (login.length < 2 || password.length < 8) return;
+  if (!isValidLogin(login) || !isValidPassword(password)) return;
   const payload = {
     login: login,
     password: password,

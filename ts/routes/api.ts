@@ -39,7 +39,7 @@ api.post("/world/create", async (req, res) => {
   const responseData = await handleCreateWorld(req);
   return res.json(responseData);
 });
-api.post("/world-data/create/:world/:turn", async (req, res) => {
+api.post("/world-data/create", async (req, res) => {
   const responseData = await handleCreateTurnData(req);
   return res.json(responseData);
 });

@@ -3,6 +3,7 @@ import SettingsValidator from "./SettingsValidator.js";
 import { MarkGroup, Settings, ParsedTurnData, Tribe } from "../../../src/Types.js";
 import { handleReadTurnData, handleReadWorld } from "../../../routes/api-handlers.js";
 import { GENERATOR_CONTROLLER_DEFAULTS as DEFAULTS, MAX_TRIBE_SUGGESTIONS } from "../constants.js";
+import { getRequest } from "../requests.js";
 
 class GeneratorController {
   #backgroundColor: string = DEFAULTS.BACKGROUND_COLOR;
@@ -126,9 +127,8 @@ class GeneratorController {
     return true;
   }
   async changeWorld(world: number) {
-    const url = `${window.location.origin}/api/world/${world}`;
-    const response = await fetch(url);
-    const worldInfo: Awaited<ReturnType<typeof handleReadWorld>> = await response.json();
+    const endpoint = `/api/world/${world}`;
+    const worldInfo: Awaited<ReturnType<typeof handleReadWorld>> = await getRequest(endpoint);
     this.data = {};
     this.turn = -1;
     if (!worldInfo) return false;
@@ -156,9 +156,8 @@ class GeneratorController {
     if (this.world === 0) return false;
     if (!SettingsValidator.turn(turn)) return false;
     if (typeof this.data[turn] === "object") return true;
-    const url = `${window.location.origin}/api/turn-data/${this.world}/${turn}`;
-    const response = await fetch(url);
-    const turnData: Awaited<ReturnType<typeof handleReadTurnData>> = await response.json();
+    const endpoint = `/api/turn-data/${this.world}/${turn}`;
+    const turnData: Awaited<ReturnType<typeof handleReadTurnData>> = await getRequest(endpoint);
     if (!turnData) return false;
     this.data[turn] = turnData;
     return true;

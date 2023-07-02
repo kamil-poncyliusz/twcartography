@@ -18,3 +18,18 @@ export const postRequest = async function (endpoint: string, body: { [key: strin
     return false;
   }
 };
+
+export const getRequest = async function (endpoint: string) {
+  try {
+    const url = `${window.location.origin}${endpoint}`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const responseData = await response.json();
+    return responseData;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return false;
+  }
+};

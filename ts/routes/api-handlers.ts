@@ -18,10 +18,10 @@ import MapGenerator from "../public/scripts/class/MapGenerator.js";
 import { encodeSettings } from "../public/scripts/settings-codec.js";
 import saveMapPng from "../src/save-map-png.js";
 import parseTurnData from "../src/parse-turn-data.js";
-import { CreateMapRequestPayload } from "../src/Types.js";
-import { Request } from "express";
+import { CreateMapRequestValidationCode, isValidID, isValidTurn, validateCreateMapRequest } from "../public/scripts/validators.js";
 import { Prisma } from "@prisma/client";
-import { CreateMapRequestValidationCode, validateCreateMapRequest } from "../public/scripts/requestValidators.js";
+import { Request } from "express";
+import { CreateMapRequestPayload } from "../src/Types.js";
 
 type mapsWithRelations = Prisma.PromiseReturnType<typeof readMaps>;
 
@@ -115,9 +115,9 @@ export const handleCreateWorld = async function (req: Request) {
 
 export const handleCreateTurnData = async function (req: Request) {
   if (!req.session.user || req.session.user.rank < 10) return false;
-  const world = parseInt(req.params.world);
-  const turn = parseInt(req.params.turn);
-  if (isNaN(world) || isNaN(turn) || world < 1 || turn < 0 || turn > 365) return false;
+  const world = req.body.world;
+  const turn = req.body.turn;
+  if (!isValidID(world) || !isValidTurn(turn)) return false;
   const worldDataFilesPath = `temp/${world}/${turn}`;
   if (!fs.existsSync(worldDataFilesPath)) return false;
   const parsedTurnData = parseTurnData(world, turn);
