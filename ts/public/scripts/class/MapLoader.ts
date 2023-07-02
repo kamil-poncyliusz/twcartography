@@ -1,5 +1,6 @@
 import { CreatedMapWithRelations, MapLoaderSettings } from "../../../src/Types.js";
 import { handleReadMaps } from "../../../routes/api-handlers.js";
+import { MAP_IMAGES_DIRECTORY } from "../constants.js";
 
 const mapsList = document.getElementById("maps-list") as Element;
 
@@ -38,7 +39,7 @@ class MapLoader {
       content += `<h2>${map.description}</h2>`;
       content += `<p>${map.turn} dzień świata ${map.world.server + map.world.num}</p>`;
       content += `<p>Stworzona przez ${map.author.login} ${createdAt}</p>`;
-      content = `<a href="/map/${map.id}"><div><img src="/images/maps/${map.id}.png" alt="img"></div><div>${content}</div></a>`;
+      content = `<a href="/map/${map.id}"><div><img src="${MAP_IMAGES_DIRECTORY}/${map.id}.png" alt="img"></div><div>${content}</div></a>`;
       newNode.innerHTML = content;
       mapsList.appendChild(newNode);
     }

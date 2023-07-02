@@ -2,6 +2,7 @@ import GeneratorController from "./GeneratorController.js";
 import SettingsTabController from "./SettingsTab.js";
 import MarkGroupsTabController from "./MarkGroupsTab.js";
 import CanvasController from "./CanvasController.js";
+import { randomizeGroupColor } from "../utils.js";
 
 const suggestionsTableElement = document.querySelector("#mark-suggestions table") as Element;
 
@@ -38,7 +39,8 @@ class SuggestionsTabController {
     let selectedGroup = target.value;
     if (selectedGroup === "Utwórz grupę") {
       const groupName = tribeTag.replaceAll(",", ".").replaceAll(" ", "_");
-      const isAdded = this.#generator.addMarkGroup({ name: groupName, color: "#FFFFFE", tribes: [] });
+      const color = randomizeGroupColor();
+      const isAdded = this.#generator.addMarkGroup({ name: groupName, color: color, tribes: [] });
       if (!isAdded) return;
       selectedGroup = groupName;
     }

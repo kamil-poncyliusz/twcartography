@@ -3,11 +3,11 @@ import { decodeSettings, encodeSettings } from "../settings-codec.js";
 import MarkGroupsTabController from "./MarkGroupsTab.js";
 import SuggestionsTabController from "./SuggestionsTab.js";
 import CanvasController from "./CanvasController.js";
-import { limits } from "./SettingsValidator.js";
-import { CreateMapRequestPayload, Settings } from "../../../src/Types.js";
 import { handleCreateMap } from "../../../routes/api-handlers.js";
 import { postRequest } from "../requests.js";
 import { CreateMapRequestValidationCode, validateCreateMapRequest } from "../requestValidators.js";
+import { SETTINGS_LIMITS as LIMITS } from "../constants.js";
+import { CreateMapRequestPayload, Settings } from "../../../src/Types.js";
 
 const inputs: { [key: string]: HTMLInputElement } = {
   autoRefresh: document.getElementById("auto-refresh") as HTMLInputElement,
@@ -113,14 +113,14 @@ class SettingsTabController {
     }
     const turnPlaceholder = this.#generator.latestTurn >= 0 ? `0-${this.#generator.latestTurn}` : "-";
     this.#inputs.turn.setAttribute("placeholder", turnPlaceholder);
-    for (let setting in limits.min) {
-      this.#inputs[setting].setAttribute("min", String(limits.min[setting]));
-      this.#inputs[setting].setAttribute("placeholder", String(limits.min[setting]) + "-");
+    for (let setting in LIMITS.MIN) {
+      this.#inputs[setting].setAttribute("min", String(LIMITS.MIN[setting]));
+      this.#inputs[setting].setAttribute("placeholder", String(LIMITS.MIN[setting]) + "-");
     }
-    for (let setting in limits.max) {
-      this.#inputs[setting].setAttribute("max", String(limits.max[setting]));
+    for (let setting in LIMITS.MAX) {
+      this.#inputs[setting].setAttribute("max", String(LIMITS.MAX[setting]));
       const current = this.#inputs[setting].getAttribute("placeholder");
-      this.#inputs[setting].setAttribute("placeholder", current + String(limits.max[setting]));
+      this.#inputs[setting].setAttribute("placeholder", current + String(LIMITS.MAX[setting]));
     }
   }
   renderCanvas() {
@@ -309,6 +309,7 @@ class SettingsTabController {
         const createdMapId: Awaited<ReturnType<typeof handleCreateMap>> = await postRequest("/api/map/create", payload);
         if (createdMapId === false) console.log("Failed to publish the map");
         else console.log("Map published succesfully");
+        collectionSelect.classList.remove("is-invalid");
       }
     }
   };

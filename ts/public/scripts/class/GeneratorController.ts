@@ -1,28 +1,23 @@
 import MapGenerator from "./MapGenerator.js";
 import SettingsValidator from "./SettingsValidator.js";
-import { randomizeGroupColor } from "../utils.js";
 import { MarkGroup, Settings, ParsedTurnData, Tribe } from "../../../src/Types.js";
 import { handleReadTurnData, handleReadWorld } from "../../../routes/api-handlers.js";
-
-const DEFAULT_BACKGROUND_COLOR = "#202020";
-const DEFAULT_BORDER_COLOR = "#808080";
-const DEFAULT_UNMARKED_COLOR = "#808080";
-const MAX_TRIBE_SUGGESTIONS = 20;
+import { GENERATOR_CONTROLLER_DEFAULTS as DEFAULTS, MAX_TRIBE_SUGGESTIONS } from "../constants.js";
 
 class GeneratorController {
-  #backgroundColor: string = DEFAULT_BACKGROUND_COLOR;
-  #borderColor: string = DEFAULT_BORDER_COLOR;
+  #backgroundColor: string = DEFAULTS.BACKGROUND_COLOR;
+  #borderColor: string = DEFAULTS.BORDER_COLOR;
   data: { [key: number]: ParsedTurnData } = {};
-  #displayUnmarked: boolean = false;
+  #displayUnmarked: boolean = DEFAULTS.DISPLAY_UNMARKED;
   latestTurn: number = -1;
   markGroups: MarkGroup[] = [];
-  #outputWidth: number = 500;
-  #spotsFilter: number = 8;
-  #scale: number = 2;
+  #outputWidth: number = DEFAULTS.OUTPUT_WIDTH;
+  #spotsFilter: number = DEFAULTS.SPOTS_FILTER;
+  #scale: number = DEFAULTS.SCALE;
   #server: string = "";
-  #trim: boolean = true;
+  #trim: boolean = DEFAULTS.TRIM;
   turn: number = -1;
-  #unmarkedColor: string = DEFAULT_UNMARKED_COLOR;
+  #unmarkedColor: string = DEFAULTS.UNMARKED_COLOR;
   world: number = 0;
   constructor() {}
   get settings(): Settings {
@@ -57,7 +52,6 @@ class GeneratorController {
     if (this.turn === -1) return false;
     if (!SettingsValidator.groupName(group.name) || !SettingsValidator.color(group.color)) return false;
     if (this.isGroupNameTaken(group.name)) return false;
-    if (group.color === "#FFFFFE") group.color = randomizeGroupColor();
     const newGroup: MarkGroup = {
       tribes: [],
       name: group.name,

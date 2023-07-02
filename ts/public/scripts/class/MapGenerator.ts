@@ -1,9 +1,7 @@
 import { parseHexColor, calcExpansionArray } from "../utils.js";
 import { Settings, ParsedColor, ParsedTurnData, Village, MarkGroup } from "../../../src/Types.js";
+import { LEGEND_FONT_FAMILY, LEGEND_FONT_SIZE, MAX_VILLAGE_POINTS, TRIBAL_WARS_MAP_SIZE } from "../constants.js";
 const canvasModule = typeof process === "object" ? await import("canvas") : null;
-
-const LEGEND_FONT_SIZE = 5;
-const LEGEND_FONT_FAMILY = "sans-serif";
 
 interface RawPixel {
   color: ParsedColor;
@@ -78,12 +76,12 @@ class MapGenerator {
     this.#turnData = data;
     this.#settings = settings;
     this.#backgroundColor = parseHexColor(settings.backgroundColor);
-    this.#maxSpotSize = 5 + Math.ceil(((12164 - data.averageVillagePoints) / 12164) * 7);
-    this.#villageFilter = Math.min(Math.floor(data.averageVillagePoints * 0.9), 3000);
+    this.#maxSpotSize = 5 + Math.ceil(((MAX_VILLAGE_POINTS - data.averageVillagePoints) / MAX_VILLAGE_POINTS) * 7);
+    this.#villageFilter = Math.min(Math.floor(data.averageVillagePoints * 0.9), Math.floor(MAX_VILLAGE_POINTS / 4));
     this.#spotSizeStep = Math.round((data.topVillagePoints - this.#villageFilter) / this.#maxSpotSize);
     // console.log("Filter:", this.#villageFilter, "Step:", this.#spotSizeStep, "Median:", data.medianVillagePoints, "Max spot:", this.#maxSpotSize);
-    this.#expansionArray = calcExpansionArray(15);
-    this.#offset = (1000 - data.width) / 2;
+    this.#expansionArray = calcExpansionArray(this.#maxSpotSize);
+    this.#offset = Math.round((TRIBAL_WARS_MAP_SIZE - data.width) / 2);
     this.#legend = new Legend(this.#settings.markGroups);
     this.generateRawPixels();
     const smallSpots = this.#findSmallSpots();
@@ -151,7 +149,7 @@ class MapGenerator {
   }
   #distributeArea(area: RawPixel[]) {
     const pixels = this.#rawPixels;
-    const deletedColor = parseHexColor("#013467");
+    const deletedColor = parseHexColor("#123456");
     for (let pixel of area) {
       pixel.color = deletedColor;
     }

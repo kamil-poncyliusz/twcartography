@@ -1,22 +1,8 @@
 import { Settings } from "../../../src/Types";
+import { GROUP_NAME_FORBIDDEN_CHARACTERS, GROUP_NAME_MAX_LENGTH, GROUP_NAME_MIN_LENGTH, SETTINGS_LIMITS as LIMITS } from "../constants.js";
 
-const GROUP_NAME_MAX_LENGTH = 8,
-  GROUP_NAME_MIN_LENGTH = 1,
-  TURN_MAX = 365,
+const TURN_MAX = 365,
   TURN_MIN = 0;
-
-const min: { [key: string]: number } = {
-  outputWidth: 100,
-  scale: 1,
-  spotsFilter: 1,
-};
-const max: { [key: string]: number } = {
-  outputWidth: 1000,
-  scale: 5,
-  spotsFilter: 400,
-};
-
-const GROUP_NAME_FORBIDDEN_CHARACTERS = "#^,;";
 
 class SettingsValidator {
   static boolean(input: boolean) {
@@ -37,15 +23,15 @@ class SettingsValidator {
     return true;
   }
   static outputWidth(input: number) {
-    if (typeof input !== "number" || input < min.outputWidth || input > max.outputWidth) return false;
+    if (typeof input !== "number" || input < LIMITS.MIN.outputWidth || input > LIMITS.MAX.outputWidth) return false;
     return true;
   }
   static scale(input: number) {
-    if (typeof input !== "number" || input < min.scale || input > max.scale) return false;
+    if (typeof input !== "number" || input < LIMITS.MIN.scale || input > LIMITS.MAX.scale) return false;
     return true;
   }
   static spotsFilter(input: number) {
-    if (typeof input !== "number" || input < min.spotsFilter || input > max.spotsFilter) return false;
+    if (typeof input !== "number" || input < LIMITS.MIN.spotsFilter || input > LIMITS.MAX.spotsFilter) return false;
     return true;
   }
   static turn(input: number) {
@@ -79,8 +65,3 @@ class SettingsValidator {
 }
 
 export default SettingsValidator;
-
-export const limits = {
-  min: min,
-  max: max,
-};
