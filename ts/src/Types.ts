@@ -1,4 +1,4 @@
-import { CreatedMap, User, World } from "@prisma/client";
+import { Collection, CreatedMap, User, World } from "@prisma/client";
 
 export interface MarkGroup {
   tribes: string[];
@@ -63,6 +63,11 @@ export interface TurnDataState {
   id: number;
   hasFiles: boolean;
 }
+export type CollectionWithRelations = Collection & {
+  author: User;
+  maps: CreatedMap[];
+  world: World;
+};
 export interface WorldDataState {
   id: number;
   serverName: string;

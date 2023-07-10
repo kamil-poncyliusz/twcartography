@@ -180,43 +180,38 @@ main {
   font-size: 1.25rem;
   text-align: left;
 }
-#maps-list {
-  display: flex;
-  flex-direction: column;
-  width: 50rem;
-}
-.map-card {
+.collection-card {
   background-color: var(--accent);
   padding: 0;
   margin-bottom: 0.5rem;
   overflow: hidden;
 }
-.map-card:hover {
+.collection-card:hover {
   background-color: var(--light-accent);
 }
-.map-card > a {
+.collection-card > a {
   display: flex;
   flex-direction: row;
   padding: 0;
   border: none;
 }
-.map-card > a > div:first-child {
+.collection-card > a > div:first-child {
   height: 20rem;
   flex: 0 0 20rem;
   overflow: hidden;
 }
-.map-card > a > div:last-child {
+.collection-card > a > div:last-child {
   display: block;
   width: 0;
   height: 20rem;
   flex: 1 0 0;
   padding: 0.5rem;
 }
-.map-card img {
+.collection-card img {
   width: 20rem;
   height: 20rem;
   object-fit: fill;
 }
-.map-card > a > div:last-child > * {
+.collection-card > a > div:last-child > * {
   margin-bottom: 0.5rem;
 }

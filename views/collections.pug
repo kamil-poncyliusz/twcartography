@@ -1,0 +1,25 @@
+doctype html
+html(lang="pl-PL")
+  head
+    meta(charset="UTF-8")
+    meta(http-equiv="X-UA-Compatible", content="IE=edge")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title TW Cartography
+    include favicon.pug
+    link(rel="stylesheet", href="/css/reset.css", type="text/css")
+    link(rel="stylesheet", href="/css/main.css", type="text/css")
+    link(rel="stylesheet", href="/css/nav-bar.css", type="text/css")
+    link(rel="stylesheet", href="/css/collections.css", type="text/css")
+    script(src="/scripts/collections.js", type="module", defer)
+  body
+    include nav-bar.pug
+    main
+      #collections-list
+        each collection in collections
+          .collection-card
+            a(href=`/collection/${collection.id}`)
+              div
+                img(src=`/images/maps/${collection.maps[0]? collection.maps[0].id:0}.png`, alt="img")
+              div
+                h1= collection.title
+                p Stworzona przez #{ collection.author.login } #{ new Date(collection.createdAt).toLocaleDateString() }

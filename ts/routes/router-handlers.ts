@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { Request } from "express";
-import { createUser, readUserByLogin } from "../src/queries/index.js";
+import { createUser, readCollection, readCollections, readUserByLogin } from "../src/queries/index.js";
+import { isValidID } from "../public/scripts/validators.js";
 
 export const handleRegistration = async function (req: Request): Promise<string | true> {
   const login = req.body.login;
@@ -48,4 +49,32 @@ export const handleLogout = async function (req: Request) {
     });
   });
   return loggedOut;
+};
+
+export const handleReadCollection = async function (req: Request) {
+  const collectionID = parseInt(req.params.id);
+  if (!isValidID(collectionID)) return false;
+  const collection = await readCollection(collectionID);
+  if (collection === null) return false;
+  const locals = {
+    page: "collection",
+    user: req.session.user,
+    collection: collection,
+  };
+  return locals;
+};
+
+export const handleReadCollections = async function (req: Request) {
+  const worldID = parseInt(req.params.world);
+  if (!isValidID(worldID)) return false;
+  const collections = await readCollections(worldID, undefined);
+  for (let collection of collections) {
+    if (collection.maps.length > 0) collection.maps = collection.maps.slice(-1);
+  }
+  const locals = {
+    page: "collections",
+    user: req.session.user,
+    collections: collections,
+  };
+  return locals;
 };

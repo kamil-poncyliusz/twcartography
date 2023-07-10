@@ -1,6 +1,6 @@
 import express from "express";
-import { readCollection, readMap, readUser, readUserCollections, readWorlds } from "../src/queries/index.js";
-import { handleAuthentication, handleLogout, handleRegistration } from "./router-handlers.js";
+import { readCollection, readCollections, readMap, readUser, readWorlds } from "../src/queries/index.js";
+import { handleAuthentication, handleLogout, handleReadCollection, handleReadCollections, handleRegistration } from "./router-handlers.js";
 import { Collection } from "@prisma/client";
 
 const router = express.Router();
@@ -61,7 +61,8 @@ router.get("/new/:settings?", async (req, res) => {
     collections: [] as Collection[],
   };
   if (req.session.user && req.session.user.rank >= 2) {
-    const collections = await readUserCollections(req.session.user.id);
+    const authorID = req.session.user.id;
+    const collections = await readCollections(undefined, authorID);
     locals.collections = collections;
   }
   res.render("new", locals);
@@ -80,16 +81,25 @@ router.get("/user/:id", async (req, res) => {
   return res.render("user", locals);
 });
 
-router.get("/collection/:id", async (req, res) => {
-  const id = parseInt(req.params.id);
-  if (isNaN(id) || id < 1) return res.status(404).render("not-found");
-  const collection = await readCollection(id);
-  if (collection === null) return res.status(404).render("not-found");
+router.get("/collections", async (req, res) => {
+  const worlds = await readWorlds();
   const locals = {
-    page: "collection",
+    page: "collections-worlds-list",
     user: req.session.user,
-    collection: collection,
+    worlds: worlds,
   };
+  return res.render("collections-worlds-list", locals);
+});
+
+router.get("/collections/:world", async (req, res) => {
+  const locals = await handleReadCollections(req);
+  if (locals === false) return res.status(404).render("not-found");
+  return res.render("collections", locals);
+});
+
+router.get("/collection/:id", async (req, res) => {
+  const locals = await handleReadCollection(req);
+  if (locals === false) return res.status(404).render("not-found");
   return res.render("collection", locals);
 });
 

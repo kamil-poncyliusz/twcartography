@@ -28,7 +28,7 @@ export const deleteTurnData = turnData.deleteTurnData;
 export const readTurnData = turnData.readTurnData;
 
 export const readCollection = collection.readCollection;
+export const readCollections = collection.readCollections;
 export const createCollection = collection.createCollection;
-export const readUserCollections = collection.readUserCollections;
 export const deleteCollection = collection.deleteCollection;
 export const updateCollection = collection.updateCollection;
