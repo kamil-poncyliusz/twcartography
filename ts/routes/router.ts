@@ -28,29 +28,6 @@ router.post("/register", async (req, res) => {
   return res.json(responseData);
 });
 
-router.get("/map/:id", async (req, res) => {
-  const id = parseInt(req.params.id);
-  if (isNaN(id) || id < 1) return res.status(404).render("not-found");
-  const map = await readMap(id);
-  if (map === null) return res.status(404).render("not-found");
-  const locals = {
-    page: "map",
-    user: req.session.user,
-    map: map,
-  };
-  return res.render("map", locals);
-});
-
-router.get("/maps", async (req, res) => {
-  const worlds = await readWorlds();
-  const locals = {
-    page: "maps",
-    user: req.session.user,
-    worlds: worlds,
-  };
-  return res.render("maps", locals);
-});
-
 router.get("/new/:settings?", async (req, res) => {
   const worlds = await readWorlds();
   const locals = {

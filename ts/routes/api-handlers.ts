@@ -87,19 +87,6 @@ export const handleCreateMap = async function (req: Request) {
   return createdMap.id;
 };
 
-export const handleReadMaps = async function (req: Request) {
-  const world = parseInt(req.params.world);
-  const author = parseInt(req.params.author);
-  const page = parseInt(req.params.page);
-  const timespans = ["day", "week", "month", "any"];
-  const orders = ["newest", "oldest"];
-  if (!(world >= 0 && author >= 0 && page >= 1)) return [];
-  if (!timespans.includes(req.params.timespan)) return [];
-  if (!orders.includes(req.params.order)) return [];
-  const maps = await readMaps(page, author, req.params.order, req.params.timespan, world);
-  return maps;
-};
-
 export const handleCreateWorld = async function (req: Request) {
   if (!req.session.user || req.session.user.rank < 10) return false;
   if (!isWorldCreatePayloadValid(req.body)) return false;

@@ -56,8 +56,8 @@ app.all("*", (req, res) => {
   return res.status(404).render("not-found");
 });
 
+if (process.env.RUN_DOWNLOADER_DAEMON === "true") turnDataDownloaderDaemon();
+
 app.listen(process.env.PORT || PORT, () => {
   console.log("[server] Server started");
 });
-
-turnDataDownloaderDaemon();

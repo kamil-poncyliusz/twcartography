@@ -19,7 +19,7 @@ html(lang="pl-PL")
           .collection-card
             a(href=`/collection/${collection.id}`)
               div
-                img(src=`/images/maps/${collection.maps[0]? collection.maps[0].id:0}.png`, alt="img")
+                img(src=`/images/${collection.maps[0] ? 'maps/' + collection.maps[0].id : 0}.png`, alt="img")
               div
                 h1= collection.title
                 p Stworzona przez #{ collection.author.login } #{ new Date(collection.createdAt).toLocaleDateString() }

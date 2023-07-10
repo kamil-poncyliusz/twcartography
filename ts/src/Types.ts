@@ -48,12 +48,6 @@ export interface ParsedTurnData {
   medianVillagePoints: number;
   topVillagePoints: number;
 }
-export interface MapLoaderSettings {
-  author: number;
-  order: string;
-  timespan: string;
-  world: number;
-}
 export type CreatedMapWithRelations = CreatedMap & {
   author: User;
   world: World;
