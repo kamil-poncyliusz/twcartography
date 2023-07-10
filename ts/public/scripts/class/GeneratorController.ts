@@ -1,24 +1,33 @@
 import MapGenerator from "./MapGenerator.js";
-import SettingsValidator from "./SettingsValidator.js";
 import { MarkGroup, Settings, ParsedTurnData, Tribe } from "../../../src/Types.js";
 import { handleReadTurnData, handleReadWorld } from "../../../routes/api-handlers.js";
-import { GENERATOR_CONTROLLER_DEFAULTS as DEFAULTS, MAX_TRIBE_SUGGESTIONS } from "../constants.js";
 import { getRequest } from "../requests.js";
+import { isValidColor, isValidGroupName, isValidOutputWidth, isValidScale, isValidSettings, isValidSpotsFilter, isValidTurn } from "../validators.js";
+
+const DEFAULT_BACKGROUND_COLOR = "#202020";
+const DEFAULT_BORDER_COLOR = "#808080";
+const DEFAULT_DISPLAY_UNMARKED = false;
+const DEFAULT_OUTPUT_WIDTH = 500;
+const DEFAULT_SCALE = 2;
+const DEFAULT_SPOTS_FILTER = 8;
+const DEFAULT_TRIM = true;
+const DEFAULT_UNMARKED_COLOR = "#808080";
+const MAX_TRIBE_SUGGESTIONS = 20;
 
 class GeneratorController {
-  #backgroundColor: string = DEFAULTS.BACKGROUND_COLOR;
-  #borderColor: string = DEFAULTS.BORDER_COLOR;
+  #backgroundColor: string = DEFAULT_BACKGROUND_COLOR;
+  #borderColor: string = DEFAULT_BORDER_COLOR;
   data: { [key: number]: ParsedTurnData } = {};
-  #displayUnmarked: boolean = DEFAULTS.DISPLAY_UNMARKED;
+  #displayUnmarked: boolean = DEFAULT_DISPLAY_UNMARKED;
   latestTurn: number = -1;
   markGroups: MarkGroup[] = [];
-  #outputWidth: number = DEFAULTS.OUTPUT_WIDTH;
-  #spotsFilter: number = DEFAULTS.SPOTS_FILTER;
-  #scale: number = DEFAULTS.SCALE;
+  #outputWidth: number = DEFAULT_OUTPUT_WIDTH;
+  #spotsFilter: number = DEFAULT_SPOTS_FILTER;
+  #scale: number = DEFAULT_SCALE;
   #server: string = "";
-  #trim: boolean = DEFAULTS.TRIM;
+  #trim: boolean = DEFAULT_TRIM;
   turn: number = -1;
-  #unmarkedColor: string = DEFAULTS.UNMARKED_COLOR;
+  #unmarkedColor: string = DEFAULT_UNMARKED_COLOR;
   world: number = 0;
   constructor() {}
   get settings(): Settings {
@@ -51,7 +60,7 @@ class GeneratorController {
   }
   addMarkGroup(group: MarkGroup) {
     if (this.turn === -1) return false;
-    if (!SettingsValidator.groupName(group.name) || !SettingsValidator.color(group.color)) return false;
+    if (!isValidGroupName(group.name) || !isValidColor(group.color)) return false;
     if (this.isGroupNameTaken(group.name)) return false;
     const newGroup: MarkGroup = {
       tribes: [],
@@ -62,7 +71,7 @@ class GeneratorController {
     return true;
   }
   async applySettings(settings: Settings) {
-    if (!SettingsValidator.settings(settings)) return false;
+    if (!isValidSettings(settings)) return false;
     if (settings.world !== this.world) {
       const isWorldChanged = await this.changeWorld(settings.world);
       if (!isWorldChanged) return false;
@@ -94,7 +103,7 @@ class GeneratorController {
     if (this.turn === -1) return false;
     const groupIndex = this.markGroups.findIndex((element) => element.name === name);
     if (groupIndex === -1) return false;
-    if (!SettingsValidator.color(color)) return false;
+    if (!isValidColor(color)) return false;
     const group = this.markGroups[groupIndex];
     group.color = color;
     return true;
@@ -104,7 +113,7 @@ class GeneratorController {
     const groupIndex = this.markGroups.findIndex((element) => element.name === oldName);
     if (groupIndex === -1) return false;
     const group = this.markGroups[groupIndex];
-    if (!SettingsValidator.groupName(newName)) return false;
+    if (!isValidGroupName(newName)) return false;
     if (this.isGroupNameTaken(newName)) return false;
     group.name = newName;
     return true;
@@ -154,7 +163,7 @@ class GeneratorController {
   }
   async fetchTurnData(turn: number) {
     if (this.world === 0) return false;
-    if (!SettingsValidator.turn(turn)) return false;
+    if (!isValidTurn(turn)) return false;
     if (typeof this.data[turn] === "object") return true;
     const endpoint = `/api/turn-data/${this.world}/${turn}`;
     const turnData: Awaited<ReturnType<typeof handleReadTurnData>> = await getRequest(endpoint);
@@ -170,7 +179,7 @@ class GeneratorController {
     return false;
   }
   getMapImageData() {
-    if (!SettingsValidator.settings(this.settings)) return false;
+    if (!isValidSettings(this.settings)) return false;
     if (typeof this.data[this.turn] !== "object") return false;
     const generator = new MapGenerator(this.data[this.turn], this.settings);
     if (!generator.imageData) return false;
@@ -206,49 +215,49 @@ class GeneratorController {
   }
   setBackgroundColor(color: string) {
     if (this.turn === -1) return false;
-    if (!SettingsValidator.color(color)) return false;
+    if (!isValidColor(color)) return false;
     this.#backgroundColor = color;
     return true;
   }
   setBorderColor(color: string) {
     if (this.turn === -1) return false;
-    if (!SettingsValidator.color(color)) return false;
+    if (!isValidColor(color)) return false;
     this.#borderColor = color;
     return true;
   }
   setDisplayUnmarked(value: boolean) {
     if (this.turn === -1) return false;
-    if (!SettingsValidator.boolean(value)) return false;
+    if (typeof value !== "boolean") return false;
     this.#displayUnmarked = value;
     return true;
   }
   setOutputWidth(value: number) {
     if (this.turn === -1) return false;
-    if (!SettingsValidator.outputWidth(value)) return false;
+    if (!isValidOutputWidth(value)) return false;
     this.#outputWidth = value;
     return true;
   }
   setScale(value: number) {
     if (this.turn === -1) return false;
-    if (!SettingsValidator.scale(value)) return false;
+    if (!isValidScale(value)) return false;
     this.#scale = value;
     return true;
   }
   setSpotsFilter(value: number) {
     if (this.turn === -1) return false;
-    if (!SettingsValidator.spotsFilter(value)) return false;
+    if (!isValidSpotsFilter(value)) return false;
     this.#spotsFilter = value;
     return true;
   }
   setTrim(value: boolean) {
     if (this.turn === -1) return false;
-    if (!SettingsValidator.boolean(value)) return false;
+    if (typeof value !== "boolean") return false;
     this.#trim = value;
     return true;
   }
   setUnmarkedColor(color: string) {
     if (this.turn === -1) return false;
-    if (!SettingsValidator.color(color)) return false;
+    if (!isValidColor(color)) return false;
     this.#unmarkedColor = color;
     return true;
   }

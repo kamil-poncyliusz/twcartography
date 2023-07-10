@@ -2,6 +2,7 @@ import express from "express";
 import { readCollection, readCollections, readMap, readUser, readWorlds } from "../src/queries/index.js";
 import { handleAuthentication, handleLogout, handleReadCollection, handleReadCollections, handleRegistration } from "./router-handlers.js";
 import { Collection } from "@prisma/client";
+import { isValidID } from "../public/scripts/validators.js";
 
 const router = express.Router();
 
@@ -47,7 +48,7 @@ router.get("/new/:settings?", async (req, res) => {
 
 router.get("/user/:id", async (req, res) => {
   const id = parseInt(req.params.id);
-  if (isNaN(id) || id < 1) return res.status(404).render("not-found");
+  if (!isValidID(id)) return res.status(404).render("not-found");
   const user = await readUser(id);
   if (user === null) return res.status(404).render("not-found");
   const locals = {

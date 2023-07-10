@@ -78,3 +78,9 @@ export interface CreateMapRequestPayload {
   settings: Settings;
   title: string;
 }
+export interface CreateWorldRequestPayload {
+  domain: string;
+  num: string;
+  server: string;
+  timestamp: number;
+}

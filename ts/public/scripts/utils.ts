@@ -1,4 +1,3 @@
-import { COLOR_RANDOMIZER_DEFAULTS } from "./constants.js";
 import { ParsedColor } from "../../src/Types";
 
 const randomInt = function (min: number, max: number) {
@@ -78,8 +77,12 @@ export const distinctiveColor = function (index: number): string {
   return "#808080";
 };
 
+const MIN_SATURATION = 45;
+const MAX_SATURATION = 90;
+const MIN_LIGHTNESS = 20;
+const MAX_LIGHTNESS = 60;
+
 export const randomizeGroupColor = function (): string {
-  const { MIN_SATURATION, MAX_SATURATION, MIN_LIGHTNESS, MAX_LIGHTNESS } = COLOR_RANDOMIZER_DEFAULTS;
   const hue = Math.floor(Math.random() * 360);
   const saturation = randomInt(MIN_SATURATION, MAX_SATURATION) / 100;
   const lightness = randomInt(MIN_LIGHTNESS, MAX_LIGHTNESS) / 100;

@@ -18,25 +18,25 @@ import MapGenerator from "../public/scripts/class/MapGenerator.js";
 import { encodeSettings } from "../public/scripts/settings-codec.js";
 import saveMapPng from "../src/save-map-png.js";
 import parseTurnData from "../src/parse-turn-data.js";
-import { CreateMapRequestValidationCode, isValidID, isValidTurn, validateCreateMapRequest } from "../public/scripts/validators.js";
+import {
+  CreateMapRequestValidationCode,
+  isValidCollectionDescription,
+  isValidCollectionTitle,
+  isValidCreateMapRequest,
+  isValidID,
+  isValidTurn,
+  isValidUserRank,
+  isValidWorldCreatePayload,
+} from "../public/scripts/validators.js";
 import { Prisma } from "@prisma/client";
 import { Request } from "express";
-import { CreateMapRequestPayload } from "../src/Types.js";
+import { CreateMapRequestPayload, CreateWorldRequestPayload } from "../src/Types.js";
 
 type mapsWithRelations = Prisma.PromiseReturnType<typeof readMaps>;
 
-const isWorldCreatePayloadValid = function (fields: any) {
-  if (typeof fields !== "object") return false;
-  if (typeof fields.server !== "string" || fields.server === "") return false;
-  if (typeof fields.num !== "string" || fields.num === "") return false;
-  if (typeof fields.domain !== "string" || fields.domain === "") return false;
-  if (typeof fields.timestamp !== "number" || fields.timestamp <= 0) return false;
-  return true;
-};
-
 export const handleReadWorld = async function (req: Request) {
   const id = parseInt(req.params.id);
-  if (isNaN(id) || id < 1) return false;
+  if (!isValidID(id)) return false;
   const data = await readWorld(id);
   if (data === null) return false;
   return data;
@@ -45,7 +45,7 @@ export const handleReadWorld = async function (req: Request) {
 export const handleReadTurnData = async function (req: Request) {
   const worldId = parseInt(req.params.world);
   const turn = parseInt(req.params.turn);
-  if (isNaN(worldId) || isNaN(turn) || worldId < 1 || turn < 0 || turn > 365) return false;
+  if (!isValidID(worldId) || isNaN(turn) || turn < 0 || turn > 365) return false;
   const data = await readTurnData(worldId, turn);
   if (data === null) return false;
   return data;
@@ -62,7 +62,7 @@ export const handleCreateMap = async function (req: Request) {
   };
   const settings = payload.settings;
   const encodedSettings = encodeSettings(settings);
-  const payloadValidationCode = validateCreateMapRequest(payload);
+  const payloadValidationCode = isValidCreateMapRequest(payload);
   if (payloadValidationCode !== CreateMapRequestValidationCode.Ok) return false;
   const turnData = await readTurnData(settings.world, settings.turn);
   if (turnData === null) return false;
@@ -89,12 +89,14 @@ export const handleCreateMap = async function (req: Request) {
 
 export const handleCreateWorld = async function (req: Request) {
   if (!req.session.user || req.session.user.rank < 10) return false;
-  if (!isWorldCreatePayloadValid(req.body)) return false;
-  const server = req.body.server as string;
-  const num = req.body.num as string;
-  const domain = req.body.domain as string;
-  const timestamp = req.body.timestamp as number;
-  const createdWorld = await createWorld(server, num, domain, timestamp);
+  const payload: CreateWorldRequestPayload = {
+    server: req.body.server,
+    num: req.body.num,
+    domain: req.body.domain,
+    timestamp: req.body.timestamp,
+  };
+  if (!isValidWorldCreatePayload(req.body)) return false;
+  const createdWorld = await createWorld(payload.server, payload.num, payload.domain, payload.timestamp);
   if (!createdWorld) return false;
   console.log("Stworzono świat o id", createdWorld.id);
   return createdWorld.id;
@@ -117,7 +119,7 @@ export const handleUpdateUserRank = async function (req: Request) {
   if (!req.session.user || req.session.user.rank < 10) return false;
   const id = req.body.id;
   const rank = req.body.rank;
-  if (typeof id !== "number" || id <= 0 || typeof rank !== "number" || rank < 0) return false;
+  if (!isValidID(id) || !isValidUserRank(rank)) return false;
   const success = await updateUserRank(id, rank);
   return success;
 };
@@ -125,7 +127,7 @@ export const handleUpdateUserRank = async function (req: Request) {
 export const handleDeleteWorld = async function (req: Request) {
   if (!req.session.user || req.session.user.rank < 10) return false;
   const worldId = req.body.id;
-  if (typeof worldId !== "number" || isNaN(worldId) || worldId < 1) return false;
+  if (!isValidID(worldId)) return false;
   const isDeleted = await deleteWorld(worldId);
   return isDeleted;
 };
@@ -133,7 +135,7 @@ export const handleDeleteWorld = async function (req: Request) {
 export const handleDeleteMap = async function (req: Request) {
   if (!req.session.user || req.session.user.rank < 10) return false;
   const mapId = req.body.id;
-  if (typeof mapId !== "number" || isNaN(mapId) || mapId <= 0) return false;
+  if (!isValidID(mapId)) return false;
   const isDeleted = await deleteMap(mapId);
   return isDeleted;
 };
@@ -141,23 +143,23 @@ export const handleDeleteMap = async function (req: Request) {
 export const handleDeleteCollection = async function (req: Request) {
   if (!req.session.user || req.session.user.rank < 10) return false;
   const id = req.body.id;
-  if (typeof id !== "number" || id <= 0) return false;
+  if (!isValidID(id)) return false;
   const isDeleted = await deleteCollection(id);
   return isDeleted;
 };
 
 export const handleUpdateCollection = async function (req: Request) {
   const id = req.body.id;
-  if (!req.session.user || typeof id !== "number" || id <= 0) return false;
+  if (!req.session.user || !isValidID(id)) return false;
   const collection = await readCollection(id);
   if (!collection || collection.author.id !== req.session.user.id) return false;
   const title = req.body.title;
   const description = req.body.description;
   const views = req.body.views;
-  if (typeof title === "string" && title.length > 0 && title.length <= 15) {
+  if (!isValidCollectionTitle(title)) {
     const isUpdated = await updateCollection(id, { title: title });
     return isUpdated;
-  } else if (typeof description === "string" && description.length <= 500) {
+  } else if (!isValidCollectionDescription(description)) {
     const isUpdated = await updateCollection(id, { description: description });
     return isUpdated;
   } else if (typeof views === "number" && views >= 0) {

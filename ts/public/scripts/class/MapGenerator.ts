@@ -1,7 +1,11 @@
 import { parseHexColor, calcExpansionArray } from "../utils.js";
 import { Settings, ParsedColor, ParsedTurnData, Village, MarkGroup } from "../../../src/Types.js";
-import { LEGEND_FONT_FAMILY, LEGEND_FONT_SIZE, MAX_VILLAGE_POINTS, TRIBAL_WARS_MAP_SIZE } from "../constants.js";
+import { MAX_VILLAGE_POINTS, TRIBAL_WARS_MAP_SIZE } from "../constants.js";
+
 const canvasModule = typeof process === "object" ? await import("canvas") : null;
+
+const LEGEND_FONT_SIZE = 5;
+const LEGEND_FONT_FAMILY = "sans-serif";
 
 interface RawPixel {
   color: ParsedColor;

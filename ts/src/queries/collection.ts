@@ -5,7 +5,7 @@ import { isValidID } from "../../public/scripts/validators.js";
 const prisma = new PrismaClient();
 
 export const readCollection = async function (id: number): Promise<CollectionWithRelations | null> {
-  if (typeof id !== "number" || id <= 0) return null;
+  if (!isValidID(id)) return null;
   const result = await prisma.collection
     .findUnique({
       where: {

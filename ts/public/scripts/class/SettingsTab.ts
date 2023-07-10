@@ -5,8 +5,7 @@ import SuggestionsTabController from "./SuggestionsTab.js";
 import CanvasController from "./CanvasController.js";
 import { handleCreateMap } from "../../../routes/api-handlers.js";
 import { postRequest } from "../requests.js";
-import { CreateMapRequestValidationCode, validateCreateMapRequest } from "../validators.js";
-import { SETTINGS_LIMITS as LIMITS } from "../constants.js";
+import { CreateMapRequestValidationCode, isValidCreateMapRequest, settingsLimits } from "../validators.js";
 import { CreateMapRequestPayload, Settings } from "../../../src/Types.js";
 
 const inputs: { [key: string]: HTMLInputElement } = {
@@ -113,14 +112,14 @@ class SettingsTabController {
     }
     const turnPlaceholder = this.#generator.latestTurn >= 0 ? `0-${this.#generator.latestTurn}` : "-";
     this.#inputs.turn.setAttribute("placeholder", turnPlaceholder);
-    for (let setting in LIMITS.MIN) {
-      this.#inputs[setting].setAttribute("min", String(LIMITS.MIN[setting]));
-      this.#inputs[setting].setAttribute("placeholder", String(LIMITS.MIN[setting]) + "-");
+    for (let setting in settingsLimits.min) {
+      this.#inputs[setting].setAttribute("min", String(settingsLimits.min[setting]));
+      this.#inputs[setting].setAttribute("placeholder", String(settingsLimits.min[setting]) + "-");
     }
-    for (let setting in LIMITS.MAX) {
-      this.#inputs[setting].setAttribute("max", String(LIMITS.MAX[setting]));
+    for (let setting in settingsLimits.max) {
+      this.#inputs[setting].setAttribute("max", String(settingsLimits.max[setting]));
       const current = this.#inputs[setting].getAttribute("placeholder");
-      this.#inputs[setting].setAttribute("placeholder", current + String(LIMITS.MAX[setting]));
+      this.#inputs[setting].setAttribute("placeholder", current + String(settingsLimits.max[setting]));
     }
   }
   renderCanvas() {
@@ -287,7 +286,7 @@ class SettingsTabController {
       description: description,
       collection: collection,
     };
-    const payloadValidationCode = validateCreateMapRequest(payload);
+    const payloadValidationCode = isValidCreateMapRequest(payload);
     switch (payloadValidationCode) {
       case CreateMapRequestValidationCode.InvalidCollection: {
         collectionSelect.classList.add("is-invalid");
