@@ -65,3 +65,18 @@ export const deleteMap = async function (id: number): Promise<boolean> {
     });
   return true;
 };
+
+export const updateMap = async function (id: number, data: { title?: string; description?: string; position?: number }): Promise<boolean> {
+  const result = await prisma.createdMap
+    .update({
+      data: data,
+      where: {
+        id: id,
+      },
+    })
+    .catch((err) => {
+      console.error("Prisma error:", err);
+      return false;
+    });
+  return true;
+};

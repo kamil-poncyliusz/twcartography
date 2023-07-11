@@ -53,13 +53,18 @@ export const isValidID = function (id: number): boolean {
   return true;
 };
 
-export const isValidCollectionTitle = function (title: string): boolean {
-  if (typeof title !== "string" || title.length === 0 || title.length > 15) return false;
+export const isValidTitle = function (title: string): boolean {
+  if (typeof title !== "string" || title.length === 0 || title.length > 20) return false;
   return true;
 };
 
 export const isValidCollectionDescription = function (description: string): boolean {
   if (typeof description !== "string" || description.length > 500) return false;
+  return true;
+};
+
+export const isValidMapDescription = function (description: string): boolean {
+  if (typeof description !== "string" || description.length > 200) return false;
   return true;
 };
 

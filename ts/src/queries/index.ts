@@ -7,6 +7,7 @@ import * as collection from "./collection.js";
 export const createMap = map.createMap;
 export const deleteMap = map.deleteMap;
 export const readMap = map.readMap;
+export const updateMap = map.updateMap;
 
 export const createUser = user.createUser;
 export const deleteUser = user.deleteUser;

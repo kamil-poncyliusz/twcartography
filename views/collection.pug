@@ -43,8 +43,15 @@ html(lang="pl-PL")
             button#edit-collection-description(type="button", data-edit-mode="false") edytuj
         div
           span#map-title ...
+          if user && user.id === collection.authorId
+            input#map-title-edit-input.hidden(type="text", name="map-title-input", autocomplete="off", placeholder="Tytuł")
+            button#edit-map-title.hidden(type="button", data-edit-mode="false") edytuj
           if user && (user.id === collection.authorId || user.rank === 10)
             button#delete-map.hidden(type="button") usuń
-        p#map-description ...
+        div
+          span#map-description ...
+          if user && user.id === collection.authorId
+            textarea#map-description-edit-textarea.hidden(name="map-description-textarea", cols="30", rows="5") 
+            button#edit-map-description.hidden(type="button", data-edit-mode="false") edytuj
         //- div
         //-   input#settings(type="text", name="settings", value="", readonly)

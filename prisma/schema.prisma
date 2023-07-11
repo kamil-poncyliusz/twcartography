@@ -59,7 +59,7 @@ model Collection {
   worldId     Int
   authorId    Int
   createdAt   DateTime      @default(now()) @db.Timestamptz(0)
-  title       String        @db.VarChar(15)
+  title       String        @db.VarChar(20)
   description String        @db.VarChar(500)
   views       Int           @default(0)
   world       World         @relation(fields: [worldId], references: [id], onDelete: Cascade, onUpdate: Cascade)

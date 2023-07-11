@@ -12,6 +12,8 @@ import {
   deleteCollection,
   updateCollection,
   readCollection,
+  readMap,
+  updateMap,
 } from "../src/queries/index.js";
 import MapGenerator from "../public/scripts/class/MapGenerator.js";
 import { encodeSettings } from "../public/scripts/settings-codec.js";
@@ -20,14 +22,15 @@ import parseTurnData from "../src/parse-turn-data.js";
 import {
   CreateMapRequestValidationCode,
   isValidCollectionDescription,
-  isValidCollectionTitle,
   isValidCreateMapRequest,
   isValidID,
+  isValidMapDescription,
+  isValidTitle,
   isValidTurn,
   isValidUserRank,
   isValidWorldCreatePayload,
 } from "../public/scripts/validators.js";
-import { Prisma, World } from "@prisma/client";
+import { World } from "@prisma/client";
 import { Request } from "express";
 import { CreateMapRequestPayload, CreateWorldRequestPayload, ParsedTurnData } from "../src/Types.js";
 
@@ -151,7 +154,7 @@ export const handleUpdateCollection = async function (req: Request): Promise<boo
   const title = req.body.title;
   const description = req.body.description;
   const views = req.body.views;
-  if (isValidCollectionTitle(title)) {
+  if (isValidTitle(title)) {
     const isUpdated = await updateCollection(id, { title: title });
     return isUpdated;
   } else if (isValidCollectionDescription(description)) {
@@ -159,6 +162,27 @@ export const handleUpdateCollection = async function (req: Request): Promise<boo
     return isUpdated;
   } else if (typeof views === "number" && views >= 0) {
     const isUpdated = await updateCollection(id, { views: views });
+    return isUpdated;
+  }
+  return false;
+};
+
+export const handleUpdateMap = async function (req: Request): Promise<boolean> {
+  const id = req.body.id;
+  if (!req.session.user || !isValidID(id)) return false;
+  const map = await readMap(id);
+  if (!map || map.author.id !== req.session.user.id) return false;
+  const title = req.body.title;
+  const description = req.body.description;
+  const position = req.body.position;
+  if (isValidTitle(title)) {
+    const isUpdated = await updateMap(id, { title: title });
+    return isUpdated;
+  } else if (isValidMapDescription(description)) {
+    const isUpdated = await updateMap(id, { description: description });
+    return isUpdated;
+  } else if (typeof position === "number") {
+    const isUpdated = await updateMap(id, { position: position });
     return isUpdated;
   }
   return false;

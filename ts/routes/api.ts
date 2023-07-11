@@ -9,6 +9,7 @@ import {
   handleReadTurnData,
   handleReadWorld,
   handleUpdateCollection,
+  handleUpdateMap,
   handleUpdateUserRank,
 } from "./api-handlers.js";
 
@@ -28,6 +29,10 @@ api.post("/map/create", async (req, res) => {
 });
 api.post("/map/delete", async (req, res) => {
   const responseData = await handleDeleteMap(req);
+  return res.json(responseData);
+});
+api.post("/map/update", async (req, res) => {
+  const responseData = await handleUpdateMap(req);
   return res.json(responseData);
 });
 api.post("/world/create", async (req, res) => {
