@@ -48,48 +48,48 @@ export const isValidWorldCreatePayload = function (payload: CreateWorldRequestPa
   return true;
 };
 
-export const isValidID = function (id: number) {
+export const isValidID = function (id: number): boolean {
   if (typeof id !== "number" || isNaN(id) || id < 1) return false;
   return true;
 };
 
-export const isValidCollectionTitle = function (title: string) {
+export const isValidCollectionTitle = function (title: string): boolean {
   if (typeof title !== "string" || title.length === 0 || title.length > 15) return false;
   return true;
 };
 
-export const isValidCollectionDescription = function (description: string) {
+export const isValidCollectionDescription = function (description: string): boolean {
   if (typeof description !== "string" || description.length > 500) return false;
   return true;
 };
 
-export const isValidLogin = function (login: string) {
+export const isValidLogin = function (login: string): boolean {
   if (typeof login !== "string" || login.length < 2 || login.length > 15) return false;
   return true;
 };
 
-export const isValidPassword = function (password: string) {
+export const isValidPassword = function (password: string): boolean {
   if (typeof password !== "string" || password.length < 8 || password.length > 16) return false;
   return true;
 };
 
-export const isValidUserRank = function (rank: number) {
+export const isValidUserRank = function (rank: number): boolean {
   if (typeof rank !== "number" || !VALID_USER_RANKS.includes(rank)) return false;
   return true;
 };
 
-export const isValidTurn = function (input: number) {
+export const isValidTurn = function (input: number): boolean {
   if (typeof input !== "number" || isNaN(input) || input < TURN_MIN || input > TURN_MAX) return false;
   return true;
 };
 
-export const isValidColor = function (input: string) {
+export const isValidColor = function (input: string): boolean {
   if (typeof input != "string") return false;
   const regex = new RegExp("^#[A-Fa-f0-9]{6}$");
   return regex.test(input);
 };
 
-export const isValidGroupName = function (input: string) {
+export const isValidGroupName = function (input: string): boolean {
   if (typeof input !== "string" || input.length < GROUP_NAME_MIN_LENGTH || input.length > GROUP_NAME_MAX_LENGTH) return false;
   for (let i = 0; i < input.length; i++) {
     for (let char = 0; char < GROUP_NAME_FORBIDDEN_CHARACTERS.length; char++) {
@@ -99,22 +99,22 @@ export const isValidGroupName = function (input: string) {
   return true;
 };
 
-export const isValidOutputWidth = function (input: number) {
+export const isValidOutputWidth = function (input: number): boolean {
   if (typeof input !== "number" || input < settingsLimits.min.outputWidth || input > settingsLimits.max.outputWidth) return false;
   return true;
 };
 
-export const isValidScale = function (input: number) {
+export const isValidScale = function (input: number): boolean {
   if (typeof input !== "number" || input < settingsLimits.min.scale || input > settingsLimits.max.scale) return false;
   return true;
 };
 
-export const isValidSpotsFilter = function (input: number) {
+export const isValidSpotsFilter = function (input: number): boolean {
   if (typeof input !== "number" || input < settingsLimits.min.spotsFilter || input > settingsLimits.max.spotsFilter) return false;
   return true;
 };
 
-export const isValidSettings = function (settings: Settings) {
+export const isValidSettings = function (settings: Settings): boolean {
   if (typeof settings !== "object") return false;
   if (!isValidColor(settings.backgroundColor)) return false;
   if (typeof settings.displayUnmarked !== "boolean") return false;

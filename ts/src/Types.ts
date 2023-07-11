@@ -57,6 +57,9 @@ export interface TurnDataState {
   id: number;
   hasFiles: boolean;
 }
+export type UserWithRelations = User & {
+  collections: Collection[];
+};
 export type CollectionWithRelations = Collection & {
   author: User;
   maps: CreatedMap[];

@@ -1,5 +1,5 @@
 import express from "express";
-import { readCollection, readCollections, readMap, readUser, readWorlds } from "../src/queries/index.js";
+import { readCollections, readUser, readWorlds } from "../src/queries/index.js";
 import { handleAuthentication, handleLogout, handleReadCollection, handleReadCollections, handleRegistration } from "./router-handlers.js";
 import { Collection } from "@prisma/client";
 import { isValidID } from "../public/scripts/validators.js";

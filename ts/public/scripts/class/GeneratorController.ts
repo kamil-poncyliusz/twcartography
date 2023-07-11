@@ -99,7 +99,7 @@ class GeneratorController {
     }
     return true;
   }
-  changeMarkGroupColor(name: string, color: string) {
+  changeMarkGroupColor(name: string, color: string): boolean {
     if (this.turn === -1) return false;
     const groupIndex = this.markGroups.findIndex((element) => element.name === name);
     if (groupIndex === -1) return false;
@@ -108,7 +108,7 @@ class GeneratorController {
     group.color = color;
     return true;
   }
-  changeMarkGroupName(oldName: string, newName: string) {
+  changeMarkGroupName(oldName: string, newName: string): boolean {
     if (this.turn === -1) return false;
     const groupIndex = this.markGroups.findIndex((element) => element.name === oldName);
     if (groupIndex === -1) return false;
@@ -135,7 +135,7 @@ class GeneratorController {
     }
     return true;
   }
-  async changeWorld(world: number) {
+  async changeWorld(world: number): Promise<boolean> {
     const endpoint = `/api/world/${world}`;
     const worldInfo: Awaited<ReturnType<typeof handleReadWorld>> = await getRequest(endpoint);
     this.data = {};
@@ -146,7 +146,7 @@ class GeneratorController {
     this.latestTurn = Math.floor((Date.now() - worldInfo.startTimestamp * 1000) / 1000 / 60 / 60 / 24);
     return true;
   }
-  deleteMark(groupName: string, tribeTag: string) {
+  deleteMark(groupName: string, tribeTag: string): boolean {
     if (this.turn === -1) return false;
     const group = this.markGroups.find((element) => element.name === groupName);
     if (group === undefined) return false;
@@ -155,13 +155,13 @@ class GeneratorController {
     group.tribes.splice(tribeIndex, 1);
     return true;
   }
-  deleteMarkGroup(name: string) {
+  deleteMarkGroup(name: string): boolean {
     const groupIndex = this.markGroups.findIndex((element) => element.name === name);
     if (groupIndex === -1) return false;
     this.markGroups.splice(groupIndex, 1);
     return true;
   }
-  async fetchTurnData(turn: number) {
+  async fetchTurnData(turn: number): Promise<boolean> {
     if (this.world === 0) return false;
     if (!isValidTurn(turn)) return false;
     if (typeof this.data[turn] === "object") return true;
@@ -171,23 +171,23 @@ class GeneratorController {
     this.data[turn] = turnData;
     return true;
   }
-  findTribe(tag: string) {
+  findTribe(tag: string): Tribe | false {
     if (!this.tribes) return false;
     for (const tribeID in this.tribes) {
       if (this.tribes[tribeID].tag === tag) return this.tribes[tribeID];
     }
     return false;
   }
-  getMapImageData() {
+  getMapImageData(): ImageData | false {
     if (!isValidSettings(this.settings)) return false;
     if (typeof this.data[this.turn] !== "object") return false;
     const generator = new MapGenerator(this.data[this.turn], this.settings);
     if (!generator.imageData) return false;
     return generator.imageData;
   }
-  getSuggestions(tag: string, limit = MAX_TRIBE_SUGGESTIONS) {
+  getSuggestions(tag: string, limit = MAX_TRIBE_SUGGESTIONS): Tribe[] {
     const tribes = this.tribes;
-    if (!tribes) return false;
+    if (!tribes) return [];
     const suggestions: Tribe[] = [];
     for (const tribeID in tribes) {
       if (tribes[tribeID].tag.includes(tag) || tag === "") suggestions.push(tribes[tribeID]);
@@ -207,55 +207,55 @@ class GeneratorController {
     suggestions.splice(limit);
     return suggestions;
   }
-  isGroupNameTaken(name: string) {
+  isGroupNameTaken(name: string): boolean {
     for (const group of this.markGroups) {
       if (group.name === name) return true;
     }
     return false;
   }
-  setBackgroundColor(color: string) {
+  setBackgroundColor(color: string): boolean {
     if (this.turn === -1) return false;
     if (!isValidColor(color)) return false;
     this.#backgroundColor = color;
     return true;
   }
-  setBorderColor(color: string) {
+  setBorderColor(color: string): boolean {
     if (this.turn === -1) return false;
     if (!isValidColor(color)) return false;
     this.#borderColor = color;
     return true;
   }
-  setDisplayUnmarked(value: boolean) {
+  setDisplayUnmarked(value: boolean): boolean {
     if (this.turn === -1) return false;
     if (typeof value !== "boolean") return false;
     this.#displayUnmarked = value;
     return true;
   }
-  setOutputWidth(value: number) {
+  setOutputWidth(value: number): boolean {
     if (this.turn === -1) return false;
     if (!isValidOutputWidth(value)) return false;
     this.#outputWidth = value;
     return true;
   }
-  setScale(value: number) {
+  setScale(value: number): boolean {
     if (this.turn === -1) return false;
     if (!isValidScale(value)) return false;
     this.#scale = value;
     return true;
   }
-  setSpotsFilter(value: number) {
+  setSpotsFilter(value: number): boolean {
     if (this.turn === -1) return false;
     if (!isValidSpotsFilter(value)) return false;
     this.#spotsFilter = value;
     return true;
   }
-  setTrim(value: boolean) {
+  setTrim(value: boolean): boolean {
     if (this.turn === -1) return false;
     if (typeof value !== "boolean") return false;
     this.#trim = value;
     return true;
   }
-  setUnmarkedColor(color: string) {
+  setUnmarkedColor(color: string): boolean {
     if (this.turn === -1) return false;
     if (!isValidColor(color)) return false;
     this.#unmarkedColor = color;

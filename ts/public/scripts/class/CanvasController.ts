@@ -1,19 +1,20 @@
 import GeneratorController from "./GeneratorController";
 
-const canvasElement = document.getElementById("map-canvas") as HTMLCanvasElement;
+const canvasElement = document.getElementById("map-canvas") as HTMLCanvasElement | null;
 
 class CanvasController {
   #generatorController;
   autoRefresh: boolean = true;
   constructor(generatorControllerObject: GeneratorController) {
     this.#generatorController = generatorControllerObject;
+    if (!canvasElement) return;
     canvasElement.addEventListener("mousedown", this.dragStart);
     canvasElement.addEventListener("mouseup", this.dragEnd);
   }
   render() {
     if (this.autoRefresh) {
       const imageData = this.#generatorController.getMapImageData();
-      if (!imageData) return;
+      if (!imageData || !canvasElement) return;
       const ctx = canvasElement.getContext("2d");
       canvasElement.width = imageData.width;
       canvasElement.height = imageData.width;
@@ -26,27 +27,33 @@ class CanvasController {
     this.autoRefresh = false;
   }
   dragEnd = (e: Event) => {
-    const target = e.target as HTMLCanvasElement;
-    target.removeEventListener("mousemove", this.dragMove);
+    const canvas = e.target as HTMLCanvasElement;
+    canvas.removeEventListener("mousemove", this.dragMove);
   };
   dragMove = (e: MouseEvent) => {
     const canvas = e.target as HTMLCanvasElement;
-    const offsetX = e.clientX - parseInt(canvas.dataset.dragX as string);
-    const offsetY = e.clientY - parseInt(canvas.dataset.dragY as string);
-    canvas.dataset.dragX = String(e.clientX);
-    canvas.dataset.dragY = String(e.clientY);
-    canvas.style.left = `${parseInt(canvas.style.left) + offsetX}px`;
-    canvas.style.top = `${parseInt(canvas.style.top) + offsetY}px`;
+    const oldX = parseInt(canvas.dataset.positionX ?? "");
+    const oldY = parseInt(canvas.dataset.positionY ?? "");
+    const newX = e.clientX;
+    const newY = e.clientY;
+    if (isNaN(oldX) || isNaN(oldY)) return;
+    const shiftX = newX - oldX;
+    const shiftY = newY - oldY;
+    canvas.dataset.positionX = String(newX);
+    canvas.dataset.positionY = String(newY);
+    canvas.style.left = `${parseInt(canvas.style.left) + shiftX}px`;
+    canvas.style.top = `${parseInt(canvas.style.top) + shiftY}px`;
   };
   dragStart = (e: MouseEvent) => {
     const canvas = e.target as HTMLCanvasElement;
-    canvas.dataset.dragX = String(e.clientX);
-    canvas.dataset.dragY = String(e.clientY);
+    canvas.dataset.positionX = String(e.clientX);
+    canvas.dataset.positionY = String(e.clientY);
     if (canvas.style.left === "") {
       canvas.style.left = "0px";
       canvas.style.top = "0px";
     }
     canvas.addEventListener("mousemove", this.dragMove);
+    canvas.addEventListener("mouseleave", this.dragEnd);
   };
 }
 

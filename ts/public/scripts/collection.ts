@@ -1,4 +1,5 @@
 import { handleDeleteCollection } from "../../routes/api-handlers.js";
+import { MAP_IMAGES_DIRECTORY } from "./constants.js";
 import "./nav-bar.js";
 import { postRequest } from "./requests.js";
 import { isValidCollectionDescription, isValidCollectionTitle, isValidID } from "./validators.js";
@@ -17,11 +18,10 @@ const collectionTitle = document.getElementById("collection-title");
 const collectionDescription = document.getElementById("collection-description");
 const editCollectionTitleButton = document.getElementById("edit-collection-title");
 const editCollectionDescriptionButton = document.getElementById("edit-collection-description");
-const collectionTitleEditInput = document.getElementById("collection-title-edit-input") as HTMLInputElement | undefined;
-const collectionDescriptionEditTextarea = document.getElementById("collection-description-edit-textarea") as HTMLTextAreaElement | undefined;
+const collectionTitleEditInput = document.getElementById("collection-title-edit-input") as HTMLInputElement | null;
+const collectionDescriptionEditTextarea = document.getElementById("collection-description-edit-textarea") as HTMLTextAreaElement | null;
 
 let currentEnlargedMap: HTMLDivElement | null = null;
-const mapImagesPath = "/images/maps";
 
 const viewEnlargedMap = function () {
   if (!currentEnlargedMap) return;
@@ -29,7 +29,7 @@ const viewEnlargedMap = function () {
   const title = currentEnlargedMap.dataset.title;
   const description = currentEnlargedMap.dataset.description;
   if (isNaN(id) || !title || !description) return;
-  const src = `${mapImagesPath}/${id}.png`;
+  const src = `${MAP_IMAGES_DIRECTORY}/${id}.png`;
   if (enlargedMapImage) enlargedMapImage.setAttribute("src", src);
   if (enlargedMap) enlargedMap.style.visibility = "visible";
   updateMapInfo();
@@ -73,10 +73,10 @@ const updateMapInfo = function () {
 };
 
 const handleMapTileClick = function (e: Event) {
-  let target = e.target as HTMLDivElement;
-  if (target.tagName === "IMG") target = target.closest("div[data-id]") as HTMLDivElement;
-  if (!target || !target.dataset.id || !target.dataset.title || !target.dataset.description) return;
-  currentEnlargedMap = target;
+  let newEnlargedMap = e.target as HTMLDivElement;
+  if (newEnlargedMap.tagName === "IMG") newEnlargedMap = newEnlargedMap.closest("div[data-id]") as HTMLDivElement;
+  if (!newEnlargedMap || !newEnlargedMap.dataset.id || !newEnlargedMap.dataset.title || !newEnlargedMap.dataset.description) return;
+  currentEnlargedMap = newEnlargedMap;
   viewEnlargedMap();
 };
 
@@ -141,7 +141,7 @@ const editCollectionTitle = async function () {
     editCollectionTitleButton.innerHTML = "edytuj";
     editCollectionTitleButton.dataset.editMode = JSON.stringify(false);
   } else {
-    const currentTitle = collectionTitle.textContent as string;
+    const currentTitle = collectionTitle.textContent ?? "";
     collectionTitle.classList.add("hidden");
     collectionTitleEditInput.value = currentTitle;
     collectionTitleEditInput.classList.remove("hidden");

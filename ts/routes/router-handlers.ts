@@ -3,7 +3,7 @@ import { Request } from "express";
 import { createUser, readCollection, readCollections, readUserByLogin } from "../src/queries/index.js";
 import { isValidID } from "../public/scripts/validators.js";
 
-export const handleRegistration = async function (req: Request): Promise<string | true> {
+export const handleRegistration = async function (req: Request): Promise<string> {
   const login = req.body.login;
   const password = req.body.password;
   if (!login || login.length < 2 || login.length > 24) return "incorrect login";
@@ -13,11 +13,11 @@ export const handleRegistration = async function (req: Request): Promise<string 
   if (user !== null) return "login taken";
   const passwordHash = bcrypt.hashSync(password, 5);
   const createdUser = await createUser(login, passwordHash, 1);
-  if (createdUser === null) return "database error";
-  return true;
+  if (!createdUser) return "database error";
+  return "success";
 };
 
-export const handleAuthentication = async function (req: Request) {
+export const handleAuthentication = async function (req: Request): Promise<boolean> {
   const login = req.body.login;
   const password = req.body.password;
   if (!login || !password) return false;
@@ -41,8 +41,8 @@ export const handleAuthentication = async function (req: Request) {
   return isSessionCreated;
 };
 
-export const handleLogout = async function (req: Request) {
-  const loggedOut = await new Promise((resolve) => {
+export const handleLogout = async function (req: Request): Promise<boolean> {
+  const loggedOut: boolean = await new Promise((resolve) => {
     req.session.destroy((err) => {
       if (err) return resolve(false);
       return resolve(true);

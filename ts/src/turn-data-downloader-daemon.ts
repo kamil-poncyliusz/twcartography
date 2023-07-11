@@ -5,6 +5,7 @@ import { createTurnData, readWorlds } from "./queries/index.js";
 import parseTurnData from "./parse-turn-data.js";
 import daysFromStart from "./days-from-start.js";
 import { World } from "@prisma/client";
+import { isValidTurn } from "../public/scripts/validators.js";
 
 const downloadWorldDataFile = function (url: string, path: string, filename: string) {
   const dl = new DownloaderHelper(url, path, {
@@ -49,13 +50,13 @@ const turnDataDownloaderDaemon = async function () {
     const rule = `${serverStart.getMinutes()} ${serverStart.getHours()} * * *`;
     scheduler.scheduleJob(rule, async function () {
       const turn = daysFromStart(serverStart);
-      if (turn < 0 || turn > 365) return;
+      if (!isValidTurn(turn)) return;
       const success = await downloadWorldData(world, turn);
       if (success) {
         console.log(`Downloading turn ${turn} of ${world.server}${world.num} completed`);
         const parsedWorldData = parseTurnData(world.id, turn);
-        const createdWorldData = await createTurnData(world.id, turn, parsedWorldData);
-        if (createdWorldData !== null) console.log(`Turn data created for ${createdWorldData.turn} turn of ${world.server + world.num}`);
+        const isCreated = await createTurnData(world.id, turn, parsedWorldData);
+        if (!isCreated) console.log(`Turn data created for ${turn} turn of ${world.server + world.num}`);
         else console.log(`Failed to create turn data record in database`);
       } else {
         console.log(`Downloading turn ${turn} of ${world.server}${world.num} failed`);

@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Collection, PrismaClient } from "@prisma/client";
 import { CollectionWithRelations } from "../Types";
 import { isValidID } from "../../public/scripts/validators.js";
 
@@ -45,7 +45,7 @@ export const readCollections = async function (worldID: number | undefined, auth
   return result;
 };
 
-export const createCollection = async function (world: number, author: number, title: string, description: string) {
+export const createCollection = async function (world: number, author: number, title: string, description: string): Promise<Collection | null> {
   const result = await prisma.collection
     .create({
       data: {
@@ -76,7 +76,7 @@ export const deleteCollection = async function (id: number): Promise<boolean> {
   return true;
 };
 
-export const updateCollection = async function (id: number, data: { title?: string; description?: string; views?: number }) {
+export const updateCollection = async function (id: number, data: { title?: string; description?: string; views?: number }): Promise<boolean> {
   const result = await prisma.collection
     .update({
       data: data,

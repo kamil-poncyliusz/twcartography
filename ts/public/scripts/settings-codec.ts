@@ -31,7 +31,7 @@ export const encodeSettings = function (settings: Settings): string {
   return encodeURIComponent(encoded);
 };
 
-export const decodeSettings = function (input: string) {
+export const decodeSettings = function (input: string): Settings | false {
   if (input === "") return false;
   const decodedURI = decodeURIComponent(input);
   let string = "";
@@ -54,7 +54,6 @@ export const decodeSettings = function (input: string) {
     };
     markGroups.push(group);
   }
-  if (settingsArray.length < 8) return false;
   const [backgroundColor, borderColor, displayUnmarked, outputWidth, scale, spotsFilter, trim, turn, unmarkedColor, world] = settingsArray;
   const result = {
     backgroundColor: backgroundColor,
@@ -79,7 +78,7 @@ export const encodeJsonSettings = function (settings: Settings): string {
   return encodeURIComponent(baseEncoded);
 };
 
-export const decodeJsonSettings = function (input: string) {
+export const decodeJsonSettings = function (input: string): Settings | false {
   if (typeof input !== "string") return false;
   const decodedURI = decodeURIComponent(input);
   let string = "";

@@ -1,8 +1,8 @@
 import { handleCreateWorld, handleDeleteWorld } from "../../../routes/api-handlers.js";
 import { postRequest } from "../requests.js";
-import { isValidID } from "../validators.js";
+import { isValidID, isValidWorldCreatePayload } from "../validators.js";
 
-const createWorldForm = document.querySelector("form") as HTMLFormElement;
+const createWorldForm = document.querySelector("form");
 const deleteWorldButtons = document.querySelectorAll(".delete-world-button");
 
 const sendDeleteWorldRequest = async function (worldId: number) {
@@ -24,10 +24,10 @@ const createWorld = async function (e: Event) {
   e.preventDefault();
   const form = createWorldForm;
   if (!form) return;
-  const serverInput = form.querySelector("input[name='server']") as HTMLInputElement;
-  const numInput = form.querySelector("input[name='num']") as HTMLInputElement;
-  const domainInput = form.querySelector("input[name='domain']") as HTMLInputElement;
-  const timestampInput = form.querySelector("input[name='start-timestamp']") as HTMLInputElement;
+  const serverInput = form.querySelector("input[name='server']") as HTMLInputElement | null;
+  const numInput = form.querySelector("input[name='num']") as HTMLInputElement | null;
+  const domainInput = form.querySelector("input[name='domain']") as HTMLInputElement | null;
+  const timestampInput = form.querySelector("input[name='start-timestamp']") as HTMLInputElement | null;
   if (!serverInput || !numInput || !domainInput || !timestampInput) return;
   const payload = {
     server: serverInput.value,
@@ -35,21 +35,22 @@ const createWorld = async function (e: Event) {
     domain: domainInput.value,
     timestamp: parseInt(timestampInput.value),
   };
-  const createdWorldId: Awaited<ReturnType<typeof handleCreateWorld>> = await postRequest("/api/world/create", payload);
-  if (createdWorldId === false) console.log("Failed to create a world");
+  if (!isValidWorldCreatePayload(payload)) return;
+  const isCreated: Awaited<ReturnType<typeof handleCreateWorld>> = await postRequest("/api/world/create", payload);
+  if (!isCreated) console.log("Failed to create a world");
   else window.location.reload();
 };
 
 const deleteWorld = async function (e: Event) {
-  const target = e.target as HTMLButtonElement;
-  const worldId = parseInt(target.dataset.worldId ?? "");
-  if (!isValidID(worldId)) return;
-  const isDeleted = await sendDeleteWorldRequest(worldId);
+  const button = e.target as HTMLButtonElement;
+  const worldID = parseInt(button.dataset.worldId ?? "");
+  if (!isValidID(worldID)) return;
+  const isDeleted = await sendDeleteWorldRequest(worldID);
   if (isDeleted) window.location.reload();
-  else console.log("Failed to delete world with ID", worldId);
+  else console.log("Failed to delete world with ID", worldID);
 };
 
-createWorldForm.addEventListener("submit", createWorld);
+if (createWorldForm) createWorldForm.addEventListener("submit", createWorld);
 deleteWorldButtons.forEach((button) => {
   button.addEventListener("click", deleteWorld);
 });

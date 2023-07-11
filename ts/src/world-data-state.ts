@@ -5,7 +5,7 @@ import { WorldWithWorldData, WorldDataState } from "./Types.js";
 
 const files = ["village", "player", "ally", "conquer", "kill_all_tribe", "kill_att_tribe", "kill_def_tribe"];
 
-const getDirectories = function (path: string) {
+const getDirectories = function (path: string): string[] {
   if (typeof path !== "string") [];
   const entities = fs.readdirSync(path, { withFileTypes: true });
   const directories = entities.filter((entity) => entity.isDirectory());
@@ -38,7 +38,7 @@ const findWorldDataFiles = function () {
   return worldDataFiles;
 };
 
-export const getWorldDataState = function (worldsWithWorldData: WorldWithWorldData[]) {
+export const getWorldDataState = function (worldsWithWorldData: WorldWithWorldData[]): WorldDataState[] {
   const worldDataState: WorldDataState[] = [];
   for (const world of worldsWithWorldData) {
     const startTimestamp = new Date(world.startTimestamp * 1000);

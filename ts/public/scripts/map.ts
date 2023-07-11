@@ -13,18 +13,6 @@ const deleteMap = async function () {
   if (isDeleted) window.location.href = `${window.location.origin}/maps`;
   else console.log("Failed to delete this map");
 };
-// const image = document.querySelector("#map img") as HTMLImageElement;
-// const wrapper = document.getElementById("wrapper") as HTMLDivElement;
-// if (image) {
-//   const canvas = document.createElement("canvas");
-//   canvas.width = image.width;
-//   canvas.height = image.height;
-//   const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-//   ctx.drawImage(image, 0, 0);
-//   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-//   const backgroundcolor = `rgb(${imageData.data[0]} ${imageData.data[1]} ${imageData.data[2]})`;
-//   if (wrapper) wrapper.style.backgroundColor = backgroundcolor;
-// }
 
 if (settingsInput)
   settingsInput.addEventListener("click", function (e: Event) {

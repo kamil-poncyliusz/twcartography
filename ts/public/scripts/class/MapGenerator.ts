@@ -114,7 +114,7 @@ class MapGenerator {
     if (canvasModule !== null) this.imageData = canvasModule.createImageData(imageArray, scaledWidth, scaledWidth) as ImageData;
     else this.imageData = new ImageData(imageArray, scaledWidth, scaledWidth);
   }
-  #calcWidthModifier() {
+  #calcWidthModifier(): number {
     const margin = 10;
     if (!this.#settings.trim) {
       if (this.#settings.outputWidth === 0) return 0;
@@ -142,7 +142,7 @@ class MapGenerator {
     }
     return 0;
   }
-  #calcSpotSize(villagePoints: number) {
+  #calcSpotSize(villagePoints: number): number {
     const maxSize = this.#maxSpotSize;
     const minSize = 1;
     const minPoints = this.#villageFilter;
@@ -203,7 +203,7 @@ class MapGenerator {
       borderPixel.color = borderColor;
     }
   }
-  #findMarkGroupOfTribe(tribeID: string) {
+  #findMarkGroupOfTribe(tribeID: string): MarkGroup | false {
     for (const group of this.#settings.markGroups) {
       if (group.tribes.includes(tribeID)) return group;
     }
@@ -216,7 +216,7 @@ class MapGenerator {
     }
     return false;
   }
-  #findSmallSpots() {
+  #findSmallSpots(): RawPixel[] {
     const pixels = this.#rawPixels;
     const smallSpots: RawPixel[] = [];
     for (let x = 0; x < pixels.length; x++) {
@@ -387,7 +387,8 @@ class MapGenerator {
   }
   #writeLegend() {
     const legend = this.#legend.getLegend();
-    const imageData = this.imageData as ImageData;
+    const imageData = this.imageData;
+    if (!imageData) return;
     const width = imageData.width;
     const height = imageData.height;
     if (canvasModule !== null) {

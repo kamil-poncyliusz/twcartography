@@ -34,7 +34,7 @@ const registerRequest = async function (e: Event) {
     password: password,
   };
   const message: Awaited<ReturnType<typeof handleRegistration>> = await postRequest("/register", payload);
-  if (message === true) console.log("Successfully registered an account");
+  if (message === "success") console.log("Successfully registered an account");
   else console.log(message);
 };
 
@@ -45,9 +45,9 @@ const logoutRequest = async function (e: Event) {
 };
 
 const toggleProfileWindow = function (e: Event) {
-  const target = e.target as HTMLButtonElement;
-  const profile = target.nextSibling as HTMLDivElement;
-  profile.classList.toggle("hidden");
+  const profileButton = e.target as HTMLButtonElement;
+  const profileWindow = profileButton.nextSibling as HTMLDivElement;
+  profileWindow.classList.toggle("hidden");
 };
 
 if (profileButton) profileButton.addEventListener("click", toggleProfileWindow);

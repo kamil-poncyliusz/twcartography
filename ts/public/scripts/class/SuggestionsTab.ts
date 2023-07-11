@@ -4,22 +4,24 @@ import MarkGroupsTabController from "./MarkGroupsTab.js";
 import CanvasController from "./CanvasController.js";
 import { randomizeGroupColor } from "../utils.js";
 
-const suggestionsTableElement = document.querySelector("#mark-suggestions table") as Element;
+const suggestionsTableElement = document.querySelector("#mark-suggestions table") as HTMLTableElement | null;
 
 class SuggestionsTabController {
   #generator: GeneratorController;
-  #body;
-  #suggestionsSearchInput;
+  #body: HTMLTableSectionElement | null = null;
+  #suggestionsSearchInput: HTMLInputElement | null = null;
   #settingsObject: SettingsTabController | undefined;
   #markGroupsObject: MarkGroupsTabController | undefined;
   #canvasObject: CanvasController | undefined;
   constructor(generatorObject: GeneratorController) {
     this.#generator = generatorObject;
-    this.#body = suggestionsTableElement.querySelector("tbody") as HTMLTableSectionElement;
-    this.#suggestionsSearchInput = suggestionsTableElement.querySelector("thead input") as HTMLInputElement;
-    this.#suggestionsSearchInput.addEventListener("input", () => {
-      this.render();
-    });
+    if (suggestionsTableElement) {
+      this.#body = suggestionsTableElement.querySelector("tbody");
+      this.#suggestionsSearchInput = suggestionsTableElement.querySelector("thead input") as HTMLInputElement;
+      this.#suggestionsSearchInput.addEventListener("input", () => {
+        this.render();
+      });
+    }
   }
   set settingsObject(object: SettingsTabController) {
     this.#settingsObject = object;
@@ -52,9 +54,9 @@ class SuggestionsTabController {
     this.renderCanvas();
   };
   render() {
-    const tag = this.#suggestionsSearchInput.value;
+    if (!this.#body) return;
+    const tag = this.#suggestionsSearchInput?.value ?? "";
     const suggestions = this.#generator.getSuggestions(tag, 30);
-    if (!suggestions) return;
     this.#body.innerHTML = "";
     const groups = this.#generator.markGroups.map((group) => group.name);
     let groupOptions = "<option selected disabled hidden>Dodaj</option>";

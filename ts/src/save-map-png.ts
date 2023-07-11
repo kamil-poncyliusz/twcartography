@@ -11,10 +11,9 @@ const saveMapPng = async function (id: number, imageData: ImageData) {
   pngImage.data = Buffer.from(imageData.data);
   const writeStream = fs.createWriteStream(path);
   pngImage.pack().pipe(writeStream);
-  await writeStream.on("close", () => {
+  writeStream.on("close", () => {
     return;
   });
-  return true;
 };
 
 export default saveMapPng;

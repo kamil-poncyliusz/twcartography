@@ -2,7 +2,7 @@ import fs from "fs";
 import zlib from "zlib";
 import { ParsedTurnData } from "./Types";
 
-const parseFile = function (world: number, turn: number, name: string) {
+const parseFile = function (world: number, turn: number, name: string): string[] {
   const path = `temp/${world}/${turn}/${name}.txt.gz`;
   try {
     const fileData = fs.readFileSync(path);
@@ -16,7 +16,7 @@ const parseFile = function (world: number, turn: number, name: string) {
   }
 };
 
-const parseTurnData = function (world_id: number, turn: number) {
+const parseTurnData = function (world_id: number, turn: number): ParsedTurnData {
   const parsedData: ParsedTurnData = {
     conquer: {},
     tribes: {},

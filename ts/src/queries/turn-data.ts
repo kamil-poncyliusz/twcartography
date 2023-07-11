@@ -3,7 +3,7 @@ import { ParsedTurnData } from "../Types";
 
 const prisma = new PrismaClient();
 
-export const readTurnData = async function (worldId: number, turn: number) {
+export const readTurnData = async function (worldId: number, turn: number): Promise<ParsedTurnData | null> {
   const result = await prisma.turnData
     .findFirst({
       where: {
@@ -22,7 +22,7 @@ export const readTurnData = async function (worldId: number, turn: number) {
   return null;
 };
 
-export const createTurnData = async function (worldId: number, turn: number, parsedTurnData: ParsedTurnData) {
+export const createTurnData = async function (worldId: number, turn: number, parsedTurnData: ParsedTurnData): Promise<boolean> {
   const data = parsedTurnData as unknown;
   const result = await prisma.turnData
     .create({
@@ -30,12 +30,12 @@ export const createTurnData = async function (worldId: number, turn: number, par
     })
     .catch((err) => {
       console.error("Prisma error:", err);
-      return null;
+      return false;
     });
-  return result;
+  return true;
 };
 
-export const deleteTurnData = async function (id: number) {
+export const deleteTurnData = async function (id: number): Promise<boolean> {
   const result = await prisma.turnData
     .delete({
       where: {
@@ -44,7 +44,7 @@ export const deleteTurnData = async function (id: number) {
     })
     .catch((err) => {
       console.error("Prisma error:", err);
-      return null;
+      return false;
     });
-  return result;
+  return true;
 };

@@ -3,7 +3,7 @@ import { WorldWithWorldData } from "../Types";
 
 const prisma = new PrismaClient();
 
-export const readWorld = async function (id: number) {
+export const readWorld = async function (id: number): Promise<World | null> {
   const result = await prisma.world
     .findUnique({
       where: {
@@ -17,7 +17,7 @@ export const readWorld = async function (id: number) {
   return result;
 };
 
-export const readWorlds = async function () {
+export const readWorlds = async function (): Promise<World[]> {
   const result = await prisma.world.findMany().catch((err) => {
     console.error("Prisma error:", err);
     return [] as World[];
@@ -44,7 +44,7 @@ export const readWorldsWithWorldData = async function (): Promise<WorldWithWorld
   return result;
 };
 
-export const createWorld = async function (server: string, num: string, domain: string, startTimestamp: number) {
+export const createWorld = async function (server: string, num: string, domain: string, startTimestamp: number): Promise<boolean> {
   const result = await prisma.world
     .create({
       data: {
@@ -56,12 +56,12 @@ export const createWorld = async function (server: string, num: string, domain: 
     })
     .catch((err) => {
       console.error("Prisma error:", err);
-      return null;
+      return false;
     });
-  return result;
+  return true;
 };
 
-export const deleteWorld = async function (id: number) {
+export const deleteWorld = async function (id: number): Promise<boolean> {
   const result = await prisma.world
     .delete({
       where: {

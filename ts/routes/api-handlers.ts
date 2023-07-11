@@ -1,6 +1,5 @@
 import fs from "fs";
 import {
-  readMaps,
   createMap,
   readTurnData,
   createWorld,
@@ -28,31 +27,28 @@ import {
   isValidUserRank,
   isValidWorldCreatePayload,
 } from "../public/scripts/validators.js";
-import { Prisma } from "@prisma/client";
+import { Prisma, World } from "@prisma/client";
 import { Request } from "express";
-import { CreateMapRequestPayload, CreateWorldRequestPayload } from "../src/Types.js";
+import { CreateMapRequestPayload, CreateWorldRequestPayload, ParsedTurnData } from "../src/Types.js";
 
-type mapsWithRelations = Prisma.PromiseReturnType<typeof readMaps>;
-
-export const handleReadWorld = async function (req: Request) {
+export const handleReadWorld = async function (req: Request): Promise<World | null> {
   const id = parseInt(req.params.id);
-  if (!isValidID(id)) return false;
+  if (!isValidID(id)) return null;
   const data = await readWorld(id);
-  if (data === null) return false;
   return data;
 };
 
-export const handleReadTurnData = async function (req: Request) {
-  const worldId = parseInt(req.params.world);
+export const handleReadTurnData = async function (req: Request): Promise<ParsedTurnData | null> {
+  const worldID = parseInt(req.params.world);
   const turn = parseInt(req.params.turn);
-  if (!isValidID(worldId) || isNaN(turn) || turn < 0 || turn > 365) return false;
-  const data = await readTurnData(worldId, turn);
-  if (data === null) return false;
+  if (!isValidID(worldID) || !isValidTurn(turn)) return null;
+  const data = await readTurnData(worldID, turn);
+  if (data === null) return null;
   return data;
 };
 
-export const handleCreateMap = async function (req: Request) {
-  if (!req.session.user || req.session.user.rank < 2) return false;
+export const handleCreateMap = async function (req: Request): Promise<number> {
+  if (!req.session.user || req.session.user.rank < 2) return 0;
   const authorId = req.session.user.id;
   const payload: CreateMapRequestPayload = {
     settings: req.body.settings,
@@ -63,13 +59,13 @@ export const handleCreateMap = async function (req: Request) {
   const settings = payload.settings;
   const encodedSettings = encodeSettings(settings);
   const payloadValidationCode = isValidCreateMapRequest(payload);
-  if (payloadValidationCode !== CreateMapRequestValidationCode.Ok) return false;
+  if (payloadValidationCode !== CreateMapRequestValidationCode.Ok) return 0;
   const turnData = await readTurnData(settings.world, settings.turn);
-  if (turnData === null) return false;
+  if (turnData === null) return 0;
   const generator = new MapGenerator(turnData, settings);
   if (payload.collection === 0) {
     const createdCollection = await createCollection(settings.world, authorId, "Nowa kolekcja", "");
-    if (!createdCollection) return false;
+    if (!createdCollection) return 0;
     payload.collection = createdCollection.id;
   }
   const createdMap = await createMap(
@@ -81,13 +77,12 @@ export const handleCreateMap = async function (req: Request) {
     encodedSettings,
     payload.collection
   );
-  if (!createdMap) return false;
-  const saved = await saveMapPng(createdMap.id, generator.imageData as ImageData);
-  if (!saved) return false;
+  if (!createdMap) return 0;
+  saveMapPng(createdMap.id, generator.imageData as ImageData);
   return createdMap.id;
 };
 
-export const handleCreateWorld = async function (req: Request) {
+export const handleCreateWorld = async function (req: Request): Promise<boolean> {
   if (!req.session.user || req.session.user.rank < 10) return false;
   const payload: CreateWorldRequestPayload = {
     server: req.body.server,
@@ -96,13 +91,13 @@ export const handleCreateWorld = async function (req: Request) {
     timestamp: req.body.timestamp,
   };
   if (!isValidWorldCreatePayload(req.body)) return false;
-  const createdWorld = await createWorld(payload.server, payload.num, payload.domain, payload.timestamp);
-  if (!createdWorld) return false;
-  console.log("Stworzono świat o id", createdWorld.id);
-  return createdWorld.id;
+  const isCreated = await createWorld(payload.server, payload.num, payload.domain, payload.timestamp);
+  if (!isCreated) return false;
+  console.log("World created");
+  return true;
 };
 
-export const handleCreateTurnData = async function (req: Request) {
+export const handleCreateTurnData = async function (req: Request): Promise<boolean> {
   if (!req.session.user || req.session.user.rank < 10) return false;
   const world = req.body.world;
   const turn = req.body.turn;
@@ -115,7 +110,7 @@ export const handleCreateTurnData = async function (req: Request) {
   return true;
 };
 
-export const handleUpdateUserRank = async function (req: Request) {
+export const handleUpdateUserRank = async function (req: Request): Promise<boolean> {
   if (!req.session.user || req.session.user.rank < 10) return false;
   const id = req.body.id;
   const rank = req.body.rank;
@@ -124,7 +119,7 @@ export const handleUpdateUserRank = async function (req: Request) {
   return success;
 };
 
-export const handleDeleteWorld = async function (req: Request) {
+export const handleDeleteWorld = async function (req: Request): Promise<boolean> {
   if (!req.session.user || req.session.user.rank < 10) return false;
   const worldId = req.body.id;
   if (!isValidID(worldId)) return false;
@@ -132,7 +127,7 @@ export const handleDeleteWorld = async function (req: Request) {
   return isDeleted;
 };
 
-export const handleDeleteMap = async function (req: Request) {
+export const handleDeleteMap = async function (req: Request): Promise<boolean> {
   if (!req.session.user || req.session.user.rank < 10) return false;
   const mapId = req.body.id;
   if (!isValidID(mapId)) return false;
@@ -140,7 +135,7 @@ export const handleDeleteMap = async function (req: Request) {
   return isDeleted;
 };
 
-export const handleDeleteCollection = async function (req: Request) {
+export const handleDeleteCollection = async function (req: Request): Promise<boolean> {
   if (!req.session.user || req.session.user.rank < 10) return false;
   const id = req.body.id;
   if (!isValidID(id)) return false;
@@ -148,7 +143,7 @@ export const handleDeleteCollection = async function (req: Request) {
   return isDeleted;
 };
 
-export const handleUpdateCollection = async function (req: Request) {
+export const handleUpdateCollection = async function (req: Request): Promise<boolean> {
   const id = req.body.id;
   if (!req.session.user || !isValidID(id)) return false;
   const collection = await readCollection(id);
@@ -156,10 +151,10 @@ export const handleUpdateCollection = async function (req: Request) {
   const title = req.body.title;
   const description = req.body.description;
   const views = req.body.views;
-  if (!isValidCollectionTitle(title)) {
+  if (isValidCollectionTitle(title)) {
     const isUpdated = await updateCollection(id, { title: title });
     return isUpdated;
-  } else if (!isValidCollectionDescription(description)) {
+  } else if (isValidCollectionDescription(description)) {
     const isUpdated = await updateCollection(id, { description: description });
     return isUpdated;
   } else if (typeof views === "number" && views >= 0) {

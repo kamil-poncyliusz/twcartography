@@ -1,8 +1,9 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, User } from "@prisma/client";
+import { UserWithRelations } from "../Types";
 
 const prisma = new PrismaClient();
 
-export const readUser = async function (id: number) {
+export const readUser = async function (id: number): Promise<UserWithRelations | null> {
   const result = await prisma.user
     .findUnique({
       where: {
@@ -19,7 +20,7 @@ export const readUser = async function (id: number) {
   return result;
 };
 
-export const readUserByLogin = async function (login: string) {
+export const readUserByLogin = async function (login: string): Promise<User | null | undefined> {
   const result = await prisma.user
     .findUnique({
       where: {
@@ -33,15 +34,15 @@ export const readUserByLogin = async function (login: string) {
   return result;
 };
 
-export const readUsers = async function () {
+export const readUsers = async function (): Promise<User[]> {
   const result = await prisma.user.findMany({}).catch((err) => {
     console.error("Prisma error:", err);
-    return null;
+    return [];
   });
   return result;
 };
 
-export const createUser = async function (login: string, password: string, rank: number) {
+export const createUser = async function (login: string, password: string, rank: number): Promise<boolean> {
   const result = await prisma.user
     .create({
       data: {
@@ -52,12 +53,12 @@ export const createUser = async function (login: string, password: string, rank:
     })
     .catch((err) => {
       console.error("Prisma error:", err);
-      return null;
+      return false;
     });
-  return result;
+  return true;
 };
 
-export const deleteUser = async function (id: number) {
+export const deleteUser = async function (id: number): Promise<boolean> {
   const result = await prisma.user
     .delete({
       where: {
@@ -66,12 +67,12 @@ export const deleteUser = async function (id: number) {
     })
     .catch((err) => {
       console.error("Prisma error:", err);
-      return null;
+      return false;
     });
-  return result;
+  return true;
 };
 
-export const deleteAllUsers = async function () {
+export const deleteAllUsers = async function (): Promise<boolean> {
   const result = await prisma.user.deleteMany({}).catch((err) => {
     console.error("Prisma error:", err);
     return false;
@@ -79,7 +80,7 @@ export const deleteAllUsers = async function () {
   return true;
 };
 
-export const updateUserRank = async function (id: number, rank: number) {
+export const updateUserRank = async function (id: number, rank: number): Promise<boolean> {
   const user = await prisma.user
     .update({
       where: {
