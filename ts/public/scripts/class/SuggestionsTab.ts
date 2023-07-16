@@ -4,24 +4,20 @@ import MarkGroupsTabController from "./MarkGroupsTab.js";
 import CanvasController from "./CanvasController.js";
 import { randomizeGroupColor } from "../utils.js";
 
-const suggestionsTableElement = document.querySelector("#mark-suggestions table") as HTMLTableElement | null;
+const suggestionsTableBody = document.querySelector("#mark-suggestions tbody") as HTMLTableSectionElement | null;
+const suggestionsSearchInput = document.querySelector("#mark-suggestions thead input") as HTMLInputElement | null;
 
 class SuggestionsTabController {
   #generator: GeneratorController;
-  #body: HTMLTableSectionElement | null = null;
-  #suggestionsSearchInput: HTMLInputElement | null = null;
   #settingsObject: SettingsTabController | undefined;
   #markGroupsObject: MarkGroupsTabController | undefined;
   #canvasObject: CanvasController | undefined;
   constructor(generatorObject: GeneratorController) {
     this.#generator = generatorObject;
-    if (suggestionsTableElement) {
-      this.#body = suggestionsTableElement.querySelector("tbody");
-      this.#suggestionsSearchInput = suggestionsTableElement.querySelector("thead input") as HTMLInputElement;
-      this.#suggestionsSearchInput.addEventListener("input", () => {
+    if (suggestionsSearchInput)
+      suggestionsSearchInput.addEventListener("input", () => {
         this.render();
       });
-    }
   }
   set settingsObject(object: SettingsTabController) {
     this.#settingsObject = object;
@@ -54,15 +50,15 @@ class SuggestionsTabController {
     this.renderCanvas();
   };
   render() {
-    if (!this.#body) return;
-    const tag = this.#suggestionsSearchInput?.value ?? "";
+    if (!suggestionsTableBody) return;
+    const tag = suggestionsSearchInput ? suggestionsSearchInput.value : "";
     const suggestions = this.#generator.getSuggestions(tag, 30);
-    this.#body.innerHTML = "";
-    const groups = this.#generator.markGroups.map((group) => group.name);
+    suggestionsTableBody.innerHTML = "";
+    const groupNames = this.#generator.markGroups.map((group) => group.name);
     let groupOptions = "<option selected disabled hidden>Dodaj</option>";
     groupOptions += `<option>Utwórz grupę</option>`;
-    for (let group of groups) {
-      groupOptions += `<option>${group}</option>`;
+    for (let groupName of groupNames) {
+      groupOptions += `<option>${groupName}</option>`;
     }
     for (let tribe of suggestions) {
       const newRow = document.createElement("tr");
@@ -70,9 +66,9 @@ class SuggestionsTabController {
       rowContent += `<td class='suggestion-name'>${tribe.name}</td><td class='suggestion-tag'>${tribe.tag}</td><td>${tribe.players}</td><td>${tribe.villages.length}</td><td>${tribe.points}</td>`;
       rowContent += `<td><select class="cell-input">${groupOptions}</select></td>`;
       newRow.innerHTML = rowContent;
-      this.#body.appendChild(newRow);
+      suggestionsTableBody.appendChild(newRow);
     }
-    this.#body.querySelectorAll("select").forEach((selectElement) => {
+    suggestionsTableBody.querySelectorAll("select").forEach((selectElement) => {
       selectElement.addEventListener("change", this.#addMark);
     });
   }

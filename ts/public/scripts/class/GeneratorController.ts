@@ -56,6 +56,7 @@ class GeneratorController {
     const tribe = this.findTribe(tribeTag);
     if (!tribe) return false;
     group.tribes.push(tribe.id);
+    this.sortMarkGroups();
     return true;
   }
   addMarkGroup(group: MarkGroup) {
@@ -153,6 +154,7 @@ class GeneratorController {
     const tribeIndex = group.tribes.findIndex((tribeID) => this.tribes[tribeID].tag === tribeTag);
     if (tribeIndex === -1) return false;
     group.tribes.splice(tribeIndex, 1);
+    this.sortMarkGroups();
     return true;
   }
   deleteMarkGroup(name: string): boolean {
@@ -260,6 +262,13 @@ class GeneratorController {
     if (!isValidColor(color)) return false;
     this.#unmarkedColor = color;
     return true;
+  }
+  sortMarkGroups() {
+    const sums: { [key: string]: number } = {};
+    for (let group of this.markGroups) {
+      sums[group.name] = group.tribes.reduce((sum, tribeID) => sum + this.tribes[tribeID].points, 0);
+    }
+    this.markGroups.sort((a, b) => sums[b.name] - sums[a.name]);
   }
 }
 

@@ -1,20 +1,35 @@
+import { MarkGroup, Tribe } from "../../../src/Types.js";
 import { randomizeGroupColor } from "../utils.js";
 import CanvasController from "./CanvasController.js";
 import GeneratorController from "./GeneratorController.js";
 import SettingsTabController from "./SettingsTab.js";
 import SuggestionsTabController from "./SuggestionsTab.js";
 
-const markGroupsTableElement = document.querySelector("#mark-groups table") as HTMLTableElement | null;
+const markGroupsTableBody = document.querySelector("#mark-groups table tbody") as HTMLTableSectionElement | null;
+
+const getMarkGroupRowInnerHTML = function (group: MarkGroup, tribes: { [key: string]: Tribe }) {
+  let innerHTML = "";
+  for (let tribeID of group.tribes) {
+    const tribe = tribes[tribeID];
+    innerHTML += `<button class='mark block-element delete-button' title='${tribe.name}'>${tribe.tag}</button>`;
+  }
+  const players = group.tribes.reduce((sum, tribeID) => sum + tribes[tribeID].players, 0);
+  const villages = group.tribes.reduce((sum, tribeID) => sum + tribes[tribeID].villages.length, 0);
+  const points = group.tribes.reduce((sum, tribeID) => sum + tribes[tribeID].points, 0);
+  innerHTML = `<td class='group-tribes'>${innerHTML}</td><td class='group-name'>${group.name}</td>`;
+  innerHTML += `<td><input type='color' title='Kliknij prawym aby wylosować kolor' value='${group.color}'></td>`;
+  innerHTML += `<td>${group.tribes.length}</td><td>${players}</td><td>${villages}</td><td>${points}</td>`;
+  innerHTML += `<td><button class='delete-group delete-button'>X</button></td>`;
+  return innerHTML;
+};
 
 class MarkGroupsTabController {
   #generator;
-  #body;
   #settingsObject: SettingsTabController | undefined;
   #suggestionsObject: SuggestionsTabController | undefined;
   #canvasObject: CanvasController | undefined;
   constructor(mapGeneratorObject: GeneratorController) {
     this.#generator = mapGeneratorObject;
-    if (markGroupsTableElement) this.#body = markGroupsTableElement.querySelector("tbody") as HTMLTableSectionElement;
   }
   set settingsObject(object: SettingsTabController) {
     this.#settingsObject = object;
@@ -26,39 +41,27 @@ class MarkGroupsTabController {
     this.#canvasObject = object;
   }
   render() {
-    const body = this.#body;
     const groups = this.#generator.markGroups;
     const tribes = this.#generator.tribes;
-    if (!body) return;
-    body.innerHTML = "";
+    if (!markGroupsTableBody) return;
+    markGroupsTableBody.innerHTML = "";
     for (let group of groups) {
       const newRow = document.createElement("tr");
-      let content = "";
-      for (let tribeID of group.tribes) {
-        const tribe = tribes[tribeID];
-        content += `<button class='mark block-element delete-button' title='${tribe.name}'>${tribe.tag}</button>`;
-      }
-      const players = group.tribes.reduce((sum, tribeID) => sum + tribes[tribeID].players, 0);
-      const villages = group.tribes.reduce((sum, tribeID) => sum + tribes[tribeID].villages.length, 0);
-      const points = group.tribes.reduce((sum, tribeID) => sum + tribes[tribeID].points, 0);
-      content = `<td class='group-tribes'>${content}</td><td class='group-name'>${group.name}</td>`;
-      content += `<td><input type='color' title='Kliknij prawym aby wylosować kolor' value='${group.color}'></td>`;
-      content += `<td>${group.tribes.length}</td><td>${players}</td><td>${villages}</td><td>${points}</td>`;
-      content += `<td><button class='delete-group delete-button'>X</button></td>`;
+      const content = getMarkGroupRowInnerHTML(group, tribes);
       newRow.innerHTML = content;
-      body.appendChild(newRow);
+      markGroupsTableBody.appendChild(newRow);
     }
-    body.querySelectorAll(".mark").forEach((mark) => {
+    markGroupsTableBody.querySelectorAll(".mark").forEach((mark) => {
       mark.addEventListener("click", this.deleteMark);
     });
-    body.querySelectorAll(".group-name").forEach((nameCell) => {
+    markGroupsTableBody.querySelectorAll(".group-name").forEach((nameCell) => {
       nameCell.addEventListener("click", this.groupNameClick);
     });
-    body.querySelectorAll("input[type=color]").forEach((colorInput) => {
+    markGroupsTableBody.querySelectorAll("input[type=color]").forEach((colorInput) => {
       colorInput.addEventListener("change", this.changeGroupColor);
       colorInput.addEventListener("contextmenu", this.randomizeColor);
     });
-    body.querySelectorAll(".delete-group").forEach((deleteGroupButton) => {
+    markGroupsTableBody.querySelectorAll(".delete-group").forEach((deleteGroupButton) => {
       deleteGroupButton.addEventListener("click", this.deleteMarkGroup);
     });
   }
