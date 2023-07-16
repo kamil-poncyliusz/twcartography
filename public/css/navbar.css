@@ -8,6 +8,16 @@
   background-color: var(--section);
   z-index: 2;
 }
+.navbar-button {
+  width: 10rem;
+  height: 100%;
+  margin-right: 3rem;
+  font-size: 1.25rem;
+  border-radius: 0;
+}
+button.navbar-button {
+  padding: 0;
+}
 #profile-button {
   margin-left: auto;
   margin-right: 0;
@@ -21,21 +31,15 @@
   border-radius: 0.5rem;
   padding: 0.5rem;
 }
-.navbar-button {
-  width: 10rem;
-  height: 100%;
-  margin-right: 3rem;
-  font-size: 1.25rem;
-  border-radius: 0;
-}
-button.navbar-button {
-  padding: 0;
+#profile > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 #login-form {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  margin-bottom: 0.5rem;
 }
 #login-form > div {
   display: flex;
@@ -46,4 +50,8 @@ button.navbar-button {
 }
 #login-form input {
   width: 10rem;
+}
+#message {
+  text-align: center;
+  padding: 0.5rem;
 }
