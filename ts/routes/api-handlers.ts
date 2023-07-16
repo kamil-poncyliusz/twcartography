@@ -22,7 +22,7 @@ import parseTurnData from "../src/parse-turn-data.js";
 import {
   CreateMapRequestValidationCode,
   isValidCollectionDescription,
-  isValidCreateMapRequest,
+  isValidCreateMapRequestPayload,
   isValidID,
   isValidMapDescription,
   isValidTitle,
@@ -61,7 +61,7 @@ export const handleCreateMap = async function (req: Request): Promise<number> {
   };
   const settings = payload.settings;
   const encodedSettings = encodeSettings(settings);
-  const payloadValidationCode = isValidCreateMapRequest(payload);
+  const payloadValidationCode = isValidCreateMapRequestPayload(payload);
   if (payloadValidationCode !== CreateMapRequestValidationCode.Ok) return 0;
   const turnData = await readTurnData(settings.world, settings.turn);
   if (turnData === null) return 0;

@@ -21,6 +21,6 @@
     "noImplicitAny": true,
     "strictFunctionTypes": true
   },
-  "include": ["./ts/**/*", "tests/ts/public/scripts/utils.test.ts"],
+  "include": ["./ts/**/*"],
   "exclude": ["node_modules", "**/*.test.ts"]
 }

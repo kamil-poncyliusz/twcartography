@@ -1,17 +1,5 @@
-import { randomInt } from "crypto";
 import { parseHexColor, calcExpansionArray, distinctiveColor, randomizeGroupColor } from "../../../../ts/public/scripts/utils";
 
-describe("randomInt", () => {
-  test("Should return a number in the given range", () => {
-    const min = -345;
-    const max = 3336;
-    for (let i = 0; i < 1000; i++) {
-      const result = randomInt(min, max);
-      expect(result).toBeGreaterThanOrEqual(min);
-      expect(result).toBeLessThanOrEqual(max);
-    }
-  });
-});
 describe("parseHexColor", () => {
   test("Should parse correct input", () => {
     expect(parseHexColor("#8B50d3")).toEqual({ r: 139, g: 80, b: 211 });

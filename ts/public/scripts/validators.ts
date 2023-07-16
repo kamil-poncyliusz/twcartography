@@ -9,8 +9,16 @@ export enum CreateMapRequestValidationCode {
   InvalidCollection,
 }
 
+const LOGIN_MIN_LENGTH = 2;
+const LOGIN_MAX_LENGTH = 15;
+const PASSWORD_MIN_LENGTH = 8;
+const PASSWORD_MAX_LENGTH = 30;
 const TURN_MAX = 365;
 const TURN_MIN = 0;
+const TITLE_MIN_LENGTH = 1;
+const TITLE_MAX_LENGTH = 20;
+const MAP_DESCRIPTION_MAX_LENGTH = 200;
+const COLLECTION_DESCRIPTION_MAX_LENGTH = 500;
 const GROUP_NAME_MAX_LENGTH = 8;
 const GROUP_NAME_MIN_LENGTH = 1;
 
@@ -22,7 +30,7 @@ const settingsMinValues: { [key: string]: number } = {
 const settingsMaxValues: { [key: string]: number } = {
   outputWidth: 1000,
   scale: 5,
-  spotsFilter: 400,
+  spotsFilter: 500,
 };
 
 export const settingsLimits = {
@@ -30,10 +38,9 @@ export const settingsLimits = {
   max: settingsMaxValues,
 };
 
-export const isValidCreateMapRequest = function (payload: CreateMapRequestPayload): CreateMapRequestValidationCode {
-  if (typeof payload.title !== "string" || payload.title.length === 0 || payload.title.length > 20)
-    return CreateMapRequestValidationCode.InvalidTitle;
-  if (typeof payload.description !== "string" || payload.description.length > 200) return CreateMapRequestValidationCode.InvalidDescription;
+export const isValidCreateMapRequestPayload = function (payload: CreateMapRequestPayload): CreateMapRequestValidationCode {
+  if (!isValidTitle(payload.title)) return CreateMapRequestValidationCode.InvalidTitle;
+  if (!isValidMapDescription(payload.description)) return CreateMapRequestValidationCode.InvalidDescription;
   if (typeof payload.collection !== "number" || !(payload.collection >= 0)) return CreateMapRequestValidationCode.InvalidCollection;
   if (!isValidSettings(payload.settings)) return CreateMapRequestValidationCode.InvalidSettings;
   return CreateMapRequestValidationCode.Ok;
@@ -49,32 +56,32 @@ export const isValidWorldCreatePayload = function (payload: CreateWorldRequestPa
 };
 
 export const isValidID = function (id: number): boolean {
-  if (typeof id !== "number" || isNaN(id) || id < 1) return false;
+  if (typeof id !== "number" || !Number.isInteger(id) || isNaN(id) || id < 1) return false;
   return true;
 };
 
 export const isValidTitle = function (title: string): boolean {
-  if (typeof title !== "string" || title.length === 0 || title.length > 20) return false;
+  if (typeof title !== "string" || title.length < TITLE_MIN_LENGTH || title.length > TITLE_MAX_LENGTH) return false;
   return true;
 };
 
 export const isValidCollectionDescription = function (description: string): boolean {
-  if (typeof description !== "string" || description.length > 500) return false;
+  if (typeof description !== "string" || description.length > COLLECTION_DESCRIPTION_MAX_LENGTH) return false;
   return true;
 };
 
 export const isValidMapDescription = function (description: string): boolean {
-  if (typeof description !== "string" || description.length > 200) return false;
+  if (typeof description !== "string" || description.length > MAP_DESCRIPTION_MAX_LENGTH) return false;
   return true;
 };
 
 export const isValidLogin = function (login: string): boolean {
-  if (typeof login !== "string" || login.length < 2 || login.length > 15) return false;
+  if (typeof login !== "string" || login.length < LOGIN_MIN_LENGTH || login.length > LOGIN_MAX_LENGTH) return false;
   return true;
 };
 
 export const isValidPassword = function (password: string): boolean {
-  if (typeof password !== "string" || password.length < 8 || password.length > 16) return false;
+  if (typeof password !== "string" || password.length < PASSWORD_MIN_LENGTH || password.length > PASSWORD_MAX_LENGTH) return false;
   return true;
 };
 
@@ -84,7 +91,7 @@ export const isValidUserRank = function (rank: number): boolean {
 };
 
 export const isValidTurn = function (input: number): boolean {
-  if (typeof input !== "number" || isNaN(input) || input < TURN_MIN || input > TURN_MAX) return false;
+  if (typeof input !== "number" || isNaN(input) || !Number.isInteger(input) || input < TURN_MIN || input > TURN_MAX) return false;
   return true;
 };
 
@@ -105,17 +112,19 @@ export const isValidGroupName = function (input: string): boolean {
 };
 
 export const isValidOutputWidth = function (input: number): boolean {
-  if (typeof input !== "number" || input < settingsLimits.min.outputWidth || input > settingsLimits.max.outputWidth) return false;
+  if (typeof input !== "number" || !Number.isInteger(input) || input < settingsLimits.min.outputWidth || input > settingsLimits.max.outputWidth)
+    return false;
   return true;
 };
 
 export const isValidScale = function (input: number): boolean {
-  if (typeof input !== "number" || input < settingsLimits.min.scale || input > settingsLimits.max.scale) return false;
+  if (typeof input !== "number" || !Number.isInteger(input) || input < settingsLimits.min.scale || input > settingsLimits.max.scale) return false;
   return true;
 };
 
 export const isValidSpotsFilter = function (input: number): boolean {
-  if (typeof input !== "number" || input < settingsLimits.min.spotsFilter || input > settingsLimits.max.spotsFilter) return false;
+  if (typeof input !== "number" || !Number.isInteger(input) || input < settingsLimits.min.spotsFilter || input > settingsLimits.max.spotsFilter)
+    return false;
   return true;
 };
 
