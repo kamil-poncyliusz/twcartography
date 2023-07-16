@@ -1,5 +1,10 @@
 import { ParsedColor } from "../../src/Types";
 
+const MIN_SATURATION = 45;
+const MAX_SATURATION = 90;
+const MIN_LIGHTNESS = 20;
+const MAX_LIGHTNESS = 60;
+
 const randomInt = function (min: number, max: number) {
   return min + Math.floor(Math.random() * (max - min + 1));
 };
@@ -76,11 +81,6 @@ export const distinctiveColor = function (index: number): string {
   if (index >= 0 && index < colors.length) return colors[index];
   return "#808080";
 };
-
-const MIN_SATURATION = 45;
-const MAX_SATURATION = 90;
-const MIN_LIGHTNESS = 20;
-const MAX_LIGHTNESS = 60;
 
 export const randomizeGroupColor = function (): string {
   const hue = Math.floor(Math.random() * 360);

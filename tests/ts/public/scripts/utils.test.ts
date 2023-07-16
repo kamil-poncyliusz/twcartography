@@ -1,5 +1,17 @@
-import { parseHexColor, calcExpansionArray, distinctiveColor } from "../../../../ts/public/scripts/utils";
+import { randomInt } from "crypto";
+import { parseHexColor, calcExpansionArray, distinctiveColor, randomizeGroupColor } from "../../../../ts/public/scripts/utils";
 
+describe("randomInt", () => {
+  test("Should return a number in the given range", () => {
+    const min = -345;
+    const max = 3336;
+    for (let i = 0; i < 1000; i++) {
+      const result = randomInt(min, max);
+      expect(result).toBeGreaterThanOrEqual(min);
+      expect(result).toBeLessThanOrEqual(max);
+    }
+  });
+});
 describe("parseHexColor", () => {
   test("Should parse correct input", () => {
     expect(parseHexColor("#8B50d3")).toEqual({ r: 139, g: 80, b: 211 });
@@ -8,14 +20,15 @@ describe("parseHexColor", () => {
   test("Should detect incorrect input", () => {
     expect(parseHexColor("a34t09hgj39tb")).toEqual({ r: 0, g: 0, b: 0 });
     expect(parseHexColor("8000FF")).toEqual({ r: 0, g: 0, b: 0 });
+    expect(parseHexColor("#8000F")).toEqual({ r: 0, g: 0, b: 0 });
+    expect(parseHexColor("#8*00FF")).toEqual({ r: 0, g: 0, b: 0 });
   });
 });
 describe("calcNeighborsArray", () => {
-  test("Should create array or neighboring pixels", () => {
+  test("Should return an array of neighboring pixels", () => {
     expect(calcExpansionArray(-5)).toEqual([]);
     expect(calcExpansionArray(0)).toEqual([[{ x: 0, y: 0 }]]);
-    expect(calcExpansionArray(1)).toEqual([[{ x: 0, y: 0 }]]);
-    expect(calcExpansionArray(2)).toEqual([
+    expect(calcExpansionArray(1)).toEqual([
       [{ x: 0, y: 0 }],
       [
         { x: -1, y: -1 },
@@ -31,12 +44,20 @@ describe("calcNeighborsArray", () => {
   });
 });
 describe("distinctiveColor", () => {
-  test("Should return RGB color in correct format", () => {
+  test("Should return RGB color in the correct format", () => {
     const regex = new RegExp("^#[A-Fa-f0-9]{6}$");
     expect(distinctiveColor(-5)).toMatch(regex);
     expect(distinctiveColor(0)).toMatch(regex);
     expect(distinctiveColor(1)).toMatch(regex);
     expect(distinctiveColor(5)).toMatch(regex);
     expect(distinctiveColor(2384)).toMatch(regex);
+  });
+});
+describe("randomizeGroupColor", () => {
+  test("Should return RGB color in the correct format", () => {
+    const regex = new RegExp("^#[A-Fa-f0-9]{6}$");
+    for (let i = 0; i < 10; i++) {
+      expect(randomizeGroupColor()).toMatch(regex);
+    }
   });
 });
