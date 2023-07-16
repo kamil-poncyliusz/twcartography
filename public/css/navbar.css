@@ -1,0 +1,49 @@
+#navbar {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  position: relative;
+  width: 100%;
+  height: var(--navbar-height);
+  background-color: var(--section);
+  z-index: 2;
+}
+#profile-button {
+  margin-left: auto;
+  margin-right: 0;
+}
+#profile {
+  position: absolute;
+  top: var(--navbar-height);
+  right: 1rem;
+  z-index: 3;
+  background-color: var(--section);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+.navbar-button {
+  width: 10rem;
+  height: 100%;
+  margin-right: 3rem;
+  font-size: 1.25rem;
+  border-radius: 0;
+}
+button.navbar-button {
+  padding: 0;
+}
+#login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+#login-form > div {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  justify-content: space-between;
+  align-items: center;
+}
+#login-form input {
+  width: 10rem;
+}

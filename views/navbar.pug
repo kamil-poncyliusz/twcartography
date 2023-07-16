@@ -1,0 +1,26 @@
+#navbar
+  a.navbar-button(href="/") Strona główna
+  if page !== "new"
+    a.navbar-button(href="/new") Stwórz mapę
+    a.navbar-button(href="/collections") Kolekcje
+    if user && user.rank === 10
+      a.navbar-button(href="/admin") Panel
+  else
+    button#settings-button.navbar-button Ustawienia
+    button#marks-button.navbar-button Oznaczenia
+  button#profile-button.navbar-button= user ? "Profil" : "Logowanie"
+  #profile.utility-window.hidden
+    if user
+      p Zalogowany jako #{ user.login }
+      button#logout-button(type="button") Wyloguj się
+    else
+      form#login-form
+        div
+          label(for="login") Login:
+          input#login(type="text", name="login", autocomplete="off", placeholder="login")
+        div
+          label(for="password") Hasło:
+          input#password(type="password", name="password", placeholder="hasło")
+        div
+          button#submit.block-element(type="submit") Zaloguj się
+      button#register-button.block-element Zarejestruj się

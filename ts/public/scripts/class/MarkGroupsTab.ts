@@ -36,7 +36,7 @@ class MarkGroupsTabController {
       let content = "";
       for (let tribeID of group.tribes) {
         const tribe = tribes[tribeID];
-        content += `<p class='mark label-button delete-button' title='${tribe.name}'>${tribe.tag}</p>`;
+        content += `<button class='mark block-element delete-button' title='${tribe.name}'>${tribe.tag}</button>`;
       }
       const players = group.tribes.reduce((sum, tribeID) => sum + tribes[tribeID].players, 0);
       const villages = group.tribes.reduce((sum, tribeID) => sum + tribes[tribeID].villages.length, 0);
@@ -132,11 +132,15 @@ class MarkGroupsTabController {
   groupNameClick = (e: Event) => {
     const cell = e.target as HTMLTableCellElement;
     const name = cell.textContent ?? "";
-    cell.innerHTML = `<input type="text" value="${name}">`;
+    cell.innerHTML = `<input type="text" class="cell-input" value="${name}">`;
     const input = cell.firstChild as HTMLInputElement;
     input.dataset.oldName = name;
     input.focus();
     input.addEventListener("focusout", this.changeGroupName);
+    input.addEventListener("keydown", (e: KeyboardEvent) => {
+      const keycode = e.code;
+      if (keycode === "Enter") this.changeGroupName(e);
+    });
   };
   changeGroupName = (e: Event) => {
     const input = e.target as HTMLInputElement;

@@ -8,13 +8,13 @@ html(lang="pl-PL")
     include favicon.pug
     link(rel="stylesheet", href="/css/reset.css", type="text/css")
     link(rel="stylesheet", href="/css/main.css", type="text/css")
-    link(rel="stylesheet", href="/css/nav-bar.css", type="text/css")
+    link(rel="stylesheet", href="/css/navbar.css", type="text/css")
     link(rel="stylesheet", href="/css/collections-worlds-list.css", type="text/css")
     script(src="/scripts/collections-worlds-list.js", type="module", defer)
   body
-    include nav-bar.pug
+    include navbar.pug
     main
-      #world-list
+      #worlds-list
         each world in worlds
           div
-            a(href=`/collections/${world.id}`)= `${world.server}${world.num}`
+            a.block-element(href=`/collections/${world.id}`)= `${world.server}${world.num}`

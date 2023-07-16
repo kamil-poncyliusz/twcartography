@@ -3,7 +3,7 @@ import SettingsTab from "./class/SettingsTab.js";
 import SuggestionsTab from "./class/SuggestionsTab.js";
 import MarkGroupsTab from "./class/MarkGroupsTab.js";
 import Canvas from "./class/CanvasController.js";
-import "./nav-bar.js";
+import "./navbar.js";
 
 const showSettingsButton = document.getElementById("settings-button");
 const showMarksButton = document.getElementById("marks-button");

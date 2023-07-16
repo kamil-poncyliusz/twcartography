@@ -1,17 +1,11 @@
-html,
-body {
-  height: 100%;
-}
-
 #wrapper {
+  flex: 1 0 1px;
   position: relative;
   width: 100%;
-  height: calc(100% - 2rem);
   margin-top: 2px;
   display: flex;
   flex-direction: row;
   justify-content: center;
-  overflow: hidden;
 }
 #map-enlarged {
   position: absolute;
@@ -58,7 +52,7 @@ body {
   height: 100%;
 }
 #map-tiles {
-  width: 70%;
+  flex: 2 0 0px;
   height: 100%;
   padding: 1rem;
   display: flex;
@@ -81,9 +75,9 @@ body {
   height: 100%;
 }
 #info {
+  flex: 1 0 0px;
   display: flex;
   flex-direction: column;
-  width: 30%;
   height: 100%;
   background-color: var(--section);
   color: var(--font);
@@ -107,20 +101,10 @@ body {
 #info input {
   padding: 0.5rem;
   width: 100%;
-  border-radius: 0.5rem;
-}
-.a-button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 0.5rem;
-  padding: 0.5rem;
-  font-size: 1.25rem;
 }
 /* #delete-collection-button {
   width: 100%;
   padding: 0.5rem;
-  border-radius: 0.5rem;
   font-size: 1.25rem;
   line-height: 1.25rem;
 } */

@@ -8,13 +8,13 @@ html(lang="pl-PL")
     include favicon.pug
     link(rel="stylesheet", href="/css/reset.css", type="text/css")
     link(rel="stylesheet", href="/css/main.css", type="text/css")
-    link(rel="stylesheet", href="/css/nav-bar.css", type="text/css")
+    link(rel="stylesheet", href="/css/navbar.css", type="text/css")
     link(rel="stylesheet", href="/css/new.css", type="text/css")
     script(src="/scripts/new.js", type="module", defer)
-  body
-    include nav-bar.pug
+  body.fullscreen
+    include navbar.pug
     #controls-wrapper
-      #settings.settings-tab
+      #settings.settings-tab.utility-window
         div
           .row
             label(for="world-select", title="Świat, z którego będą pobierane dane") Świat:
@@ -82,14 +82,14 @@ html(lang="pl-PL")
               .row
                 div
                   button#publish-button(disabled) Opublikuj
-      #mark-suggestions.marks-tab.hidden
+      #mark-suggestions.marks-tab.utility-window.hidden
         div
           table
             thead
               tr
                 th NAZWA
                 th
-                  input#suggestions-search-input(type="text", name="suggestions-search-input", placeholder="TAG", autocomplete="off")
+                  input#suggestions-search-input.cell-input(type="text", name="suggestions-search-input", placeholder="TAG", autocomplete="off")
                 th GR
                 th WI
                 th PUNKTY
@@ -102,7 +102,7 @@ html(lang="pl-PL")
                 td -
                 td -
                 td -
-      #mark-groups.marks-tab.hidden
+      #mark-groups.marks-tab.utility-window.hidden
         div
           table
             thead

@@ -8,11 +8,11 @@ html(lang="pl-PL")
     include favicon.pug
     link(rel="stylesheet", href="/css/reset.css", type="text/css")
     link(rel="stylesheet", href="/css/main.css", type="text/css")
-    link(rel="stylesheet", href="/css/nav-bar.css", type="text/css")
+    link(rel="stylesheet", href="/css/navbar.css", type="text/css")
     link(rel="stylesheet", href="/css/collection.css", type="text/css")
     script(src="/scripts/collection.js", type="module", defer)
-  body
-    include nav-bar.pug
+  body.fullscreen
+    include navbar.pug
     #wrapper
       #map-enlarged
         #image-wrapper
@@ -29,9 +29,9 @@ html(lang="pl-PL")
           span#collection-title= collection.title
           if user && user.id === collection.authorId
             input#collection-title-edit-input.hidden(type="text", name="collection-title-input", autocomplete="off", placeholder="Tytuł")
-            button#edit-collection-title(type="button", data-edit-mode="false") edytuj
+            button#edit-collection-title.label-button(type="button", data-edit-mode="false") edytuj
           if user && (user.id === collection.authorId || user.rank === 10)
-            button#delete-collection(type="button") usuń
+            button#delete-collection.label-button(type="button") usuń
         div
           span= `Stworzona przez `
           a.label-button(href=`/user/${collection.author.id}`) #{ collection.author.login }
@@ -40,18 +40,18 @@ html(lang="pl-PL")
           span#collection-description= collection.description
           if user && user.id === collection.authorId
             textarea#collection-description-edit-textarea.hidden(name="collection-description-textarea", cols="30", rows="5") 
-            button#edit-collection-description(type="button", data-edit-mode="false") edytuj
+            button#edit-collection-description.label-button(type="button", data-edit-mode="false") edytuj
         div
           span#map-title ...
           if user && user.id === collection.authorId
             input#map-title-edit-input.hidden(type="text", name="map-title-input", autocomplete="off", placeholder="Tytuł")
-            button#edit-map-title.hidden(type="button", data-edit-mode="false") edytuj
+            button#edit-map-title.label-button.hidden(type="button", data-edit-mode="false") edytuj
           if user && (user.id === collection.authorId || user.rank === 10)
-            button#delete-map.hidden(type="button") usuń
+            button#delete-map.hidden.label-button(type="button") usuń
         div
           span#map-description ...
           if user && user.id === collection.authorId
             textarea#map-description-edit-textarea.hidden(name="map-description-textarea", cols="30", rows="5") 
-            button#edit-map-description.hidden(type="button", data-edit-mode="false") edytuj
+            button#edit-map-description.label-button.hidden(type="button", data-edit-mode="false") edytuj
         //- div
         //-   input#settings(type="text", name="settings", value="", readonly)

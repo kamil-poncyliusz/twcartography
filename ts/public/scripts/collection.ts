@@ -1,6 +1,6 @@
 import { handleDeleteCollection } from "../../routes/api-handlers.js";
 import { MAP_IMAGES_DIRECTORY } from "./constants.js";
-import "./nav-bar.js";
+import "./navbar.js";
 import { postRequest } from "./requests.js";
 import { isValidCollectionDescription, isValidID, isValidMapDescription, isValidTitle } from "./validators.js";
 

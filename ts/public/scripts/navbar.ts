@@ -3,6 +3,7 @@ import { postRequest } from "./requests.js";
 import { isValidLogin, isValidPassword } from "./validators.js";
 
 const profileButton = document.getElementById("profile-button");
+const profile = document.getElementById("profile");
 const loginForm = document.getElementById("login-form") as HTMLFormElement | null;
 const logoutButton = document.getElementById("logout-button") as HTMLButtonElement | null;
 const registerButton = document.getElementById("register-button") as HTMLButtonElement | null;
@@ -45,9 +46,7 @@ const logoutRequest = async function (e: Event) {
 };
 
 const toggleProfileWindow = function (e: Event) {
-  const profileButton = e.target as HTMLButtonElement;
-  const profileWindow = profileButton.nextSibling as HTMLDivElement;
-  profileWindow.classList.toggle("hidden");
+  if (profile) profile.classList.toggle("hidden");
 };
 
 if (profileButton) profileButton.addEventListener("click", toggleProfileWindow);
