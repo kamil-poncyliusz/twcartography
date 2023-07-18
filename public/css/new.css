@@ -1,14 +1,10 @@
+td {
+  padding: 0 0.5rem;
+}
 #controls-wrapper {
   height: 0px;
   position: relative;
   width: 100%;
-  z-index: 100;
-}
-#settings > div {
-  display: flex;
-  flex-direction: column;
-  width: 20rem;
-  padding: 0.5rem 0.5rem 0px 0.5rem;
   z-index: 100;
 }
 #controls-wrapper > div > div {
@@ -19,8 +15,23 @@
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
 }
+table tr > td:last-child,
+#mark-suggestions tr > th:nth-child(2),
+#mark-groups tr > td:nth-child(2),
+#mark-groups tr > td:nth-child(3) {
+  padding: 0;
+}
+#settings > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 20rem;
+  padding: 0.5rem;
+  z-index: 100;
+}
 #settings input[type="text"],
 #settings input[type="number"],
+#settings input[type="color"],
 #settings select,
 #settings button {
   display: block;
@@ -28,24 +39,14 @@
   font-size: 1rem;
 }
 #settings input[type="color"] {
-  display: block;
-  width: 100%;
   height: 2.75rem;
 }
-.delete-group {
-  width: 2.5rem;
-  height: 2.5rem;
-  font-size: 1.25rem;
-  line-height: 1;
-}
 .row {
-  margin-bottom: 0.5rem;
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 .row > * {
-  display: inline-block;
   flex: 1 0 0px;
 }
 .row > label {
@@ -64,20 +65,18 @@
   flex-basis: 2.5rem;
   flex-grow: 0;
 }
-#suggestions-search-input {
-  width: 5rem;
-  text-align: center;
-  font-size: 1rem;
-}
 #mark-suggestions select {
   font-size: 1rem;
+}
+#suggestions-search-input,
+#mark-groups .group-name > input {
+  width: 5rem;
 }
 #mark-groups > div {
   display: block;
   z-index: 100;
 }
 #mark-groups input[type="color"] {
-  height: 2.5rem;
   padding: 0;
   border: 1px solid var(--accent);
   overflow: hidden;
@@ -85,36 +84,20 @@
 #mark-groups input[type="color"]:hover {
   border-color: var(--light-accent);
 }
-.group-tribes > .mark:not(:last-of-type) {
-  margin-bottom: 0.25rem;
-}
-.group-name > input {
-  width: 6rem;
-  height: 2.5rem;
-  font-size: 1rem;
-  padding: 0;
-  display: flex;
-  text-align: center;
-  align-items: center;
-}
-.mark {
+#mark-groups .mark {
   padding: 0px;
 }
-td {
-  padding: 0 0.5rem;
+#mark-groups .mark:not(:last-of-type) {
+  margin-bottom: 0.25rem;
 }
-table tr > td:last-child,
-#mark-suggestions tr > th:nth-child(2),
-#mark-groups tr > td:nth-child(2),
-#mark-groups tr > td:nth-child(3) {
-  padding: 0;
+#mark-groups .delete-group {
+  width: 2.5rem;
 }
 #map {
   flex: 1 0 1px;
   display: block;
   width: 100%;
   height: 100%;
-  padding: 0;
   overflow: hidden;
 }
 #map-canvas {

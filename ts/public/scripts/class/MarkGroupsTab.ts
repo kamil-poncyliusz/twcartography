@@ -24,6 +24,15 @@ const getMarkGroupRowInnerHTML = function (group: MarkGroup, tribes: { [key: str
   return innerHTML;
 };
 
+const findGroupName = function (element: Element) {
+  const row = element.closest("tr");
+  if (!row) return "";
+  const groupNameInput = row.querySelector(".group-name > input") as HTMLInputElement | null;
+  if (!groupNameInput) return "";
+  const name = groupNameInput.value;
+  return name;
+};
+
 class MarkGroupsTabController {
   #generator;
   #settingsObject: SettingsTabController | undefined;
@@ -78,12 +87,8 @@ class MarkGroupsTabController {
   }
   deleteMarkGroup = (e: Event) => {
     const button = e.target as HTMLButtonElement;
-    const cell = button.parentElement as HTMLTableCellElement;
-    const row = cell.parentElement as HTMLTableRowElement;
-    const nameCell = row.querySelector("td.group-name") as HTMLTableCellElement | null;
-    if (!nameCell) return;
-    const name = nameCell.textContent ?? "";
-    const isDeleted = this.#generator.deleteMarkGroup(name);
+    const groupName = findGroupName(button);
+    const isDeleted = this.#generator.deleteMarkGroup(groupName);
     if (!isDeleted) return;
     this.render();
     this.updateSettings();
@@ -93,12 +98,8 @@ class MarkGroupsTabController {
   changeGroupColor = (e: Event) => {
     const colorInput = e.target as HTMLInputElement;
     const color = colorInput.value;
-    const cell = colorInput.parentElement as HTMLTableCellElement;
-    const row = cell.parentElement as HTMLTableRowElement;
-    const nameCell = row.querySelector(".group-name") as HTMLTableCellElement | null;
-    if (!nameCell) return;
-    const name = nameCell.textContent ?? "";
-    const isChanged = this.#generator.changeMarkGroupColor(name, color);
+    const groupName = findGroupName(colorInput);
+    const isChanged = this.#generator.changeMarkGroupColor(groupName, color);
     if (!isChanged) return;
     this.render();
     this.updateSettings();
@@ -107,13 +108,9 @@ class MarkGroupsTabController {
   randomizeColor = (e: Event) => {
     e.preventDefault();
     const colorInput = e.target as HTMLInputElement;
-    const cell = colorInput.parentElement as HTMLTableCellElement;
-    const row = cell.parentElement as HTMLTableRowElement;
-    const groupNameCell = row.querySelector(".group-name") as HTMLTableCellElement | null;
-    if (!groupNameCell) return;
-    const name = groupNameCell.textContent ?? "";
+    const groupName = findGroupName(colorInput);
     const color = randomizeGroupColor();
-    const isChanged = this.#generator.changeMarkGroupColor(name, color);
+    const isChanged = this.#generator.changeMarkGroupColor(groupName, color);
     if (!isChanged) return;
     this.render();
     this.updateSettings();
@@ -121,12 +118,8 @@ class MarkGroupsTabController {
   };
   deleteMark = (e: Event) => {
     const button = e.target as HTMLElement;
-    const cell = button.parentElement as HTMLTableCellElement;
-    const row = cell.parentElement as HTMLTableRowElement;
     const tribeTag = button.textContent as string;
-    const nameCell = row.querySelector(".group-name") as HTMLTableCellElement | null;
-    if (!nameCell) return;
-    const groupName = nameCell.textContent ?? "";
+    const groupName = findGroupName(button);
     const isDeleted = this.#generator.deleteMark(groupName, tribeTag);
     if (!isDeleted) return;
     this.render();
