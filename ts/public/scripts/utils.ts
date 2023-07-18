@@ -129,3 +129,8 @@ export const randomizeGroupColor = function (): string {
   result += blue;
   return result;
 };
+
+export const selectInputValue = function (e: Event) {
+  const input = e.target as HTMLInputElement;
+  input.select();
+};

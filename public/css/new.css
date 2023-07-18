@@ -77,7 +77,6 @@
   z-index: 100;
 }
 #mark-groups input[type="color"] {
-  width: 2.5rem;
   height: 2.5rem;
   padding: 0;
   border: 1px solid var(--accent);
@@ -89,18 +88,25 @@
 .group-tribes > .mark:not(:last-of-type) {
   margin-bottom: 0.25rem;
 }
+.group-name > input {
+  width: 6rem;
+  height: 2.5rem;
+  font-size: 1rem;
+  padding: 0;
+  display: flex;
+  text-align: center;
+  align-items: center;
+}
 .mark {
   padding: 0px;
 }
-.group-name:hover {
-  background-color: var(--light-accent);
-}
 td {
-  padding: 0 0.25rem;
+  padding: 0 0.5rem;
 }
 table tr > td:last-child,
 #mark-suggestions tr > th:nth-child(2),
-#mark-groups tr > td:nth-child(2) {
+#mark-groups tr > td:nth-child(2),
+#mark-groups tr > td:nth-child(3) {
   padding: 0;
 }
 #map {

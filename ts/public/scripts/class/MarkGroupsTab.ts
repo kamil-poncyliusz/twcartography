@@ -16,10 +16,11 @@ const getMarkGroupRowInnerHTML = function (group: MarkGroup, tribes: { [key: str
   const players = group.tribes.reduce((sum, tribeID) => sum + tribes[tribeID].players, 0);
   const villages = group.tribes.reduce((sum, tribeID) => sum + tribes[tribeID].villages.length, 0);
   const points = group.tribes.reduce((sum, tribeID) => sum + tribes[tribeID].points, 0);
-  innerHTML = `<td class='group-tribes'>${innerHTML}</td><td class='group-name'>${group.name}</td>`;
-  innerHTML += `<td><input type='color' title='Kliknij prawym aby wylosować kolor' value='${group.color}'></td>`;
+  innerHTML = `<td class='group-tribes'>${innerHTML}</td>`;
+  innerHTML += `<td class='group-name'><input type='text' class='fill-cell' value='${group.name}' data-old-name='${group.name}' placeholder='nazwa'></td>`;
+  innerHTML += `<td><input type='color' class='fill-cell' title='Kliknij prawym aby wylosować kolor' value='${group.color}'></td>`;
   innerHTML += `<td>${group.tribes.length}</td><td>${players}</td><td>${villages}</td><td>${points}</td>`;
-  innerHTML += `<td><button class='delete-group delete-button'>X</button></td>`;
+  innerHTML += `<td><button class='delete-group delete-button fill-cell'>X</button></td>`;
   return innerHTML;
 };
 
@@ -54,8 +55,9 @@ class MarkGroupsTabController {
     markGroupsTableBody.querySelectorAll(".mark").forEach((mark) => {
       mark.addEventListener("click", this.deleteMark);
     });
-    markGroupsTableBody.querySelectorAll(".group-name").forEach((nameCell) => {
-      nameCell.addEventListener("click", this.groupNameClick);
+    markGroupsTableBody.querySelectorAll(".group-name input").forEach((element) => {
+      const nameInput = element as HTMLInputElement;
+      nameInput.addEventListener("change", this.changeGroupName);
     });
     markGroupsTableBody.querySelectorAll("input[type=color]").forEach((colorInput) => {
       colorInput.addEventListener("change", this.changeGroupColor);
@@ -132,28 +134,17 @@ class MarkGroupsTabController {
     this.renderSuggestions();
     this.renderCanvas();
   };
-  groupNameClick = (e: Event) => {
-    const cell = e.target as HTMLTableCellElement;
-    const name = cell.textContent ?? "";
-    cell.innerHTML = `<input type="text" class="cell-input" value="${name}">`;
-    const input = cell.firstChild as HTMLInputElement;
-    input.dataset.oldName = name;
-    input.focus();
-    input.addEventListener("focusout", this.changeGroupName);
-    input.addEventListener("keydown", (e: KeyboardEvent) => {
-      const keycode = e.code;
-      if (keycode === "Enter") this.changeGroupName(e);
-    });
-  };
   changeGroupName = (e: Event) => {
-    const input = e.target as HTMLInputElement;
-    const newName = input.value;
-    const oldName = input.dataset.oldName as string;
+    const nameInput = e.target as HTMLInputElement;
+    const newName = nameInput.value;
+    const oldName = nameInput.dataset.oldName as string;
     const isChanged = this.#generator.changeMarkGroupName(oldName, newName);
     if (!isChanged) {
-      //
+      nameInput.classList.add("is-invalid");
+      return;
     }
-    this.render();
+    nameInput.classList.remove("is-invalid");
+    nameInput.dataset.oldName = newName;
     this.renderSuggestions();
     this.renderCanvas();
   };

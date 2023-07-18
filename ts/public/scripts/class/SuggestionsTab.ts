@@ -64,7 +64,7 @@ class SuggestionsTabController {
       const newRow = document.createElement("tr");
       let rowContent = "";
       rowContent += `<td class='suggestion-name'>${tribe.name}</td><td class='suggestion-tag'>${tribe.tag}</td><td>${tribe.players}</td><td>${tribe.villages.length}</td><td>${tribe.points}</td>`;
-      rowContent += `<td><select class="cell-input">${groupOptions}</select></td>`;
+      rowContent += `<td><select class="fill-cell">${groupOptions}</select></td>`;
       newRow.innerHTML = rowContent;
       suggestionsTableBody.appendChild(newRow);
     }

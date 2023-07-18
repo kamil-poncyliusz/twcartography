@@ -16,7 +16,7 @@ model CreatedMap {
   title            String      @db.VarChar(20)
   description      String      @db.VarChar(200)
   encodedSettings  String
-  collectionId  Int
+  collectionId     Int
   position         Int
   author           User        @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   world            World       @relation(fields: [worldId], references: [id], onDelete: Cascade, onUpdate: Cascade)

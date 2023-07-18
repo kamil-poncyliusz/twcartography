@@ -22,7 +22,13 @@ html(lang="pl-PL")
         button#hide-enlarged-map(type="button") X
       #map-tiles
         each map in collection.maps
-          .map-tile(title=map.title, data-id=map.id, data-title=map.title, data-description=map.description)
+          .map-tile(
+            title=map.title,
+            data-id=map.id,
+            data-title=map.title,
+            data-description=map.description,
+            data-encoded-settings=map.encodedSettings
+          )
             img(src=`/images/maps/${map.id}.png`, alt="map")
       #info
         div
@@ -42,16 +48,16 @@ html(lang="pl-PL")
             textarea#collection-description-edit-textarea.hidden(name="collection-description-textarea", cols="30", rows="5") 
             button#edit-collection-description.label-button(type="button", data-edit-mode="false") edytuj
         div
-          span#map-title ...
+          span#map-title
           if user && user.id === collection.authorId
             input#map-title-edit-input.hidden(type="text", name="map-title-input", autocomplete="off", placeholder="Tytuł")
             button#edit-map-title.label-button.hidden(type="button", data-edit-mode="false") edytuj
           if user && (user.id === collection.authorId || user.rank === 10)
             button#delete-map.hidden.label-button(type="button") usuń
         div
-          span#map-description ...
+          span#map-description
           if user && user.id === collection.authorId
             textarea#map-description-edit-textarea.hidden(name="map-description-textarea", cols="30", rows="5") 
             button#edit-map-description.label-button.hidden(type="button", data-edit-mode="false") edytuj
-        //- div
-        //-   input#settings(type="text", name="settings", value="", readonly)
+        div
+          input#encoded-settings(type="text", name="settings", value="", placeholder="kod ustawień", readonly)

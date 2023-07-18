@@ -7,6 +7,7 @@ import { handleCreateMap } from "../../../routes/api-handlers.js";
 import { postRequest } from "../requests.js";
 import { CreateMapRequestValidationCode, isValidCreateMapRequestPayload, settingsLimits } from "../validators.js";
 import { CreateMapRequestPayload, Settings } from "../../../src/Types.js";
+import { selectInputValue } from "../utils.js";
 
 const inputs: { [key: string]: HTMLInputElement } = {
   autoRefresh: document.getElementById("auto-refresh") as HTMLInputElement,
@@ -37,21 +38,19 @@ class SettingsTabController {
     this.#generator = mapGeneratorObject;
     if (generateButton) generateButton.addEventListener("click", this.generate);
     inputs.autoRefresh.addEventListener("input", this.autoRefreshChange);
-    inputs.backgroundColor.addEventListener("input", this.backgroundColorChange);
-    inputs.borderColor.addEventListener("input", this.borderColorChange);
+    inputs.backgroundColor.addEventListener("change", this.backgroundColorChange);
+    inputs.borderColor.addEventListener("change", this.borderColorChange);
     inputs.displayUnmarked.addEventListener("input", this.displayUnmarkedChange);
-    inputs.outputWidth.addEventListener("input", this.outputWidthChange);
-    inputs.scale.addEventListener("input", this.scaleChange);
-    inputs.spotsFilter.addEventListener("input", this.spotsFilterChange);
+    inputs.outputWidth.addEventListener("change", this.outputWidthChange);
+    inputs.scale.addEventListener("change", this.scaleChange);
+    inputs.spotsFilter.addEventListener("change", this.spotsFilterChange);
     inputs.trim.addEventListener("input", this.trimChange);
-    inputs.turn.addEventListener("input", this.turnChange);
-    inputs.unmarkedColor.addEventListener("input", this.unmarkedColorChange);
+    inputs.turn.addEventListener("change", this.turnChange);
+    inputs.unmarkedColor.addEventListener("change", this.unmarkedColorChange);
     if (worldSelect) worldSelect.addEventListener("change", this.worldChange);
     if (encodedSettingsInput) {
       encodedSettingsInput.addEventListener("input", this.encodedSettingsChange);
-      encodedSettingsInput.addEventListener("click", (e: Event) => {
-        encodedSettingsInput.select();
-      });
+      encodedSettingsInput.addEventListener("click", selectInputValue);
     }
     if (publishButton !== null) publishButton.addEventListener("click", this.publishMap);
   }

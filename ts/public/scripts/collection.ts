@@ -2,6 +2,7 @@ import { handleDeleteCollection } from "../../routes/api-handlers.js";
 import { MAP_IMAGES_DIRECTORY } from "./constants.js";
 import "./navbar.js";
 import { postRequest } from "./requests.js";
+import { selectInputValue } from "./utils.js";
 import { isValidCollectionDescription, isValidID, isValidMapDescription, isValidTitle } from "./validators.js";
 
 const mapTiles = document.querySelectorAll("#map-tiles > .map-tile");
@@ -24,6 +25,7 @@ const editMapTitleButton = document.getElementById("edit-map-title");
 const mapTitleEditInput = document.getElementById("map-title-edit-input") as HTMLInputElement | null;
 const editMapDescriptionButton = document.getElementById("edit-map-description");
 const mapDescriptionEditTextarea = document.getElementById("map-description-edit-textarea") as HTMLInputElement | null;
+const encodedSettingsInput = document.getElementById("encoded-settings") as HTMLInputElement | null;
 
 let currentEnlargedMap: HTMLDivElement | null = null;
 
@@ -63,11 +65,13 @@ const viewPreviousMap = function () {
 
 const updateMapInfo = function () {
   if (!mapTitle || !mapDescription) return;
-  let title = "...";
-  let description = "...";
+  const title = currentEnlargedMap?.dataset.title ?? "[...]";
+  const description = currentEnlargedMap?.dataset.description ?? "[...]";
+  const encodedSettings = currentEnlargedMap?.dataset.encodedSettings ?? "";
+  mapTitle.innerHTML = title;
+  mapDescription.innerHTML = description;
+  if (encodedSettingsInput) encodedSettingsInput.value = encodedSettings;
   if (currentEnlargedMap) {
-    title = currentEnlargedMap.dataset.title ?? "...";
-    description = currentEnlargedMap.dataset.description ?? "...";
     if (editMapTitleButton) editMapTitleButton.classList.remove("hidden");
     if (editMapDescriptionButton) editMapDescriptionButton.classList.remove("hidden");
     if (deleteMapButton) deleteMapButton.classList.remove("hidden");
@@ -76,8 +80,6 @@ const updateMapInfo = function () {
     if (editMapDescriptionButton) editMapDescriptionButton.classList.add("hidden");
     if (deleteMapButton) deleteMapButton.classList.add("hidden");
   }
-  mapTitle.innerHTML = title;
-  mapDescription.innerHTML = description;
 };
 
 const handleMapTileClick = function (e: Event) {
@@ -272,4 +274,7 @@ if (editCollectionTitleButton) editCollectionTitleButton.addEventListener("click
 if (editCollectionDescriptionButton) editCollectionDescriptionButton.addEventListener("click", editCollectionDescription);
 if (editMapTitleButton) editMapTitleButton.addEventListener("click", editMapTitle);
 if (editMapDescriptionButton) editMapDescriptionButton.addEventListener("click", editMapDescription);
+if (encodedSettingsInput) encodedSettingsInput.addEventListener("click", selectInputValue);
 document.body.addEventListener("keydown", useKeyboardShortcut);
+
+updateMapInfo();

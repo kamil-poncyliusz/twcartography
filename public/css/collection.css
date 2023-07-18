@@ -52,7 +52,7 @@
   height: 100%;
 }
 #map-tiles {
-  flex: 2 0 0px;
+  width: 70%;
   height: 100%;
   padding: 1rem;
   display: flex;
@@ -75,10 +75,10 @@
   height: 100%;
 }
 #info {
-  flex: 1 0 0px;
   display: flex;
   flex-direction: column;
   height: 100%;
+  width: 30%;
   background-color: var(--section);
   color: var(--font);
 }
