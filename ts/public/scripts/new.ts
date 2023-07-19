@@ -1,8 +1,4 @@
 import GeneratorController from "./class/GeneratorController.js";
-import SettingsTab from "./class/SettingsTab.js";
-import SuggestionsTab from "./class/SuggestionsTab.js";
-import MarkGroupsTab from "./class/MarkGroupsTab.js";
-import Canvas from "./class/CanvasController.js";
 import "./navbar.js";
 
 const showSettingsButton = document.getElementById("settings-button");
@@ -21,22 +17,7 @@ const showTab = function (tabClassName: string) {
     });
 };
 
-const mapGenerator = new GeneratorController();
-
-const settings = new SettingsTab(mapGenerator);
-const suggestions = new SuggestionsTab(mapGenerator);
-const markGroups = new MarkGroupsTab(mapGenerator);
-const canvas = new Canvas(mapGenerator);
-settings.canvasObject = canvas;
-settings.markGroupsObject = markGroups;
-settings.suggestionsObject = suggestions;
-suggestions.settingsObject = settings;
-suggestions.canvasObject = canvas;
-suggestions.markGroupsObject = markGroups;
-markGroups.settingsObject = settings;
-markGroups.canvasObject = canvas;
-markGroups.suggestionsObject = suggestions;
-settings.init();
+const generatorController = new GeneratorController();
 
 if (showSettingsButton)
   showSettingsButton.addEventListener("click", function () {

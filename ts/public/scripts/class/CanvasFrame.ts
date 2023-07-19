@@ -2,29 +2,13 @@ import GeneratorController from "./GeneratorController";
 
 const canvasElement = document.getElementById("map-canvas") as HTMLCanvasElement | null;
 
-class CanvasController {
-  #generatorController;
-  autoRefresh: boolean = true;
-  constructor(generatorControllerObject: GeneratorController) {
-    this.#generatorController = generatorControllerObject;
+class CanvasFrame {
+  #generator;
+  constructor(generatorController: GeneratorController) {
+    this.#generator = generatorController;
     if (!canvasElement) return;
     canvasElement.addEventListener("mousedown", this.dragStart);
     canvasElement.addEventListener("mouseup", this.dragEnd);
-  }
-  render() {
-    if (this.autoRefresh) {
-      const imageData = this.#generatorController.getMapImageData();
-      if (!imageData || !canvasElement) return;
-      const ctx = canvasElement.getContext("2d");
-      canvasElement.width = imageData.width;
-      canvasElement.height = imageData.width;
-      if (ctx) ctx.putImageData(imageData, 0, 0);
-    }
-  }
-  forceRender() {
-    this.autoRefresh = true;
-    this.render();
-    this.autoRefresh = false;
   }
   dragEnd = (e: Event) => {
     const canvas = e.target as HTMLCanvasElement;
@@ -55,6 +39,16 @@ class CanvasController {
     canvas.addEventListener("mousemove", this.dragMove);
     canvas.addEventListener("mouseleave", this.dragEnd);
   };
+  render(options?: { force?: boolean }) {
+    if (this.#generator.autoRefresh || options?.force) {
+      const imageData = this.#generator.getMapImageData();
+      if (!imageData || !canvasElement) return;
+      const ctx = canvasElement.getContext("2d");
+      canvasElement.width = imageData.width;
+      canvasElement.height = imageData.width;
+      if (ctx) ctx.putImageData(imageData, 0, 0);
+    }
+  }
 }
 
-export default CanvasController;
+export default CanvasFrame;

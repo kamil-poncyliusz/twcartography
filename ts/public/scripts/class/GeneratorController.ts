@@ -2,8 +2,22 @@ import MapGenerator from "./MapGenerator.js";
 import { MarkGroup, Settings, ParsedTurnData, Tribe } from "../../../src/Types.js";
 import { handleReadTurnData, handleReadWorld } from "../../../routes/api-handlers.js";
 import { getRequest } from "../requests.js";
-import { isValidColor, isValidGroupName, isValidOutputWidth, isValidScale, isValidSettings, isValidSpotsFilter, isValidTurn } from "../validators.js";
+import {
+  isValidColor,
+  isValidGroupName,
+  isValidID,
+  isValidOutputWidth,
+  isValidScale,
+  isValidSettings,
+  isValidSpotsFilter,
+  isValidTurn,
+} from "../validators.js";
+import MarkGroupsTab from "./MarkGroupsTab.js";
+import SuggestionsTab from "./SuggestionsTab.js";
+import SettingsTab from "./SettingsTab.js";
+import CanvasFrame from "./CanvasFrame.js";
 
+const DEFAULT_AUTO_REFRESH = true;
 const DEFAULT_BACKGROUND_COLOR = "#202020";
 const DEFAULT_BORDER_COLOR = "#808080";
 const DEFAULT_DISPLAY_UNMARKED = false;
@@ -15,21 +29,31 @@ const DEFAULT_UNMARKED_COLOR = "#808080";
 const MAX_TRIBE_SUGGESTIONS = 20;
 
 class GeneratorController {
+  autoRefresh: boolean = DEFAULT_AUTO_REFRESH;
   #backgroundColor: string = DEFAULT_BACKGROUND_COLOR;
   #borderColor: string = DEFAULT_BORDER_COLOR;
+  #canvasFrame: CanvasFrame;
   data: { [key: number]: ParsedTurnData } = {};
   #displayUnmarked: boolean = DEFAULT_DISPLAY_UNMARKED;
   latestTurn: number = -1;
   markGroups: MarkGroup[] = [];
+  #markGroupsTab: MarkGroupsTab;
   #outputWidth: number = DEFAULT_OUTPUT_WIDTH;
   #spotsFilter: number = DEFAULT_SPOTS_FILTER;
   #scale: number = DEFAULT_SCALE;
   #server: string = "";
+  #settingsTab: SettingsTab;
+  #suggestionsTab: SuggestionsTab;
   #trim: boolean = DEFAULT_TRIM;
   turn: number = -1;
   #unmarkedColor: string = DEFAULT_UNMARKED_COLOR;
   world: number = 0;
-  constructor() {}
+  constructor() {
+    this.#canvasFrame = new CanvasFrame(this);
+    this.#markGroupsTab = new MarkGroupsTab(this);
+    this.#suggestionsTab = new SuggestionsTab(this);
+    this.#settingsTab = new SettingsTab(this);
+  }
   get settings(): Settings {
     return {
       backgroundColor: this.#backgroundColor,
@@ -49,17 +73,21 @@ class GeneratorController {
     if (this.world === 0 || this.turn === -1) return {};
     return this.data[this.turn].tribes;
   }
-  addMark(tribeTag: string, groupName: string) {
+  addMark(tribeTag: string, groupName: string, options?: { skipUpdate?: boolean }) {
     if (this.turn === -1) return false;
     const group = this.markGroups.find((element) => element.name === groupName);
-    if (!group) return false;
     const tribe = this.findTribe(tribeTag);
-    if (!tribe) return false;
+    if (!tribe || !group) return false;
     group.tribes.push(tribe.id);
     this.sortMarkGroups();
+    if (options?.skipUpdate) return true;
+    this.#canvasFrame.render();
+    this.#markGroupsTab.render();
+    this.#settingsTab.update();
+    this.#suggestionsTab.render();
     return true;
   }
-  addMarkGroup(group: MarkGroup) {
+  addMarkGroup(group: MarkGroup, options?: { skipUpdate?: boolean }) {
     if (this.turn === -1) return false;
     if (!isValidGroupName(group.name) || !isValidColor(group.color)) return false;
     if (this.isGroupNameTaken(group.name)) return false;
@@ -69,35 +97,43 @@ class GeneratorController {
       color: group.color,
     };
     this.markGroups.push(newGroup);
+    if (options?.skipUpdate) return true;
+    this.#markGroupsTab.render();
+    this.#settingsTab.update();
     return true;
   }
   async applySettings(settings: Settings) {
     if (!isValidSettings(settings)) return false;
-    if (settings.world !== this.world) {
-      const isWorldChanged = await this.changeWorld(settings.world);
-      if (!isWorldChanged) return false;
-      const isTurnChanged = await this.changeTurn(settings.turn);
-      if (!isTurnChanged) return false;
-    }
-    this.setBackgroundColor(settings.backgroundColor);
-    this.setDisplayUnmarked(settings.displayUnmarked);
-    this.setOutputWidth(settings.outputWidth);
-    this.setScale(settings.scale);
-    this.setSpotsFilter(settings.spotsFilter);
-    this.setTrim(settings.trim);
-    this.setUnmarkedColor(settings.unmarkedColor);
+    const isWorldChanged = await this.changeWorld(settings.world);
+    if (!isWorldChanged) return false;
+    this.#backgroundColor = settings.backgroundColor;
+    this.#displayUnmarked = settings.displayUnmarked;
+    this.#outputWidth = settings.outputWidth;
+    this.#scale = settings.scale;
+    this.#spotsFilter = settings.spotsFilter;
+    this.#trim = settings.trim;
+    this.#unmarkedColor = settings.unmarkedColor;
+    const isTurnChanged = await this.changeTurn(settings.turn);
+    if (!isTurnChanged) return false;
     this.markGroups = [];
     for (let group of settings.markGroups) {
-      this.addMarkGroup({
-        tribes: [],
-        name: group.name,
-        color: group.color,
-      });
+      this.addMarkGroup(
+        {
+          tribes: [],
+          name: group.name,
+          color: group.color,
+        },
+        { skipUpdate: true }
+      );
       for (let tribeID of group.tribes) {
         const tribe = this.tribes[tribeID];
-        if (tribe) this.addMark(tribe.tag, group.name);
+        if (tribe) this.addMark(tribe.tag, group.name, { skipUpdate: true });
       }
     }
+    this.#canvasFrame.render();
+    this.#markGroupsTab.render();
+    this.#settingsTab.update();
+    this.#suggestionsTab.render();
     return true;
   }
   changeMarkGroupColor(name: string, color: string): boolean {
@@ -107,6 +143,8 @@ class GeneratorController {
     if (!isValidColor(color)) return false;
     const group = this.markGroups[groupIndex];
     group.color = color;
+    this.#canvasFrame.render();
+    this.#markGroupsTab.render();
     return true;
   }
   changeMarkGroupName(oldName: string, newName: string): boolean {
@@ -117,9 +155,12 @@ class GeneratorController {
     if (!isValidGroupName(newName)) return false;
     if (this.isGroupNameTaken(newName)) return false;
     group.name = newName;
+    this.#canvasFrame.render();
+    this.#markGroupsTab.render();
+    this.#suggestionsTab.render();
     return true;
   }
-  async changeTurn(turn: number): Promise<boolean> {
+  async changeTurn(turn: number, options?: { skipUpdate?: boolean }): Promise<boolean> {
     const isTurnDataAvailable = await this.fetchTurnData(turn);
     if (!isTurnDataAvailable) {
       this.turn = -1;
@@ -134,9 +175,16 @@ class GeneratorController {
         }
       }
     }
+    if (options?.skipUpdate) return true;
+    this.#canvasFrame.render();
+    this.#markGroupsTab.render();
+    this.#settingsTab.update();
+    this.#suggestionsTab.render();
     return true;
   }
   async changeWorld(world: number): Promise<boolean> {
+    if (!isValidID(world)) return false;
+    if (world === this.world) return true;
     const endpoint = `/api/world/${world}`;
     const worldInfo: Awaited<ReturnType<typeof handleReadWorld>> = await getRequest(endpoint);
     this.data = {};
@@ -145,6 +193,7 @@ class GeneratorController {
     this.#server = worldInfo.server + worldInfo.num;
     this.world = world;
     this.latestTurn = Math.floor((Date.now() - worldInfo.startTimestamp * 1000) / 1000 / 60 / 60 / 24);
+    this.#settingsTab.update();
     return true;
   }
   deleteMark(groupName: string, tribeTag: string): boolean {
@@ -155,12 +204,20 @@ class GeneratorController {
     if (tribeIndex === -1) return false;
     group.tribes.splice(tribeIndex, 1);
     this.sortMarkGroups();
+    this.#canvasFrame.render();
+    this.#markGroupsTab.render();
+    this.#settingsTab.update();
+    this.#suggestionsTab.render();
     return true;
   }
   deleteMarkGroup(name: string): boolean {
     const groupIndex = this.markGroups.findIndex((element) => element.name === name);
     if (groupIndex === -1) return false;
     this.markGroups.splice(groupIndex, 1);
+    this.#canvasFrame.render();
+    this.#markGroupsTab.render();
+    this.#settingsTab.update();
+    this.#suggestionsTab.render();
     return true;
   }
   async fetchTurnData(turn: number): Promise<boolean> {
@@ -179,6 +236,9 @@ class GeneratorController {
       if (this.tribes[tribeID].tag === tag) return this.tribes[tribeID];
     }
     return false;
+  }
+  forceRenderCanvas() {
+    this.#canvasFrame.render({ force: true });
   }
   getMapImageData(): ImageData | false {
     if (!isValidSettings(this.settings)) return false;
@@ -219,48 +279,64 @@ class GeneratorController {
     if (this.turn === -1) return false;
     if (!isValidColor(color)) return false;
     this.#backgroundColor = color;
+    this.#canvasFrame.render();
+    this.#settingsTab.update();
     return true;
   }
   setBorderColor(color: string): boolean {
     if (this.turn === -1) return false;
     if (!isValidColor(color)) return false;
     this.#borderColor = color;
+    this.#canvasFrame.render();
+    this.#settingsTab.update();
     return true;
   }
   setDisplayUnmarked(value: boolean): boolean {
     if (this.turn === -1) return false;
     if (typeof value !== "boolean") return false;
     this.#displayUnmarked = value;
+    this.#canvasFrame.render();
+    this.#settingsTab.update();
     return true;
   }
   setOutputWidth(value: number): boolean {
     if (this.turn === -1) return false;
     if (!isValidOutputWidth(value)) return false;
     this.#outputWidth = value;
+    this.#canvasFrame.render();
+    this.#settingsTab.update();
     return true;
   }
   setScale(value: number): boolean {
     if (this.turn === -1) return false;
     if (!isValidScale(value)) return false;
     this.#scale = value;
+    this.#canvasFrame.render();
+    this.#settingsTab.update();
     return true;
   }
   setSpotsFilter(value: number): boolean {
     if (this.turn === -1) return false;
     if (!isValidSpotsFilter(value)) return false;
     this.#spotsFilter = value;
+    this.#canvasFrame.render();
+    this.#settingsTab.update();
     return true;
   }
   setTrim(value: boolean): boolean {
     if (this.turn === -1) return false;
     if (typeof value !== "boolean") return false;
     this.#trim = value;
+    this.#canvasFrame.render();
+    this.#settingsTab.update();
     return true;
   }
   setUnmarkedColor(color: string): boolean {
     if (this.turn === -1) return false;
     if (!isValidColor(color)) return false;
     this.#unmarkedColor = color;
+    this.#canvasFrame.render();
+    this.#settingsTab.update();
     return true;
   }
   sortMarkGroups() {

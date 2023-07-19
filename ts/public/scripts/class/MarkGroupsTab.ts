@@ -1,11 +1,16 @@
 import { MarkGroup, Tribe } from "../../../src/Types.js";
-import { randomizeGroupColor } from "../utils.js";
-import CanvasController from "./CanvasController.js";
 import GeneratorController from "./GeneratorController.js";
-import SettingsTabController from "./SettingsTab.js";
-import SuggestionsTabController from "./SuggestionsTab.js";
+import { randomizeGroupColor } from "../utils.js";
 
 const markGroupsTableBody = document.querySelector("#mark-groups table tbody") as HTMLTableSectionElement | null;
+
+const findGroupName = function (element: Element) {
+  const row = element.closest("tr");
+  if (!row) return "";
+  const groupNameInput = row.querySelector(".group-name > input") as HTMLInputElement | null;
+  if (!groupNameInput) return "";
+  return groupNameInput.value;
+};
 
 const getMarkGroupRowInnerHTML = function (group: MarkGroup, tribes: { [key: string]: Tribe }) {
   let innerHTML = "";
@@ -24,48 +29,66 @@ const getMarkGroupRowInnerHTML = function (group: MarkGroup, tribes: { [key: str
   return innerHTML;
 };
 
-const findGroupName = function (element: Element) {
-  const row = element.closest("tr");
-  if (!row) return "";
-  const groupNameInput = row.querySelector(".group-name > input") as HTMLInputElement | null;
-  if (!groupNameInput) return "";
-  const name = groupNameInput.value;
-  return name;
-};
-
-class MarkGroupsTabController {
+class MarkGroupsTab {
   #generator;
-  #settingsObject: SettingsTabController | undefined;
-  #suggestionsObject: SuggestionsTabController | undefined;
-  #canvasObject: CanvasController | undefined;
-  constructor(mapGeneratorObject: GeneratorController) {
-    this.#generator = mapGeneratorObject;
+  constructor(generatorController: GeneratorController) {
+    this.#generator = generatorController;
   }
-  set settingsObject(object: SettingsTabController) {
-    this.#settingsObject = object;
-  }
-  set suggestionsObject(object: SuggestionsTabController) {
-    this.#suggestionsObject = object;
-  }
-  set canvasObject(object: CanvasController) {
-    this.#canvasObject = object;
-  }
+  deleteMarkGroup = (e: Event) => {
+    const deleteMarkGroupButton = e.target as HTMLButtonElement;
+    const groupName = findGroupName(deleteMarkGroupButton);
+    const isDeleted = this.#generator.deleteMarkGroup(groupName);
+    if (!isDeleted) return console.log("Failed to delete a mark group");
+  };
+  changeGroupColor = (e: Event) => {
+    const colorInput = e.target as HTMLInputElement;
+    const newColor = colorInput.value;
+    const groupName = findGroupName(colorInput);
+    const isGroupColorChanged = this.#generator.changeMarkGroupColor(groupName, newColor);
+    if (!isGroupColorChanged) return console.log("Failed to change a group color");
+  };
+  changeGroupName = (e: Event) => {
+    const nameInput = e.target as HTMLInputElement;
+    const newName = nameInput.value;
+    const oldName = nameInput.dataset.oldName ?? "";
+    const isGroupNameChanged = this.#generator.changeMarkGroupName(oldName, newName);
+    if (!isGroupNameChanged) {
+      nameInput.classList.add("is-invalid");
+      return;
+    }
+    nameInput.dataset.oldName = newName;
+    nameInput.classList.remove("is-invalid");
+  };
+  deleteMark = (e: Event) => {
+    const deleteMarkButton = e.target as HTMLElement;
+    const tribeTag = deleteMarkButton.textContent ?? "";
+    const groupName = findGroupName(deleteMarkButton);
+    const isMarkDeleted = this.#generator.deleteMark(groupName, tribeTag);
+    if (!isMarkDeleted) return console.log("Failed to delete a mark");
+  };
+  randomizeColor = (e: Event) => {
+    e.preventDefault();
+    const colorInput = e.target as HTMLInputElement;
+    const groupName = findGroupName(colorInput);
+    const newColor = randomizeGroupColor();
+    const isGroupColorChanged = this.#generator.changeMarkGroupColor(groupName, newColor);
+    if (!isGroupColorChanged) return console.log("Failed to change a group color");
+  };
   render() {
-    const groups = this.#generator.markGroups;
+    const markGroups = this.#generator.markGroups;
     const tribes = this.#generator.tribes;
     if (!markGroupsTableBody) return;
     markGroupsTableBody.innerHTML = "";
-    for (let group of groups) {
-      const newRow = document.createElement("tr");
+    for (let group of markGroups) {
       const content = getMarkGroupRowInnerHTML(group, tribes);
+      const newRow = document.createElement("tr");
       newRow.innerHTML = content;
       markGroupsTableBody.appendChild(newRow);
     }
-    markGroupsTableBody.querySelectorAll(".mark").forEach((mark) => {
-      mark.addEventListener("click", this.deleteMark);
+    markGroupsTableBody.querySelectorAll(".mark").forEach((markButton) => {
+      markButton.addEventListener("click", this.deleteMark);
     });
-    markGroupsTableBody.querySelectorAll(".group-name input").forEach((element) => {
-      const nameInput = element as HTMLInputElement;
+    markGroupsTableBody.querySelectorAll(".group-name input").forEach((nameInput) => {
       nameInput.addEventListener("change", this.changeGroupName);
     });
     markGroupsTableBody.querySelectorAll("input[type=color]").forEach((colorInput) => {
@@ -76,71 +99,6 @@ class MarkGroupsTabController {
       deleteGroupButton.addEventListener("click", this.deleteMarkGroup);
     });
   }
-  updateSettings() {
-    if (this.#settingsObject) this.#settingsObject.update();
-  }
-  renderCanvas() {
-    if (this.#canvasObject) this.#canvasObject.render();
-  }
-  renderSuggestions() {
-    if (this.#suggestionsObject) this.#suggestionsObject.render();
-  }
-  deleteMarkGroup = (e: Event) => {
-    const button = e.target as HTMLButtonElement;
-    const groupName = findGroupName(button);
-    const isDeleted = this.#generator.deleteMarkGroup(groupName);
-    if (!isDeleted) return;
-    this.render();
-    this.updateSettings();
-    this.renderSuggestions();
-    this.renderCanvas();
-  };
-  changeGroupColor = (e: Event) => {
-    const colorInput = e.target as HTMLInputElement;
-    const color = colorInput.value;
-    const groupName = findGroupName(colorInput);
-    const isChanged = this.#generator.changeMarkGroupColor(groupName, color);
-    if (!isChanged) return;
-    this.render();
-    this.updateSettings();
-    this.renderCanvas();
-  };
-  randomizeColor = (e: Event) => {
-    e.preventDefault();
-    const colorInput = e.target as HTMLInputElement;
-    const groupName = findGroupName(colorInput);
-    const color = randomizeGroupColor();
-    const isChanged = this.#generator.changeMarkGroupColor(groupName, color);
-    if (!isChanged) return;
-    this.render();
-    this.updateSettings();
-    this.renderCanvas();
-  };
-  deleteMark = (e: Event) => {
-    const button = e.target as HTMLElement;
-    const tribeTag = button.textContent as string;
-    const groupName = findGroupName(button);
-    const isDeleted = this.#generator.deleteMark(groupName, tribeTag);
-    if (!isDeleted) return;
-    this.render();
-    this.updateSettings();
-    this.renderSuggestions();
-    this.renderCanvas();
-  };
-  changeGroupName = (e: Event) => {
-    const nameInput = e.target as HTMLInputElement;
-    const newName = nameInput.value;
-    const oldName = nameInput.dataset.oldName as string;
-    const isChanged = this.#generator.changeMarkGroupName(oldName, newName);
-    if (!isChanged) {
-      nameInput.classList.add("is-invalid");
-      return;
-    }
-    nameInput.classList.remove("is-invalid");
-    nameInput.dataset.oldName = newName;
-    this.renderSuggestions();
-    this.renderCanvas();
-  };
 }
 
-export default MarkGroupsTabController;
+export default MarkGroupsTab;
