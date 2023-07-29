@@ -5,16 +5,16 @@ td:first-child {
   font-weight: bold;
 }
 .available {
-  background-color: #000080;
+  background-color: green;
 }
 .unavailable {
-  background-color: #800000;
+  background-color: maroon;
 }
 .files-only {
-  background-color: #008000;
+  background-color: yellow;
 }
 .data-only {
-  background-color: #004080;
+  background-color: violet;
 }
 td > button {
   background-color: inherit;

@@ -1,84 +1,92 @@
 import { handleDeleteCollection } from "../../routes/api-handlers.js";
-import { MAP_IMAGES_DIRECTORY } from "./constants.js";
 import "./navbar.js";
 import { postRequest } from "./requests.js";
 import { selectInputValue } from "./utils.js";
 import { isValidCollectionDescription, isValidID, isValidMapDescription, isValidTitle } from "./validators.js";
 
 const mapTiles = document.querySelectorAll("#map-tiles > .map-tile");
-const enlargedMap = document.getElementById("map-enlarged");
-const enlargedMapImage = document.querySelector("#image-wrapper > img");
-const hideEnlargedMapButton = document.getElementById("hide-enlarged-map");
+const displayedMap = document.getElementById("displayed-map");
+const displayedMapImage = document.querySelector("#image-wrapper > img");
+const closeMapButton = document.getElementById("close-map");
 const previousMapButton = document.getElementById("previous-map");
 const nextMapButton = document.getElementById("next-map");
-const mapTitle = document.getElementById("map-title");
-const mapDescription = document.getElementById("map-description");
+const collectionTitle = document.getElementById("collection-title") as HTMLInputElement | null;
+const collectionDescription = document.getElementById("collection-description") as HTMLTextAreaElement | null;
 const deleteCollectionButton = document.getElementById("delete-collection");
-const deleteMapButton = document.getElementById("delete-map");
-const collectionTitle = document.getElementById("collection-title");
-const collectionDescription = document.getElementById("collection-description");
-const editCollectionTitleButton = document.getElementById("edit-collection-title");
-const editCollectionDescriptionButton = document.getElementById("edit-collection-description");
-const collectionTitleEditInput = document.getElementById("collection-title-edit-input") as HTMLInputElement | null;
-const collectionDescriptionEditTextarea = document.getElementById("collection-description-edit-textarea") as HTMLTextAreaElement | null;
-const editMapTitleButton = document.getElementById("edit-map-title");
-const mapTitleEditInput = document.getElementById("map-title-edit-input") as HTMLInputElement | null;
-const editMapDescriptionButton = document.getElementById("edit-map-description");
-const mapDescriptionEditTextarea = document.getElementById("map-description-edit-textarea") as HTMLInputElement | null;
+const mapTitle = document.getElementById("map-title") as HTMLInputElement | null;
+const mapDescription = document.getElementById("map-description") as HTMLTextAreaElement | null;
+const deleteMapButton = document.getElementById("delete-map") as HTMLButtonElement | null;
 const encodedSettingsInput = document.getElementById("encoded-settings") as HTMLInputElement | null;
 
-let currentEnlargedMap: HTMLDivElement | null = null;
+let currentlyDisplayedMap: HTMLDivElement | null = null;
 
-const viewEnlargedMap = function () {
-  if (!currentEnlargedMap) return;
-  const id = parseInt(currentEnlargedMap.dataset.id ?? "0");
-  const title = currentEnlargedMap.dataset.title;
-  const description = currentEnlargedMap.dataset.description;
+const textAreaAutoResize = function (e: Event) {
+  const target = e.target as HTMLTextAreaElement;
+  target.style.height = "auto";
+  target.style.height = `${target.scrollHeight + 5}px`;
+};
+
+const isAnyTextFieldFocused = function () {
+  const activeElementTagName = document.activeElement?.tagName.toLowerCase();
+  if (activeElementTagName === "input" || activeElementTagName === "textarea") return true;
+  return false;
+};
+
+const displayMap = function () {
+  if (!currentlyDisplayedMap) return;
+  const id = parseInt(currentlyDisplayedMap.dataset.id ?? "0");
+  const title = currentlyDisplayedMap.dataset.title;
+  const description = currentlyDisplayedMap.dataset.description;
   if (isNaN(id) || !title || !description) return;
-  const src = `${MAP_IMAGES_DIRECTORY}/${id}.png`;
-  if (enlargedMapImage) enlargedMapImage.setAttribute("src", src);
-  if (enlargedMap) enlargedMap.style.visibility = "visible";
+  const src = `/images/maps/${id}.png`;
+  if (displayedMapImage) displayedMapImage.setAttribute("src", src);
+  if (displayedMap) displayedMap.style.visibility = "visible";
   updateMapInfo();
 };
 
-const hideEnlargedMap = function () {
-  if (enlargedMap) enlargedMap.style.visibility = "hidden";
-  currentEnlargedMap = null;
+const closeMap = function () {
+  if (displayedMap) displayedMap.style.visibility = "hidden";
+  currentlyDisplayedMap = null;
   updateMapInfo();
 };
 
 const viewNextMap = function () {
-  if (!currentEnlargedMap) return;
-  const nextSibling = currentEnlargedMap.nextElementSibling as HTMLDivElement | null;
-  if (nextSibling) currentEnlargedMap = nextSibling;
-  else currentEnlargedMap = mapTiles[mapTiles.length - 1] as HTMLDivElement;
-  viewEnlargedMap();
+  if (!currentlyDisplayedMap) return;
+  if (isAnyTextFieldFocused()) return;
+  const nextSibling = currentlyDisplayedMap.nextElementSibling as HTMLDivElement | null;
+  if (nextSibling) currentlyDisplayedMap = nextSibling;
+  else currentlyDisplayedMap = mapTiles[mapTiles.length - 1] as HTMLDivElement;
+  displayMap();
 };
 
 const viewPreviousMap = function () {
-  if (!currentEnlargedMap) return;
-  const previousSibling = currentEnlargedMap.previousElementSibling as HTMLDivElement | null;
-  if (previousSibling) currentEnlargedMap = previousSibling;
-  else currentEnlargedMap = mapTiles[0] as HTMLDivElement;
-  viewEnlargedMap();
+  if (!currentlyDisplayedMap) return;
+  if (isAnyTextFieldFocused()) return;
+  const previousSibling = currentlyDisplayedMap.previousElementSibling as HTMLDivElement | null;
+  if (previousSibling) currentlyDisplayedMap = previousSibling;
+  else currentlyDisplayedMap = mapTiles[0] as HTMLDivElement;
+  displayMap();
 };
 
 const updateMapInfo = function () {
-  if (!mapTitle || !mapDescription) return;
-  const title = currentEnlargedMap?.dataset.title ?? "[...]";
-  const description = currentEnlargedMap?.dataset.description ?? "[...]";
-  const encodedSettings = currentEnlargedMap?.dataset.encodedSettings ?? "";
-  mapTitle.innerHTML = title;
-  mapDescription.innerHTML = description;
-  if (encodedSettingsInput) encodedSettingsInput.value = encodedSettings;
-  if (currentEnlargedMap) {
-    if (editMapTitleButton) editMapTitleButton.classList.remove("hidden");
-    if (editMapDescriptionButton) editMapDescriptionButton.classList.remove("hidden");
-    if (deleteMapButton) deleteMapButton.classList.remove("hidden");
+  if (!mapTitle || !mapDescription || !encodedSettingsInput) return;
+  const title = currentlyDisplayedMap?.dataset.title ?? "";
+  const description = currentlyDisplayedMap?.dataset.description ?? "";
+  const encodedSettings = currentlyDisplayedMap?.dataset.encodedSettings ?? "";
+  mapTitle.value = title;
+  mapDescription.textContent = description;
+  encodedSettingsInput.value = encodedSettings;
+  if (currentlyDisplayedMap) {
+    mapTitle.classList.remove("hidden");
+    mapDescription.classList.remove("hidden");
+    deleteMapButton?.classList.remove("hidden");
+    encodedSettingsInput.classList.remove("hidden");
+    mapDescription.dispatchEvent(new Event("input"));
   } else {
-    if (editMapTitleButton) editMapTitleButton.classList.add("hidden");
-    if (editMapDescriptionButton) editMapDescriptionButton.classList.add("hidden");
-    if (deleteMapButton) deleteMapButton.classList.add("hidden");
+    mapTitle.classList.add("hidden");
+    mapDescription.classList.add("hidden");
+    deleteMapButton?.classList.add("hidden");
+    encodedSettingsInput.classList.add("hidden");
   }
 };
 
@@ -86,8 +94,8 @@ const handleMapTileClick = function (e: Event) {
   let newEnlargedMap = e.target as HTMLDivElement;
   if (newEnlargedMap.tagName === "IMG") newEnlargedMap = newEnlargedMap.closest("div[data-id]") as HTMLDivElement;
   if (!newEnlargedMap || !newEnlargedMap.dataset.id || !newEnlargedMap.dataset.title || !newEnlargedMap.dataset.description) return;
-  currentEnlargedMap = newEnlargedMap;
-  viewEnlargedMap();
+  currentlyDisplayedMap = newEnlargedMap;
+  displayMap();
 };
 
 const useKeyboardShortcut = function (e: KeyboardEvent) {
@@ -102,13 +110,13 @@ const useKeyboardShortcut = function (e: KeyboardEvent) {
       break;
     }
     case "Escape": {
-      hideEnlargedMap();
+      closeMap();
       break;
     }
   }
 };
 
-const sendDeleteCollectionRequest = async function () {
+const deleteCollection = async function () {
   const id = parseInt(window.location.pathname.split("/")[2]);
   if (!isValidID(id)) return;
   const payload = {
@@ -119,9 +127,9 @@ const sendDeleteCollectionRequest = async function () {
   else console.log("Failed to delete this collection");
 };
 
-const sendDeleteMapRequest = async function () {
-  if (!currentEnlargedMap) return;
-  const id = parseInt(currentEnlargedMap.dataset.id ?? "");
+const deleteMap = async function () {
+  if (!currentlyDisplayedMap) return;
+  const id = parseInt(currentlyDisplayedMap.dataset.id ?? "");
   if (!isValidID(id)) return;
   const payload = {
     id: id,
@@ -131,150 +139,72 @@ const sendDeleteMapRequest = async function () {
   else console.log("Failed to delete this map");
 };
 
-const editCollectionTitle = async function () {
-  if (!editCollectionTitleButton || !editCollectionTitleButton.dataset.editMode || !collectionTitle || !collectionTitleEditInput) return;
-  const editMode: boolean = JSON.parse(editCollectionTitleButton.dataset.editMode);
-  if (editMode) {
-    const collectionID = parseInt(window.location.pathname.split("/")[2]);
-    const newTitle = collectionTitleEditInput.value;
-    if (!isValidID(collectionID)) return;
-    if (!isValidTitle(newTitle)) {
-      collectionTitleEditInput.classList.add("is-invalid");
-      return;
-    }
-    const isUpdated = await postRequest("/api/collection/update", { id: collectionID, title: newTitle });
-    if (!isUpdated) return;
-    collectionTitle.innerHTML = newTitle;
-    collectionTitle.classList.remove("hidden");
-    collectionTitleEditInput.classList.add("hidden");
-    collectionTitleEditInput.classList.remove("is-invalid");
-    editCollectionTitleButton.innerHTML = "edytuj";
-    editCollectionTitleButton.dataset.editMode = JSON.stringify(false);
-  } else {
-    const currentTitle = collectionTitle.textContent ?? "";
-    collectionTitle.classList.add("hidden");
-    collectionTitleEditInput.value = currentTitle;
-    collectionTitleEditInput.classList.remove("hidden");
-    editCollectionTitleButton.innerHTML = "zapisz";
-    editCollectionTitleButton.dataset.editMode = JSON.stringify(true);
-  }
+const editCollectionTitle = async function (e: Event) {
+  const target = e.target as HTMLInputElement;
+  const collectionID = parseInt(window.location.pathname.split("/")[2]);
+  if (!isValidID(collectionID)) return;
+  const newTitle = target.value;
+  if (!isValidTitle(newTitle)) return target.classList.add("is-invalid");
+  const isUpdated = await postRequest("/api/collection/update", { id: collectionID, title: newTitle });
+  if (isUpdated) target.classList.remove("is-invalid");
+  else target.classList.add("is-invalid");
 };
 
-const editCollectionDescription = async function () {
-  if (
-    !editCollectionDescriptionButton ||
-    !editCollectionDescriptionButton.dataset.editMode ||
-    !collectionDescription ||
-    !collectionDescriptionEditTextarea
-  )
-    return;
-  const editMode: boolean = JSON.parse(editCollectionDescriptionButton.dataset.editMode);
-  if (editMode) {
-    const collectionID = parseInt(window.location.pathname.split("/")[2]);
-    if (!isValidID(collectionID)) return;
-    const newDescription = collectionDescriptionEditTextarea.value;
-    if (!isValidCollectionDescription(newDescription)) {
-      collectionDescriptionEditTextarea.classList.add("is-invalid");
-      return;
-    }
-    const isUpdated = await postRequest("/api/collection/update", { id: collectionID, description: newDescription });
-    if (!isUpdated) return;
-    collectionDescription.innerHTML = newDescription;
-    collectionDescription.classList.remove("hidden");
-    collectionDescriptionEditTextarea.classList.add("hidden");
-    collectionDescriptionEditTextarea.classList.remove("is-invalid");
-    editCollectionDescriptionButton.innerHTML = "edytuj";
-    editCollectionDescriptionButton.dataset.editMode = JSON.stringify(false);
-  } else {
-    const currentTitle = collectionDescription.textContent as string;
-    collectionDescription.classList.add("hidden");
-    collectionDescriptionEditTextarea.value = currentTitle;
-    collectionDescriptionEditTextarea.classList.remove("hidden");
-    editCollectionDescriptionButton.innerHTML = "zapisz";
-    editCollectionDescriptionButton.dataset.editMode = JSON.stringify(true);
-  }
+const editCollectionDescription = async function (e: Event) {
+  const target = e.target as HTMLTextAreaElement;
+  const collectionID = parseInt(window.location.pathname.split("/")[2]);
+  if (!isValidID(collectionID)) return;
+  const newDescription = target.value;
+  if (!isValidCollectionDescription(newDescription)) return target.classList.add("is-invalid");
+  const isUpdated = await postRequest("/api/collection/update", { id: collectionID, description: newDescription });
+  if (isUpdated) target.classList.remove("is-invalid");
+  else target.classList.add("is-invalid");
 };
 
-const editMapTitle = async function () {
-  if (!editMapTitleButton || !editMapTitleButton.dataset.editMode || !mapTitle || !mapTitleEditInput || !currentEnlargedMap) return;
-  const editMode: boolean = JSON.parse(editMapTitleButton.dataset.editMode);
-  if (editMode) {
-    const mapID = parseInt(currentEnlargedMap.dataset.id ?? "");
-    const newTitle = mapTitleEditInput.value;
-    if (!isValidID(mapID)) return;
-    if (!isValidTitle(newTitle)) {
-      mapTitleEditInput.classList.add("is-invalid");
-      return;
-    }
-    const isUpdated = await postRequest("/api/map/update", { id: mapID, title: newTitle });
-    if (!isUpdated) return;
-    mapTitle.classList.remove("hidden");
-    mapTitleEditInput.classList.add("hidden");
-    mapTitleEditInput.classList.remove("is-invalid");
-    editMapTitleButton.innerHTML = "edytuj";
-    editMapTitleButton.dataset.editMode = JSON.stringify(false);
-    currentEnlargedMap.dataset.title = newTitle;
-    updateMapInfo();
-  } else {
-    const currentTitle = currentEnlargedMap.dataset.title ?? "";
-    mapTitle.classList.add("hidden");
-    mapTitleEditInput.value = currentTitle;
-    mapTitleEditInput.classList.remove("hidden");
-    editMapTitleButton.innerHTML = "zapisz";
-    editMapTitleButton.dataset.editMode = JSON.stringify(true);
-  }
+const editMapTitle = async function (e: Event) {
+  if (!currentlyDisplayedMap) return;
+  const target = e.target as HTMLInputElement;
+  const mapID = parseInt(currentlyDisplayedMap.dataset.id ?? "");
+  if (!isValidID(mapID)) return;
+  const newTitle = target.value;
+  if (!isValidTitle(newTitle)) return target.classList.add("is-invalid");
+  const isUpdated = await postRequest("/api/map/update", { id: mapID, title: newTitle });
+  if (isUpdated) target.classList.remove("is-invalid");
+  else target.classList.add("is-invalid");
 };
 
-const editMapDescription = async function () {
-  if (
-    !editMapDescriptionButton ||
-    !editMapDescriptionButton.dataset.editMode ||
-    !mapDescription ||
-    !mapDescriptionEditTextarea ||
-    !currentEnlargedMap
-  )
-    return;
-  const editMode: boolean = JSON.parse(editMapDescriptionButton.dataset.editMode);
-  if (editMode) {
-    const mapID = parseInt(currentEnlargedMap.dataset.id ?? "");
-    const newDescription = mapDescriptionEditTextarea.value;
-    if (!isValidID(mapID)) return;
-    if (!isValidMapDescription(newDescription)) {
-      mapDescriptionEditTextarea.classList.add("is-invalid");
-      return;
-    }
-    const isUpdated = await postRequest("/api/map/update", { id: mapID, description: newDescription });
-    if (!isUpdated) return;
-    mapDescription.classList.remove("hidden");
-    mapDescriptionEditTextarea.classList.add("hidden");
-    mapDescriptionEditTextarea.classList.remove("is-invalid");
-    editMapDescriptionButton.innerHTML = "edytuj";
-    editMapDescriptionButton.dataset.editMode = JSON.stringify(false);
-    currentEnlargedMap.dataset.description = newDescription;
-    updateMapInfo();
-  } else {
-    const currentDescription = currentEnlargedMap.dataset.description ?? "";
-    mapDescription.classList.add("hidden");
-    mapDescriptionEditTextarea.value = currentDescription;
-    mapDescriptionEditTextarea.classList.remove("hidden");
-    editMapDescriptionButton.innerHTML = "zapisz";
-    editMapDescriptionButton.dataset.editMode = JSON.stringify(true);
-  }
+const editMapDescription = async function (e: Event) {
+  if (!currentlyDisplayedMap) return;
+  const target = e.target as HTMLTextAreaElement;
+  const mapID = parseInt(currentlyDisplayedMap.dataset.id ?? "");
+  if (!isValidID(mapID)) return;
+  const newDescription = target.value;
+  if (!isValidMapDescription(newDescription)) return target.classList.add("is-invalid");
+  const isUpdated = await postRequest("/api/map/update", { id: mapID, description: newDescription });
+  if (isUpdated) target.classList.remove("is-invalid");
+  else target.classList.add("is-invalid");
 };
 
 mapTiles.forEach((mapTile) => {
   mapTile.addEventListener("click", handleMapTileClick);
 });
-if (hideEnlargedMapButton) hideEnlargedMapButton.addEventListener("click", hideEnlargedMap);
+if (closeMapButton) closeMapButton.addEventListener("click", closeMap);
 if (nextMapButton) nextMapButton.addEventListener("click", viewNextMap);
 if (previousMapButton) previousMapButton.addEventListener("click", viewPreviousMap);
-if (deleteCollectionButton) deleteCollectionButton.addEventListener("click", sendDeleteCollectionRequest);
-if (deleteMapButton) deleteMapButton.addEventListener("click", sendDeleteMapRequest);
-if (editCollectionTitleButton) editCollectionTitleButton.addEventListener("click", editCollectionTitle);
-if (editCollectionDescriptionButton) editCollectionDescriptionButton.addEventListener("click", editCollectionDescription);
-if (editMapTitleButton) editMapTitleButton.addEventListener("click", editMapTitle);
-if (editMapDescriptionButton) editMapDescriptionButton.addEventListener("click", editMapDescription);
+if (collectionTitle) collectionTitle.addEventListener("change", editCollectionTitle);
+if (collectionDescription) {
+  collectionDescription.addEventListener("change", editCollectionDescription);
+  collectionDescription.addEventListener("input", textAreaAutoResize);
+}
+if (mapTitle) mapTitle.addEventListener("change", editMapTitle);
+if (mapDescription) {
+  mapDescription.addEventListener("change", editMapDescription);
+  mapDescription.addEventListener("input", textAreaAutoResize);
+}
+if (deleteCollectionButton) deleteCollectionButton.addEventListener("click", deleteCollection);
+if (deleteMapButton) deleteMapButton.addEventListener("click", deleteMap);
 if (encodedSettingsInput) encodedSettingsInput.addEventListener("click", selectInputValue);
 document.body.addEventListener("keydown", useKeyboardShortcut);
 
 updateMapInfo();
+if (collectionDescription) collectionDescription.dispatchEvent(new Event("input"));

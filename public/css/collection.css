@@ -7,7 +7,7 @@
   flex-direction: row;
   justify-content: center;
 }
-#map-enlarged {
+#displayed-map {
   position: absolute;
   display: flex;
   overflow: hidden;
@@ -32,7 +32,7 @@
 #next-map {
   right: 0;
 }
-#hide-enlarged-map {
+#close-map {
   width: 3rem;
   height: 3rem;
   line-height: 2rem;
@@ -85,26 +85,30 @@
 #info > * {
   padding: 0.5rem;
 }
-#collection-title {
+#collection-title,
+#map-title {
   font-size: 2rem;
   font-weight: 600;
-}
-#map-title {
-  font-size: 1.5rem;
-  font-weight: 500;
+  background-color: transparent;
+  padding: 0;
 }
 #collection-description,
 #map-description {
-  font-style: italic;
-  white-space: pre;
-}
-#info input {
-  padding: 0.5rem;
-  width: 100%;
-}
-/* #delete-collection-button {
-  width: 100%;
-  padding: 0.5rem;
   font-size: 1.25rem;
-  line-height: 1.25rem;
-} */
+  font-style: italic;
+  white-space: pre-wrap;
+  width: 100%;
+  resize: none;
+  background-color: transparent;
+  border: 2px solid transparent;
+  border-radius: 0.5rem;
+  padding: 0;
+}
+#collection-description:focus,
+#map-description:focus {
+  border-color: var(--light-accent);
+  outline: none;
+}
+#encoded-settings {
+  width: 100%;
+}

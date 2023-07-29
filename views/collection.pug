@@ -1,3 +1,5 @@
+- var isAuthor = user && user.id === collection.authorId;
+- var isAdmin = user && user.rank === 10;
 doctype html
 html(lang="pl-PL")
   head
@@ -14,12 +16,12 @@ html(lang="pl-PL")
   body.fullscreen
     include navbar.pug
     #wrapper
-      #map-enlarged
+      #displayed-map
         #image-wrapper
           img(alt="map")
         button#previous-map(type="button") <
         button#next-map(type="button") >
-        button#hide-enlarged-map(type="button") X
+        button#close-map(type="button") X
       #map-tiles
         each map in collection.maps
           .map-tile(
@@ -32,32 +34,40 @@ html(lang="pl-PL")
             img(src=`/images/maps/${map.id}.png`, alt="map")
       #info
         div
-          span#collection-title= collection.title
-          if user && user.id === collection.authorId
-            input#collection-title-edit-input.hidden(type="text", name="collection-title-input", autocomplete="off", placeholder="Tytuł")
-            button#edit-collection-title.label-button(type="button", data-edit-mode="false") edytuj
-          if user && (user.id === collection.authorId || user.rank === 10)
+          if isAuthor
+            input#collection-title(type="text", name="collection-title", placeholder="Tytuł", value=collection.title, autocomplete="off", size="20")
+          else
+            input#collection-title(
+              type="text",
+              name="collection-title",
+              placeholder="Tytuł",
+              readonly="readonly",
+              value=collection.title,
+              autocomplete="off",
+              size="20"
+            )
+          if isAuthor || isAdmin
             button#delete-collection.label-button(type="button") usuń
         div
           span= `Stworzona przez `
           a.label-button(href=`/user/${collection.author.id}`) #{ collection.author.login }
           span= ` ${collection.createdAt.toLocaleDateString()}`
         div
-          span#collection-description= collection.description
-          if user && user.id === collection.authorId
-            textarea#collection-description-edit-textarea.hidden(name="collection-description-textarea", cols="30", rows="5") 
-            button#edit-collection-description.label-button(type="button", data-edit-mode="false") edytuj
+          if isAuthor
+            textarea#collection-description(cols="1", autocomplete="off")= collection.description
+          else
+            textarea#collection-description(cols="1", readonly="readonly", autocomplete="off")= collection.description
         div
-          span#map-title
-          if user && user.id === collection.authorId
-            input#map-title-edit-input.hidden(type="text", name="map-title-input", autocomplete="off", placeholder="Tytuł")
-            button#edit-map-title.label-button.hidden(type="button", data-edit-mode="false") edytuj
-          if user && (user.id === collection.authorId || user.rank === 10)
-            button#delete-map.hidden.label-button(type="button") usuń
+          if isAuthor
+            input#map-title.hidden(type="text", name="map-title", placeholder="Tytuł", value="", autocomplete="off", size="20")
+          else
+            input#map-title.hidden(type="text", name="map-title", placeholder="Tytuł", value="", readonly="readonly", autocomplete="off", size="20")
+          if isAuthor || isAdmin
+            button#delete-map.label-button.hidden(type="button") usuń
         div
-          span#map-description
-          if user && user.id === collection.authorId
-            textarea#map-description-edit-textarea.hidden(name="map-description-textarea", cols="30", rows="5") 
-            button#edit-map-description.label-button.hidden(type="button", data-edit-mode="false") edytuj
+          if isAuthor
+            textarea#map-description.hidden(cols="1", autocomplete="off")
+          else
+            textarea#map-description.hidden(cols="1", readonly="readonly", autocomplete="off") 
         div
-          input#encoded-settings(type="text", name="settings", value="", placeholder="kod ustawień", readonly)
+          input#encoded-settings.hidden(type="text", name="settings", value="", placeholder="kod ustawień", readonly="readonly", autocomplete="off")

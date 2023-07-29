@@ -1,8 +1,7 @@
 import fs from "fs";
 import { PNG } from "pngjs";
-import { MAP_IMAGES_DIRECTORY } from "../public/scripts/constants.js";
 
-const mapsPath = `public${MAP_IMAGES_DIRECTORY}`;
+const mapsPath = `public/images/maps`;
 
 const saveMapPng = async function (id: number, imageData: ImageData) {
   if (!fs.existsSync(mapsPath)) fs.mkdirSync(mapsPath);
