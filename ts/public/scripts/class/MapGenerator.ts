@@ -80,7 +80,7 @@ class MapGenerator {
     this.#turnData = data;
     this.#settings = settings;
     this.#backgroundColor = parseHexColor(settings.backgroundColor);
-    this.#maxSpotSize = 5 + Math.ceil(((MAX_VILLAGE_POINTS - data.averageVillagePoints) / MAX_VILLAGE_POINTS) * 7);
+    this.#maxSpotSize = 5 + Math.ceil(((MAX_VILLAGE_POINTS - data.averageVillagePoints) / MAX_VILLAGE_POINTS) * 5);
     this.#villageFilter = Math.min(Math.floor(data.averageVillagePoints * 0.9), Math.floor(MAX_VILLAGE_POINTS / 4));
     this.#spotSizeStep = Math.round((data.topVillagePoints - this.#villageFilter) / this.#maxSpotSize);
     // console.log("Filter:", this.#villageFilter, "Step:", this.#spotSizeStep, "Median:", data.medianVillagePoints, "Max spot:", this.#maxSpotSize);
@@ -328,7 +328,7 @@ class MapGenerator {
     for (let d = 0; d <= spotSize; d++) {
       for (let expansion of this.#expansionArray[d]) {
         const pixel = this.#rawPixels[x + expansion.x][y + expansion.y];
-        if (spotSize - d > pixel.priority) {
+        if (pixel && spotSize - d > pixel.priority) {
           pixel.priority = spotSize - d;
           pixel.color = color;
           pixel.counted = false;

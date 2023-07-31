@@ -237,9 +237,9 @@ class GeneratorController {
     }
     return false;
   }
-  forceRenderCanvas() {
+  forceRenderCanvas = () => {
     this.#canvasFrame.render({ force: true });
-  }
+  };
   getMapImageData(): ImageData | false {
     if (!isValidSettings(this.settings)) return false;
     if (typeof this.data[this.turn] !== "object") return false;

@@ -38,33 +38,29 @@ class MarkGroupsTab {
     const deleteMarkGroupButton = e.target as HTMLButtonElement;
     const groupName = findGroupName(deleteMarkGroupButton);
     const isDeleted = this.#generator.deleteMarkGroup(groupName);
-    if (!isDeleted) return console.log("Failed to delete a mark group");
+    if (!isDeleted) console.log("Failed to delete a mark group");
   };
   changeGroupColor = (e: Event) => {
     const colorInput = e.target as HTMLInputElement;
     const newColor = colorInput.value;
     const groupName = findGroupName(colorInput);
     const isGroupColorChanged = this.#generator.changeMarkGroupColor(groupName, newColor);
-    if (!isGroupColorChanged) return console.log("Failed to change a group color");
+    if (!isGroupColorChanged) console.log("Failed to change a group color");
   };
   changeGroupName = (e: Event) => {
     const nameInput = e.target as HTMLInputElement;
     const newName = nameInput.value;
     const oldName = nameInput.dataset.oldName ?? "";
     const isGroupNameChanged = this.#generator.changeMarkGroupName(oldName, newName);
-    if (!isGroupNameChanged) {
-      nameInput.classList.add("is-invalid");
-      return;
-    }
-    nameInput.dataset.oldName = newName;
-    nameInput.classList.remove("is-invalid");
+    if (isGroupNameChanged) nameInput.classList.remove("is-invalid");
+    else nameInput.classList.add("is-invalid");
   };
   deleteMark = (e: Event) => {
     const deleteMarkButton = e.target as HTMLElement;
     const tribeTag = deleteMarkButton.textContent ?? "";
     const groupName = findGroupName(deleteMarkButton);
     const isMarkDeleted = this.#generator.deleteMark(groupName, tribeTag);
-    if (!isMarkDeleted) return console.log("Failed to delete a mark");
+    if (!isMarkDeleted) console.log("Failed to delete a mark");
   };
   randomizeColor = (e: Event) => {
     e.preventDefault();
@@ -72,7 +68,7 @@ class MarkGroupsTab {
     const groupName = findGroupName(colorInput);
     const newColor = randomizeGroupColor();
     const isGroupColorChanged = this.#generator.changeMarkGroupColor(groupName, newColor);
-    if (!isGroupColorChanged) return console.log("Failed to change a group color");
+    if (!isGroupColorChanged) console.log("Failed to change a group color");
   };
   render() {
     const markGroups = this.#generator.markGroups;

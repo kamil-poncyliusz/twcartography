@@ -13,7 +13,11 @@ export const readCollection = async function (id: number): Promise<CollectionWit
       },
       include: {
         author: true,
-        maps: true,
+        maps: {
+          orderBy: {
+            position: "asc",
+          },
+        },
         world: true,
       },
     })
