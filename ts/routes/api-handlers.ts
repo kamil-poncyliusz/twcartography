@@ -67,7 +67,7 @@ export const handleCreateMap = async function (req: Request): Promise<number> {
   if (turnData === null) return 0;
   const generator = new MapGenerator(turnData, settings);
   if (payload.collection === 0) {
-    const createdCollection = await createCollection(settings.world, authorId, "Nowa kolekcja", "");
+    const createdCollection = await createCollection(settings.world, authorId, "Kolekcja", "bez opisu");
     if (!createdCollection) return 0;
     payload.collection = createdCollection.id;
   }

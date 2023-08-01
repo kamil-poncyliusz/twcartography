@@ -29,6 +29,8 @@ describe("calcNeighborsArray", () => {
         { x: 1, y: 1 },
       ],
     ]);
+    expect(calcExpansionArray(7)[7]).toBeDefined();
+    expect(calcExpansionArray(12)[12]).toBeDefined();
   });
 });
 describe("distinctiveColor", () => {

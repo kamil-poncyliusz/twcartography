@@ -1,3 +1,4 @@
+- var hasPublishRights = user && user.rank >= 2;
 doctype html
 html(lang="pl-PL")
   head
@@ -64,24 +65,23 @@ html(lang="pl-PL")
           .row
             div(title="Wklej kod ustawień, żeby odtworzyć ustawienia stworzone przez innego użytkownika")
               input#encoded-settings(type="text", name="encoded-settings", autocomplete="off", placeholder="kod ustawień", value=encodedSettings)
-          if user
-            if user.rank >= 2
-              .row
-                div
-                  input#map-title(type="text", name="map-title", placeholder="tytuł", autocomplete="off", disabled)
-              .row
-                div
-                  input#map-description(type="text", name="map-description", placeholder="opis", autocomplete="off", disabled)
-              .row
-                div
-                  select#collection(name="collection", autocomplete="off")
-                    option(value="", selected, disabled, hidden) wybierz
-                    option(value="0") Utwórz nową
-                    each collection in collections
-                      option(value=collection.id) #{ collection.title }
-              .row
-                div
-                  button#publish-button(disabled) Opublikuj
+          if hasPublishRights
+            .row
+              div
+                input#map-title(type="text", name="map-title", placeholder="tytuł", autocomplete="off", disabled)
+            .row
+              div
+                input#map-description(type="text", name="map-description", placeholder="opis", autocomplete="off", disabled)
+            .row
+              div
+                select#collection(name="collection", autocomplete="off")
+                  option(value="", selected, disabled, hidden) wybierz kolekcję
+                  option(value="0") Utwórz nową
+                  each collection in collections
+                    option(value=collection.id) #{ collection.title }
+            .row
+              div
+                button#publish-button(disabled) Dodaj do kolekcji
       #mark-suggestions.marks-tab.utility-window.hidden
         div
           table
