@@ -21,6 +21,7 @@ const MAP_DESCRIPTION_MAX_LENGTH = 200;
 const COLLECTION_DESCRIPTION_MAX_LENGTH = 500;
 const GROUP_NAME_MAX_LENGTH = 8;
 const GROUP_NAME_MIN_LENGTH = 1;
+const FRAME_DELAY_MAX_MILISECONDS = 60000;
 
 const settingsMinValues: { [key: string]: number } = {
   outputWidth: 100,
@@ -67,6 +68,11 @@ export const isValidTitle = function (title: string): boolean {
 
 export const isValidCollectionDescription = function (description: string): boolean {
   if (typeof description !== "string" || description.length > COLLECTION_DESCRIPTION_MAX_LENGTH) return false;
+  return true;
+};
+
+export const isValidFrameDelay = function (frameDelay: number): boolean {
+  if (typeof frameDelay !== "number" || isNaN(frameDelay) || frameDelay < 1 || frameDelay > FRAME_DELAY_MAX_MILISECONDS) return false;
   return true;
 };
 

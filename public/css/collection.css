@@ -17,6 +17,7 @@
   top: 0;
   left: 0;
   background-color: var(--background);
+  z-index: 1;
 }
 #previous-map,
 #next-map {
@@ -69,6 +70,9 @@
 }
 .map-tile:hover {
   border: 1px solid var(--light-accent);
+}
+.map-tile:not([data-checked="checked"]) {
+  filter: grayscale(100%);
 }
 .map-tile > img {
   width: 100%;

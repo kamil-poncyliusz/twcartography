@@ -2,7 +2,7 @@ import { handleDeleteCollection } from "../../routes/api-handlers.js";
 import "./navbar.js";
 import { postRequest } from "./requests.js";
 import { selectInputValue } from "./utils.js";
-import { isValidCollectionDescription, isValidID, isValidMapDescription, isValidTitle } from "./validators.js";
+import { isValidCollectionDescription, isValidFrameDelay, isValidID, isValidMapDescription, isValidTitle } from "./validators.js";
 
 const mapTiles = document.querySelectorAll("#map-tiles > .map-tile");
 const displayedMap = document.getElementById("displayed-map");
@@ -13,10 +13,17 @@ const nextMapButton = document.getElementById("next-map");
 const collectionTitle = document.getElementById("collection-title") as HTMLInputElement | null;
 const collectionDescription = document.getElementById("collection-description") as HTMLTextAreaElement | null;
 const deleteCollectionButton = document.getElementById("delete-collection");
+const mapInfo = document.getElementById("map-info");
 const mapTitle = document.getElementById("map-title") as HTMLInputElement | null;
 const mapDescription = document.getElementById("map-description") as HTMLTextAreaElement | null;
 const deleteMapButton = document.getElementById("delete-map") as HTMLButtonElement | null;
 const encodedSettingsInput = document.getElementById("encoded-settings") as HTMLInputElement | null;
+const animationSettings = document.getElementById("animation-settings");
+const animationCreatorModeCheckbox = document.getElementById("animation-creator-mode") as HTMLInputElement | null;
+const checkAllMapsButton = document.getElementById("check-all-maps") as HTMLButtonElement | null;
+const uncheckAllMapsButton = document.getElementById("uncheck-all-maps") as HTMLButtonElement | null;
+const frameDelayInput = document.getElementById("frame-delay") as HTMLInputElement | null;
+const createAnimationButton = document.getElementById("create-animation") as HTMLButtonElement | null;
 
 let currentlyDisplayedMap: HTMLDivElement | null = null;
 
@@ -69,7 +76,7 @@ const viewPreviousMap = function () {
 };
 
 const updateMapInfo = function () {
-  if (!mapTitle || !mapDescription || !encodedSettingsInput) return;
+  if (!mapInfo || !mapTitle || !mapDescription || !encodedSettingsInput) return;
   const title = currentlyDisplayedMap?.dataset.title ?? "";
   const description = currentlyDisplayedMap?.dataset.description ?? "";
   const encodedSettings = currentlyDisplayedMap?.dataset.encodedSettings ?? "";
@@ -77,24 +84,24 @@ const updateMapInfo = function () {
   mapDescription.textContent = description;
   encodedSettingsInput.value = encodedSettings;
   if (currentlyDisplayedMap) {
-    mapTitle.classList.remove("hidden");
-    mapDescription.classList.remove("hidden");
-    deleteMapButton?.classList.remove("hidden");
-    encodedSettingsInput.classList.remove("hidden");
+    mapInfo.classList.remove("hidden");
+    animationSettings?.classList.add("hidden");
     mapDescription.dispatchEvent(new Event("input"));
   } else {
-    mapTitle.classList.add("hidden");
-    mapDescription.classList.add("hidden");
-    deleteMapButton?.classList.add("hidden");
-    encodedSettingsInput.classList.add("hidden");
+    mapInfo.classList.add("hidden");
+    animationSettings?.classList.remove("hidden");
   }
 };
 
 const handleMapTileClick = function (e: Event) {
-  let newEnlargedMap = e.target as HTMLDivElement;
-  if (newEnlargedMap.tagName === "IMG") newEnlargedMap = newEnlargedMap.closest("div[data-id]") as HTMLDivElement;
-  if (!newEnlargedMap || !newEnlargedMap.dataset.id || !newEnlargedMap.dataset.title || !newEnlargedMap.dataset.description) return;
-  currentlyDisplayedMap = newEnlargedMap;
+  let mapTile = e.target as HTMLDivElement;
+  if (mapTile.tagName === "IMG") mapTile = mapTile.closest("div[data-id]") as HTMLDivElement;
+  if (!mapTile || !mapTile.dataset.id || !mapTile.dataset.title || !mapTile.dataset.description) return;
+  const animationCreatorMode = animationCreatorModeCheckbox !== null && animationCreatorModeCheckbox.checked;
+  if (animationCreatorMode) {
+    if (mapTile.dataset.checked !== "checked") mapTile.dataset.checked = "checked";
+    else mapTile.dataset.checked = "";
+  } else currentlyDisplayedMap = mapTile;
   displayMap();
 };
 
@@ -185,6 +192,50 @@ const editMapDescription = async function (e: Event) {
   else target.classList.add("is-invalid");
 };
 
+const toggleCreateAnimationMode = function (e: Event) {
+  if (!checkAllMapsButton || !uncheckAllMapsButton || !frameDelayInput || !createAnimationButton) return;
+  const target = e.target as HTMLInputElement;
+  const animationCreatorMode = target.checked;
+  if (animationCreatorMode) {
+    checkAllMapsButton.disabled = false;
+    uncheckAllMapsButton.disabled = false;
+    frameDelayInput.disabled = false;
+    createAnimationButton.disabled = false;
+  } else {
+    checkAllMapsButton.disabled = true;
+    uncheckAllMapsButton.disabled = true;
+    frameDelayInput.disabled = true;
+    createAnimationButton.disabled = true;
+    checkAllMaps();
+  }
+};
+
+const checkAllMaps = function () {
+  mapTiles.forEach((element) => {
+    const mapTile = element as HTMLDivElement;
+    mapTile.dataset.checked = "checked";
+  });
+};
+
+const uncheckAllMaps = function () {
+  mapTiles.forEach((element) => {
+    const mapTile = element as HTMLDivElement;
+    mapTile.dataset.checked = "";
+  });
+};
+
+const createAnimation = function () {
+  const frameDelay = parseInt(frameDelayInput?.value ?? "");
+  if (!isValidFrameDelay(frameDelay)) return;
+  const frames: number[] = [];
+  mapTiles.forEach((element) => {
+    const mapTile = element as HTMLDivElement;
+    const mapID = parseInt(mapTile.dataset.id ?? "");
+    if (mapTile.dataset.checked === "checked" && isValidID(mapID)) frames.push(mapID);
+  });
+  console.log(frames);
+};
+
 mapTiles.forEach((mapTile) => {
   mapTile.addEventListener("click", handleMapTileClick);
 });
@@ -204,6 +255,12 @@ if (mapDescription) {
 if (deleteCollectionButton) deleteCollectionButton.addEventListener("click", deleteCollection);
 if (deleteMapButton) deleteMapButton.addEventListener("click", deleteMap);
 if (encodedSettingsInput) encodedSettingsInput.addEventListener("click", selectInputValue);
+if (animationSettings) {
+  animationCreatorModeCheckbox?.addEventListener("change", toggleCreateAnimationMode);
+  checkAllMapsButton?.addEventListener("click", checkAllMaps);
+  uncheckAllMapsButton?.addEventListener("click", uncheckAllMaps);
+  createAnimationButton?.addEventListener("click", createAnimation);
+}
 document.body.addEventListener("keydown", useKeyboardShortcut);
 
 updateMapInfo();

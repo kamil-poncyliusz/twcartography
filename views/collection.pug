@@ -29,7 +29,8 @@ html(lang="pl-PL")
             data-id=map.id,
             data-title=map.title,
             data-description=map.description,
-            data-encoded-settings=map.encodedSettings
+            data-encoded-settings=map.encodedSettings,
+            data-checked="checked"
           )
             img(src=`/images/maps/${map.id}.png`, alt="map")
       #info
@@ -57,17 +58,38 @@ html(lang="pl-PL")
             textarea#collection-description(cols="1", autocomplete="off")= collection.description
           else
             textarea#collection-description(cols="1", readonly="readonly", autocomplete="off")= collection.description
-        div
-          if isAuthor
-            input#map-title.hidden(type="text", name="map-title", placeholder="Tytuł", value="", autocomplete="off", size="20")
-          else
-            input#map-title.hidden(type="text", name="map-title", placeholder="Tytuł", value="", readonly="readonly", autocomplete="off", size="20")
-          if isAuthor || isAdmin
-            button#delete-map.label-button.hidden(type="button") usuń
-        div
-          if isAuthor
-            textarea#map-description.hidden(cols="1", autocomplete="off")
-          else
-            textarea#map-description.hidden(cols="1", readonly="readonly", autocomplete="off") 
-        div
-          input#encoded-settings.hidden(type="text", name="settings", value="", placeholder="kod ustawień", readonly="readonly", autocomplete="off")
+        #map-info.hidden
+          div
+            if isAuthor
+              input#map-title(type="text", name="map-title", placeholder="Tytuł", value="", autocomplete="off", size="20")
+            else
+              input#map-title(type="text", name="map-title", placeholder="Tytuł", value="", readonly="readonly", autocomplete="off", size="20")
+            if isAuthor || isAdmin
+              button#delete-map.label-button(type="button") usuń
+          div
+            if isAuthor
+              textarea#map-description(cols="1", autocomplete="off")
+            else
+              textarea#map-description(cols="1", readonly="readonly", autocomplete="off") 
+          div
+            input#encoded-settings(type="text", name="settings", value="", placeholder="kod ustawień", readonly="readonly", autocomplete="off")
+        if isAuthor
+          #animation-settings
+            div
+              label(for="animation-creator-mode") Tryb tworzenia animacji
+              input#animation-creator-mode(type="checkbox", name="animation-creator-mode", autocomplete="off")
+            button#check-all-maps(type="button", autocomplete="off", disabled) zaznacz wszystkie
+            button#uncheck-all-maps(type="button", autocomplete="off", disabled) odznacz wszystkie
+            div
+              label(for="frame-delay") Odstęp (ms):
+              input#frame-delay(
+                type="number",
+                min="1",
+                max="60000",
+                name="frame-delay",
+                autocomplete="off",
+                placeholder="czas w milisekundach",
+                value="1000",
+                disabled
+              )
+            button#create-animation(type="button", autocomplete="off", disabled) Stwórz animację
