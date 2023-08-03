@@ -1,4 +1,4 @@
-import { Collection, CreatedMap, User, World } from "@prisma/client";
+import { Collection, CreatedAnimation, CreatedMap, User, World } from "@prisma/client";
 
 export interface MarkGroup {
   tribes: string[];
@@ -60,6 +60,7 @@ export type UserWithRelations = User & {
   collections: Collection[];
 };
 export type CollectionWithRelations = Collection & {
+  animations: CreatedAnimation[];
   author: User;
   maps: CreatedMap[];
   world: World;

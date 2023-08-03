@@ -12,6 +12,7 @@ export const readCollection = async function (id: number): Promise<CollectionWit
         id: id,
       },
       include: {
+        animations: true,
         author: true,
         maps: {
           orderBy: {
@@ -37,6 +38,7 @@ export const readCollections = async function (worldID: number | undefined, auth
         authorId: authorID,
       },
       include: {
+        animations: true,
         author: true,
         maps: true,
         world: true,
