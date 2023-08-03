@@ -49,8 +49,7 @@ export interface ParsedTurnData {
   topVillagePoints: number;
 }
 export type CreatedMapWithRelations = CreatedMap & {
-  author: User;
-  world: World;
+  collection: Collection;
 };
 export type WorldWithWorldData = World & { worldData: { id: number; turn: number }[] };
 export interface TurnDataState {

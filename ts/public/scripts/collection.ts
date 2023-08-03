@@ -44,7 +44,7 @@ const displayMap = function () {
   const id = parseInt(currentlyDisplayedMap.dataset.id ?? "0");
   const title = currentlyDisplayedMap.dataset.title;
   const description = currentlyDisplayedMap.dataset.description;
-  if (isNaN(id) || !title || !description) return;
+  if (isNaN(id) || !title || typeof description !== "string") return;
   const src = `/images/maps/${id}.png`;
   if (displayedMapImage) displayedMapImage.setAttribute("src", src);
   if (displayedMap) displayedMap.style.visibility = "visible";
@@ -96,7 +96,7 @@ const updateMapInfo = function () {
 const handleMapTileClick = function (e: Event) {
   let mapTile = e.target as HTMLDivElement;
   if (mapTile.tagName === "IMG") mapTile = mapTile.closest("div[data-id]") as HTMLDivElement;
-  if (!mapTile || !mapTile.dataset.id || !mapTile.dataset.title || !mapTile.dataset.description) return;
+  if (!mapTile || !mapTile.dataset.id || !mapTile.dataset.title || typeof mapTile.dataset.description !== "string") return;
   const animationCreatorMode = animationCreatorModeCheckbox !== null && animationCreatorModeCheckbox.checked;
   if (animationCreatorMode) {
     if (mapTile.dataset.checked !== "checked") mapTile.dataset.checked = "checked";
@@ -233,7 +233,6 @@ const createAnimation = function () {
     const mapID = parseInt(mapTile.dataset.id ?? "");
     if (mapTile.dataset.checked === "checked" && isValidID(mapID)) frames.push(mapID);
   });
-  console.log(frames);
 };
 
 mapTiles.forEach((mapTile) => {

@@ -1,6 +1,6 @@
-import { PrismaClient } from "@prisma/client";
-import { CreatedMapWithRelations } from "../Types";
+import { CreatedMap, PrismaClient } from "@prisma/client";
 import { isValidID } from "../../public/scripts/validators.js";
+import { CreatedMapWithRelations } from "../Types.js";
 
 const prisma = new PrismaClient();
 
@@ -12,8 +12,7 @@ export const readMap = async function (id: number): Promise<CreatedMapWithRelati
         id: id,
       },
       include: {
-        author: true,
-        world: true,
+        collection: true,
       },
     })
     .catch((err) => {
@@ -23,26 +22,15 @@ export const readMap = async function (id: number): Promise<CreatedMapWithRelati
   return result;
 };
 
-export const createMap = async function (
-  worldId: number,
-  turn: number,
-  authorId: number,
-  title: string,
-  description: string,
-  settings: string,
-  collection: number
-) {
+export const createMap = async function (turn: number, title: string, description: string, settings: string, collection: number) {
   const result = await prisma.createdMap
     .create({
       data: {
-        worldId: worldId,
         turn: turn,
-        authorId: authorId,
         title: title,
         description: description,
         encodedSettings: settings,
         collectionId: collection,
-        position: turn,
       },
     })
     .catch((err) => {
@@ -66,7 +54,7 @@ export const deleteMap = async function (id: number): Promise<boolean> {
   return true;
 };
 
-export const updateMap = async function (id: number, data: { title?: string; description?: string; position?: number }): Promise<boolean> {
+export const updateMap = async function (id: number, data: { title?: string; description?: string }): Promise<boolean> {
   const result = await prisma.createdMap
     .update({
       data: data,

@@ -71,15 +71,7 @@ export const handleCreateMap = async function (req: Request): Promise<number> {
     if (!createdCollection) return 0;
     payload.collection = createdCollection.id;
   }
-  const createdMap = await createMap(
-    settings.world,
-    settings.turn,
-    authorId,
-    payload.title,
-    payload.description,
-    encodedSettings,
-    payload.collection
-  );
+  const createdMap = await createMap(settings.turn, payload.title, payload.description, encodedSettings, payload.collection);
   if (!createdMap) return 0;
   saveMapPng(createdMap.id, generator.imageData as ImageData);
   return createdMap.id;
@@ -171,7 +163,7 @@ export const handleUpdateMap = async function (req: Request): Promise<boolean> {
   const id = req.body.id;
   if (!req.session.user || !isValidID(id)) return false;
   const map = await readMap(id);
-  if (!map || map.author.id !== req.session.user.id) return false;
+  if (!map || map.collection.authorId !== req.session.user.id) return false;
   const title = req.body.title;
   const description = req.body.description;
   const position = req.body.position;
@@ -180,9 +172,6 @@ export const handleUpdateMap = async function (req: Request): Promise<boolean> {
     return isUpdated;
   } else if (isValidMapDescription(description)) {
     const isUpdated = await updateMap(id, { description: description });
-    return isUpdated;
-  } else if (typeof position === "number") {
-    const isUpdated = await updateMap(id, { position: position });
     return isUpdated;
   }
   return false;
