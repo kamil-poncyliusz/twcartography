@@ -4,7 +4,7 @@ import { postRequest } from "./requests.js";
 import { selectInputValue } from "./utils.js";
 import { isValidCollectionDescription, isValidFrameDelay, isValidID, isValidMapDescription, isValidTitle } from "./validators.js";
 
-const mapTiles = document.querySelectorAll("#map-tiles > .map-tile");
+const mapTiles = document.querySelectorAll("#tiles .map-tile");
 const displayedMap = document.getElementById("displayed-map");
 const displayedMapImage = document.querySelector("#image-wrapper > img");
 const closeMapButton = document.getElementById("close-map");
@@ -224,7 +224,7 @@ const uncheckAllMaps = function () {
   });
 };
 
-const createAnimation = function () {
+const createAnimation = async function () {
   const frameDelay = parseInt(frameDelayInput?.value ?? "");
   if (!isValidFrameDelay(frameDelay)) return;
   const frames: number[] = [];
@@ -233,6 +233,14 @@ const createAnimation = function () {
     const mapID = parseInt(mapTile.dataset.id ?? "");
     if (mapTile.dataset.checked === "checked" && isValidID(mapID)) frames.push(mapID);
   });
+  const collectionID = parseInt(window.location.pathname.split("/")[2]);
+  if (!isValidID(collectionID)) return;
+  const payload = {
+    collectionId: collectionID,
+    frames: frames,
+    frameDelay: frameDelay,
+  };
+  const isAnimationCreated = await postRequest("/api/animation/create", payload);
 };
 
 mapTiles.forEach((mapTile) => {

@@ -22,17 +22,22 @@ html(lang="pl-PL")
         button#previous-map(type="button") <
         button#next-map(type="button") >
         button#close-map(type="button") X
-      #map-tiles
-        each map in collection.maps
-          .map-tile(
-            title=map.title,
-            data-id=map.id,
-            data-title=map.title,
-            data-description=map.description,
-            data-encoded-settings=map.encodedSettings,
-            data-checked="checked"
-          )
-            img(src=`/images/maps/${map.id}.png`, alt="map")
+      #tiles
+        div
+          each map in collection.maps
+            .tile.map-tile(
+              title=map.title,
+              data-id=map.id,
+              data-title=map.title,
+              data-description=map.description,
+              data-encoded-settings=map.encodedSettings,
+              data-checked="checked"
+            )
+              img(src=`/images/maps/${map.id}.png`, alt="map")
+        div
+          each animation in collection.animations
+            .tile.animation-tile
+              img(src=`/images/animations/${animation.id}.gif`, alt="animation")
       #info
         div
           if isAuthor
@@ -77,9 +82,11 @@ html(lang="pl-PL")
           #animation-settings
             div
               label(for="animation-creator-mode") Tryb tworzenia animacji
-              input#animation-creator-mode(type="checkbox", name="animation-creator-mode", autocomplete="off")
-            button#check-all-maps(type="button", autocomplete="off", disabled) zaznacz wszystkie
-            button#uncheck-all-maps(type="button", autocomplete="off", disabled) odznacz wszystkie
+              div
+                input#animation-creator-mode(type="checkbox", name="animation-creator-mode", autocomplete="off")
+            div
+              button#check-all-maps(type="button", autocomplete="off", disabled) zaznacz wszystkie
+              button#uncheck-all-maps(type="button", autocomplete="off", disabled) odznacz wszystkie
             div
               label(for="frame-delay") Odstęp (ms):
               input#frame-delay(
@@ -92,4 +99,5 @@ html(lang="pl-PL")
                 value="1000",
                 disabled
               )
-            button#create-animation(type="button", autocomplete="off", disabled) Stwórz animację
+            div
+              button#create-animation(type="button", autocomplete="off", disabled) Stwórz animację

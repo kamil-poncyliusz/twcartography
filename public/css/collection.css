@@ -52,29 +52,32 @@
   width: 100%;
   height: 100%;
 }
-#map-tiles {
+#tiles {
   width: 70%;
   height: 100%;
-  padding: 1rem;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+#tiles > div {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   gap: 1rem 1rem;
-  overflow: scroll;
+  padding: 1rem;
 }
-.map-tile {
+.tile {
   width: 10rem;
   height: 10rem;
   border: 1px solid var(--accent);
   cursor: pointer;
 }
-.map-tile:hover {
+.tile:hover {
   border: 1px solid var(--light-accent);
 }
 .map-tile:not([data-checked="checked"]) {
   filter: grayscale(100%);
 }
-.map-tile > img {
+.tile > img {
   width: 100%;
   height: 100%;
 }
@@ -115,4 +118,12 @@
 }
 #encoded-settings {
   width: 100%;
+}
+#animation-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+label + div {
+  display: inline-block;
 }
