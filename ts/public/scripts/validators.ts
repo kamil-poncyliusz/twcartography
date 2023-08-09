@@ -47,7 +47,7 @@ export const isValidCreateMapRequestPayload = function (payload: CreateMapReques
   return CreateMapRequestValidationCode.Ok;
 };
 
-export const isValidWorldCreatePayload = function (payload: CreateWorldRequestPayload) {
+export const isValidCreateWorldRequestPayload = function (payload: CreateWorldRequestPayload) {
   if (typeof payload !== "object") return false;
   if (typeof payload.server !== "string" || payload.server.length === 0) return false;
   if (typeof payload.num !== "string" || payload.num.length === 0) return false;

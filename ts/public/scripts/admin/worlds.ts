@@ -1,6 +1,6 @@
 import { handleCreateWorld, handleDeleteWorld } from "../../../routes/api-handlers.js";
 import { postRequest } from "../requests.js";
-import { isValidID, isValidWorldCreatePayload } from "../validators.js";
+import { isValidID, isValidCreateWorldRequestPayload } from "../validators.js";
 
 const createWorldForm = document.querySelector("form");
 const deleteWorldButtons = document.querySelectorAll(".delete-world-button");
@@ -35,7 +35,7 @@ const createWorld = async function (e: Event) {
     domain: domainInput.value,
     timestamp: parseInt(timestampInput.value),
   };
-  if (!isValidWorldCreatePayload(payload)) return;
+  if (!isValidCreateWorldRequestPayload(payload)) return;
   const isCreated: Awaited<ReturnType<typeof handleCreateWorld>> = await postRequest("/api/world/create", payload);
   if (!isCreated) console.log("Failed to create a world");
   else window.location.reload();

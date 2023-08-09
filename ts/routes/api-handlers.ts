@@ -14,6 +14,7 @@ import {
   readCollection,
   readMap,
   updateMap,
+  createAnimation,
 } from "../src/queries/index.js";
 import MapGenerator from "../public/scripts/class/MapGenerator.js";
 import { encodeSettings } from "../public/scripts/settings-codec.js";
@@ -28,11 +29,13 @@ import {
   isValidTitle,
   isValidTurn,
   isValidUserRank,
-  isValidWorldCreatePayload,
+  isValidCreateWorldRequestPayload,
+  isValidFrameDelay,
 } from "../public/scripts/validators.js";
 import { World } from "@prisma/client";
 import { Request } from "express";
 import { CreateMapRequestPayload, CreateWorldRequestPayload, ParsedTurnData } from "../src/Types.js";
+import saveCollectionGif from "../src/save-animation-gif.js";
 
 export const handleReadWorld = async function (req: Request): Promise<World | null> {
   const id = parseInt(req.params.id);
@@ -85,7 +88,7 @@ export const handleCreateWorld = async function (req: Request): Promise<boolean>
     domain: req.body.domain,
     timestamp: req.body.timestamp,
   };
-  if (!isValidWorldCreatePayload(req.body)) return false;
+  if (!isValidCreateWorldRequestPayload(req.body)) return false;
   const isCreated = await createWorld(payload.server, payload.num, payload.domain, payload.timestamp);
   if (!isCreated) return false;
   console.log("World created");
@@ -175,4 +178,24 @@ export const handleUpdateMap = async function (req: Request): Promise<boolean> {
     return isUpdated;
   }
   return false;
+};
+
+export const handleCreateAnimation = async function (req: Request): Promise<boolean> {
+  if (!req.session.user || req.session.user.rank < 2) return false;
+  const authorId = req.session.user.id;
+  const collectionId = req.body.collectionId as number;
+  const frames = req.body.frames as number[];
+  const frameDelay = req.body.frameDelay as number;
+  if (!isValidID(collectionId) || !isValidFrameDelay(frameDelay) || !Array.isArray(frames)) return false;
+  const collection = await readCollection(collectionId);
+  if (!collection || authorId !== collection.authorId) return false;
+  const collectionMapsIds = collection.maps.map((map) => map.id);
+  for (let frame of frames) {
+    if (!isValidID(frame)) return false;
+    if (!collectionMapsIds.includes(frame)) return false;
+  }
+  const animationRecord = await createAnimation(collectionId);
+  if (animationRecord === null) return false;
+  const isGifSaved = await saveCollectionGif(animationRecord.id, frames, frameDelay);
+  return true;
 };
