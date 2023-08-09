@@ -3,6 +3,7 @@ app.code-workspace
 .env
 temp/*/
 public/images/maps
+public/images/animations
 *.txt
 coverage/*
 server.js
