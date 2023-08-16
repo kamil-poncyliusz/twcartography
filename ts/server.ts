@@ -11,6 +11,7 @@ import { adminAuthorization } from "./src/authorization.js";
 import turnDataDownloaderDaemon from "./src/turn-data-downloader-daemon.js";
 import session from "express-session";
 import { UserSessionData } from "./src/Types.js";
+import { upsertAdminAccount } from "./src/queries/user.js";
 
 declare module "express-session" {
   interface SessionData {
@@ -47,6 +48,10 @@ app.use(
     cookie: { secure: process.env.SECURE_COOKIE === "true", maxAge: 3600000, sameSite: "lax" },
   })
 );
+
+upsertAdminAccount("Admin", process.env.ADMIN_ACCOUNT_PASSWORD ?? "password").then((success) => {
+  if (!success) console.log("Failed to create administrator account");
+});
 
 app.use("/", router);
 app.use("/api", api);

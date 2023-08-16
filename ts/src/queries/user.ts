@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import { PrismaClient, User } from "@prisma/client";
 import { UserWithRelations } from "../Types";
 
@@ -96,4 +97,28 @@ export const updateUserRank = async function (id: number, rank: number): Promise
     });
   if (user) return true;
   else return false;
+};
+
+export const upsertAdminAccount = async function (login: string, password: string): Promise<boolean> {
+  const hash = bcrypt.hashSync(password, 5);
+  const result = await prisma.user
+    .upsert({
+      where: {
+        login: login,
+      },
+      update: {
+        password: hash,
+        rank: 10,
+      },
+      create: {
+        login: login,
+        password: hash,
+        rank: 10,
+      },
+    })
+    .catch((err) => {
+      console.error("Prisma error:", err);
+      return false;
+    });
+  return true;
 };
