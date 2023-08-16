@@ -5,6 +5,7 @@ import { selectInputValue } from "./utils.js";
 import { isValidCollectionDescription, isValidFrameDelay, isValidID, isValidMapDescription, isValidTitle } from "./validators.js";
 
 const mapTiles = document.querySelectorAll("#tiles .map-tile");
+const animationTiles = document.querySelectorAll("#tiles .animation-tile");
 const displayedMap = document.getElementById("displayed-map");
 const displayedMapImage = document.querySelector("#image-wrapper > img");
 const closeMapButton = document.getElementById("close-map");
@@ -30,7 +31,7 @@ let currentlyDisplayedMap: HTMLDivElement | null = null;
 const textAreaAutoResize = function (e: Event) {
   const target = e.target as HTMLTextAreaElement;
   target.style.height = "auto";
-  target.style.height = `${target.scrollHeight + 5}px`;
+  target.style.height = target.scrollHeight < 5 ? "2rem" : `${target.scrollHeight}px`;
 };
 
 const isAnyTextFieldFocused = function () {
@@ -44,8 +45,8 @@ const displayMap = function () {
   const id = parseInt(currentlyDisplayedMap.dataset.id ?? "0");
   const title = currentlyDisplayedMap.dataset.title;
   const description = currentlyDisplayedMap.dataset.description;
-  if (isNaN(id) || !title || typeof description !== "string") return;
-  const src = `/images/maps/${id}.png`;
+  if (isNaN(id)) return;
+  const src = typeof title === "string" && typeof description === "string" ? `/images/maps/${id}.png` : `/images/animations/${id}.gif`;
   if (displayedMapImage) displayedMapImage.setAttribute("src", src);
   if (displayedMap) displayedMap.style.visibility = "visible";
   updateMapInfo();
@@ -62,7 +63,10 @@ const viewNextMap = function () {
   if (isAnyTextFieldFocused()) return;
   const nextSibling = currentlyDisplayedMap.nextElementSibling as HTMLDivElement | null;
   if (nextSibling) currentlyDisplayedMap = nextSibling;
-  else currentlyDisplayedMap = mapTiles[mapTiles.length - 1] as HTMLDivElement;
+  else {
+    const tilesContainer = currentlyDisplayedMap.parentElement as HTMLDivElement;
+    currentlyDisplayedMap = tilesContainer.lastElementChild as HTMLDivElement;
+  }
   displayMap();
 };
 
@@ -71,7 +75,10 @@ const viewPreviousMap = function () {
   if (isAnyTextFieldFocused()) return;
   const previousSibling = currentlyDisplayedMap.previousElementSibling as HTMLDivElement | null;
   if (previousSibling) currentlyDisplayedMap = previousSibling;
-  else currentlyDisplayedMap = mapTiles[0] as HTMLDivElement;
+  else {
+    const tilesContainer = currentlyDisplayedMap.parentElement as HTMLDivElement;
+    currentlyDisplayedMap = tilesContainer.firstElementChild as HTMLDivElement;
+  }
   displayMap();
 };
 
@@ -84,24 +91,35 @@ const updateMapInfo = function () {
   mapDescription.textContent = description;
   encodedSettingsInput.value = encodedSettings;
   if (currentlyDisplayedMap) {
+    if (currentlyDisplayedMap.classList.contains("map-tile")) {
+      mapTitle.classList.remove("hidden");
+      mapDescription.classList.remove("hidden");
+      encodedSettingsInput.classList.remove("hidden");
+      mapDescription.dispatchEvent(new Event("input"));
+    } else {
+      mapTitle.classList.add("hidden");
+      mapDescription.classList.add("hidden");
+      encodedSettingsInput.classList.add("hidden");
+    }
     mapInfo.classList.remove("hidden");
     animationSettings?.classList.add("hidden");
-    mapDescription.dispatchEvent(new Event("input"));
   } else {
     mapInfo.classList.add("hidden");
     animationSettings?.classList.remove("hidden");
   }
 };
 
-const handleMapTileClick = function (e: Event) {
-  let mapTile = e.target as HTMLDivElement;
-  if (mapTile.tagName === "IMG") mapTile = mapTile.closest("div[data-id]") as HTMLDivElement;
-  if (!mapTile || !mapTile.dataset.id || !mapTile.dataset.title || typeof mapTile.dataset.description !== "string") return;
+const handleTileClick = function (e: Event) {
+  let tile = e.target as HTMLDivElement;
+  if (tile.tagName === "IMG") tile = tile.closest("div[data-id]") as HTMLDivElement;
+  if (!tile) return console.log("Clicked element is not a valid tile");
+  // if (!tile || !tile.dataset.id || !tile.dataset.title || typeof tile.dataset.description !== "string") return;
   const animationCreatorMode = animationCreatorModeCheckbox !== null && animationCreatorModeCheckbox.checked;
-  if (animationCreatorMode) {
-    if (mapTile.dataset.checked !== "checked") mapTile.dataset.checked = "checked";
-    else mapTile.dataset.checked = "";
-  } else currentlyDisplayedMap = mapTile;
+  if (!animationCreatorMode) currentlyDisplayedMap = tile;
+  else if (tile.classList.contains("map-tile")) {
+    if (tile.dataset.checked !== "checked") tile.dataset.checked = "checked";
+    else tile.dataset.checked = "";
+  }
   displayMap();
 };
 
@@ -243,8 +261,11 @@ const createAnimation = async function () {
   const isAnimationCreated = await postRequest("/api/animation/create", payload);
 };
 
-mapTiles.forEach((mapTile) => {
-  mapTile.addEventListener("click", handleMapTileClick);
+mapTiles.forEach((tile) => {
+  tile.addEventListener("click", handleTileClick);
+});
+animationTiles.forEach((tile) => {
+  tile.addEventListener("click", handleTileClick);
 });
 if (closeMapButton) closeMapButton.addEventListener("click", closeMap);
 if (nextMapButton) nextMapButton.addEventListener("click", viewNextMap);

@@ -119,7 +119,7 @@
 #encoded-settings {
   width: 100%;
 }
-#animation-settings {
+#animation-settings > div {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;

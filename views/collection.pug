@@ -36,7 +36,7 @@ html(lang="pl-PL")
               img(src=`/images/maps/${map.id}.png`, alt="map")
         div
           each animation in collection.animations
-            .tile.animation-tile
+            .tile.animation-tile(data-id=animation.id)
               img(src=`/images/animations/${animation.id}.gif`, alt="animation")
       #info
         div
@@ -81,23 +81,24 @@ html(lang="pl-PL")
         if isAuthor
           #animation-settings
             div
-              label(for="animation-creator-mode") Tryb tworzenia animacji
               div
-                input#animation-creator-mode(type="checkbox", name="animation-creator-mode", autocomplete="off")
-            div
-              button#check-all-maps(type="button", autocomplete="off", disabled) zaznacz wszystkie
-              button#uncheck-all-maps(type="button", autocomplete="off", disabled) odznacz wszystkie
-            div
-              label(for="frame-delay") Odstęp (ms):
-              input#frame-delay(
-                type="number",
-                min="1",
-                max="60000",
-                name="frame-delay",
-                autocomplete="off",
-                placeholder="czas w milisekundach",
-                value="1000",
-                disabled
-              )
-            div
-              button#create-animation(type="button", autocomplete="off", disabled) Stwórz animację
+                label(for="animation-creator-mode") Tryb tworzenia animacji
+                div
+                  input#animation-creator-mode(type="checkbox", name="animation-creator-mode", autocomplete="off")
+              div
+                button#check-all-maps(type="button", autocomplete="off", disabled) zaznacz wszystkie
+                button#uncheck-all-maps(type="button", autocomplete="off", disabled) odznacz wszystkie
+              div
+                label(for="frame-delay") Odstęp (ms):
+                input#frame-delay(
+                  type="number",
+                  min="1",
+                  max="60000",
+                  name="frame-delay",
+                  autocomplete="off",
+                  placeholder="czas w milisekundach",
+                  value="1000",
+                  disabled
+                )
+              div
+                button#create-animation(type="button", autocomplete="off", disabled) Stwórz animację
