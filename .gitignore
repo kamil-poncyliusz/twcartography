@@ -12,7 +12,6 @@ public/scripts/admin/*.js
 public/scripts/class/*.js
 routes/*.js
 src/**/*.js
-prisma/migrations/**/*
 /test-results/
 /playwright-report/
 /playwright/.cache/
