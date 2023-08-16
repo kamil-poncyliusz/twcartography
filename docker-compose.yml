@@ -1,0 +1,35 @@
+version: "3"
+services:
+  server:
+    build:
+      context: .
+      dockerfile: server.dockerfile
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://dbuser:dbpassword@database:5432/twmap?schema=public
+      - NODE_ENV=production
+    ports:
+      - "8080:8080"
+    depends_on:
+      database:
+        condition: service_healthy
+    command: sh -c "npx prisma migrate deploy && npm run start"
+  database:
+    build:
+      context: .
+      dockerfile: database.dockerfile
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d twmap -U dbuser"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=dbpassword
+      - POSTGRES_DB=twmap
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+volumes:
+  pg_data:
+    driver: local

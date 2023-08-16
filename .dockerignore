@@ -1,0 +1,17 @@
+node_modules
+app.code-workspace
+.env
+temp/*/
+public/images/maps
+public/images/animations
+*.txt
+coverage/*
+server.js
+public/scripts/
+public/scripts/admin/*.js
+public/scripts/class/*.js
+routes/*.js
+src/**/*.js
+/test-results/
+/playwright-report/
+/playwright/.cache/
