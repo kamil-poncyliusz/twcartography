@@ -32,3 +32,18 @@ export const createAnimation = async function (collectionID: number): Promise<Cr
     });
   return result;
 };
+
+export const deleteAnimation = async function (collectionID: number): Promise<boolean> {
+  if (!isValidID(collectionID)) return false;
+  const result = await prisma.createdAnimation
+    .delete({
+      where: {
+        id: collectionID,
+      },
+    })
+    .catch((err) => {
+      console.error("Prisma error:", err);
+      return false;
+    });
+  return true;
+};

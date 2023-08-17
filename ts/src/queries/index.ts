@@ -7,6 +7,7 @@ import * as world from "./world.js";
 
 export const readAnimation = animation.readAnimation;
 export const createAnimation = animation.createAnimation;
+export const deleteAnimation = animation.deleteAnimation;
 
 export const readCollection = collection.readCollection;
 export const readCollections = collection.readCollections;

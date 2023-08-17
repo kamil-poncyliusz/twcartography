@@ -15,6 +15,7 @@ import {
   readMap,
   updateMap,
   createAnimation,
+  deleteAnimation,
 } from "../src/queries/index.js";
 import MapGenerator from "../public/scripts/class/MapGenerator.js";
 import { encodeSettings } from "../public/scripts/settings-codec.js";
@@ -128,7 +129,7 @@ export const handleCreateTurnData = async function (req: Request): Promise<boole
   const worldDirectoryName = world.startTimestamp.toString(36);
   const worldDataFilesPath = `temp/${worldDirectoryName}/${turn}`;
   if (!fs.existsSync(worldDataFilesPath)) return false;
-  const parsedTurnData = parseTurnData(worldDataFilesPath, turn);
+  const parsedTurnData = parseTurnData(worldDirectoryName, turn);
   const createdWorldData = await createTurnData(world.id, turn, parsedTurnData);
   if (!createdWorldData) return false;
   return true;
@@ -224,4 +225,12 @@ export const handleCreateAnimation = async function (req: Request): Promise<bool
   if (animationRecord === null) return false;
   const isGifSaved = await saveAnimationGif(animationRecord.id, frames, frameDelay);
   return true;
+};
+
+export const handleDeleteAnimation = async function (req: Request): Promise<boolean> {
+  if (!req.session.user || req.session.user.rank < 10) return false;
+  const animationId = req.body.id;
+  if (!isValidID(animationId)) return false;
+  const isDeleted = await deleteAnimation(animationId);
+  return isDeleted;
 };

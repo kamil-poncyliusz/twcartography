@@ -19,12 +19,12 @@ html(lang="pl-PL")
             each turn, index in world.turns
               if turn.isParsed
                 if turn.hasDataFiles
+                  td.available(title=`Tura ${index}, dane w bazie, pliki dostępne`)= index
+                else
+                  td.data-only(title=`Tura ${index}, dane w bazie, pliki niedostępne`)= index
+              else
+                if turn.hasDataFiles
                   td.files-only(title=`Tura ${index}, brak danych w bazie, pliki dostępne`)
                     button.create-turn-data(data-world=world.id, data-turn=index)= index
                 else
                   td.unavailable(title=`Tura ${index}, brak danych w bazie, pliki niedostępne`)= index
-              else
-                if turn.hasDataFiles
-                  td.available(title=`Tura ${index}, dane w bazie, pliki dostępne`)= index
-                else
-                  td.data-only(title=`Tura ${index}, dane w bazie, pliki niedostępne`)= index

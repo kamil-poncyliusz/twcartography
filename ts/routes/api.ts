@@ -4,6 +4,7 @@ import {
   handleCreateMap,
   handleCreateTurnData,
   handleCreateWorld,
+  handleDeleteAnimation,
   handleDeleteCollection,
   handleDeleteMap,
   handleDeleteWorld,
@@ -73,6 +74,11 @@ api.post("/collection/update", async (req, res) => {
 
 api.post("/animation/create", async (req, res) => {
   const responseData = await handleCreateAnimation(req);
+  return res.json(responseData);
+});
+
+api.post("/animation/delete", async (req, res) => {
+  const responseData = await handleDeleteAnimation(req);
   return res.json(responseData);
 });
 

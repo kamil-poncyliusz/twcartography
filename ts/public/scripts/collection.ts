@@ -159,7 +159,8 @@ const deleteMap = async function () {
   const payload = {
     id: id,
   };
-  const isDeleted = await postRequest("/api/map/delete", payload);
+  const url = currentlyDisplayedMap.classList.contains("map-tile") ? "/api/map/delete" : "/api/animation/delete";
+  const isDeleted = await postRequest(url, payload);
   if (isDeleted) window.location.reload();
   else console.log("Failed to delete this map");
 };
