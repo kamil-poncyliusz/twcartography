@@ -35,7 +35,28 @@ import {
 import { World } from "@prisma/client";
 import { Request } from "express";
 import { CreateMapRequestPayload, CreateWorldRequestPayload, ParsedTurnData } from "../src/Types.js";
-import saveCollectionGif from "../src/save-animation-gif.js";
+import saveAnimationGif from "../src/save-animation-gif.js";
+
+const createWorldDirectory = async function (payload: CreateWorldRequestPayload): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    try {
+      const worldDirectoryName = payload.timestamp.toString(36);
+      const worldDirectoryPath = `${process.env.ROOT}/temp/${worldDirectoryName}`;
+      const worldDirectoryInfoFilePath = `${worldDirectoryPath}/info`;
+      if (!fs.existsSync(worldDirectoryPath)) fs.mkdirSync(worldDirectoryPath);
+      if (fs.existsSync(worldDirectoryInfoFilePath)) fs.unlinkSync(worldDirectoryInfoFilePath);
+      const fileString = Object.entries(payload)
+        .map(([key, value]) => `${key}=${value}`)
+        .join("\n");
+      fs.writeFile(worldDirectoryInfoFilePath, fileString, (error) => {
+        if (error) reject(false);
+        else resolve(true);
+      });
+    } catch {
+      reject(false);
+    }
+  });
+};
 
 export const handleReadWorld = async function (req: Request): Promise<World | null> {
   const id = parseInt(req.params.id);
@@ -82,28 +103,33 @@ export const handleCreateMap = async function (req: Request): Promise<number> {
 
 export const handleCreateWorld = async function (req: Request): Promise<boolean> {
   if (!req.session.user || req.session.user.rank < 10) return false;
+  if (!isValidCreateWorldRequestPayload(req.body)) return false;
+  const modifiedTimestamp: number = req.body.timestamp + Math.floor(Math.random() * 100);
   const payload: CreateWorldRequestPayload = {
     server: req.body.server,
     num: req.body.num,
     domain: req.body.domain,
-    timestamp: req.body.timestamp,
+    timestamp: modifiedTimestamp,
   };
-  if (!isValidCreateWorldRequestPayload(req.body)) return false;
   const isCreated = await createWorld(payload.server, payload.num, payload.domain, payload.timestamp);
   if (!isCreated) return false;
-  console.log("World created");
-  return true;
+  const isWorldDirectoryCreated = await createWorldDirectory(payload);
+  if (isWorldDirectoryCreated) console.log("World created");
+  return isWorldDirectoryCreated;
 };
 
 export const handleCreateTurnData = async function (req: Request): Promise<boolean> {
   if (!req.session.user || req.session.user.rank < 10) return false;
-  const world = req.body.world;
-  const turn = req.body.turn;
-  if (!isValidID(world) || !isValidTurn(turn)) return false;
-  const worldDataFilesPath = `temp/${world}/${turn}`;
+  const worldID = req.body.world as number;
+  const turn = req.body.turn as number;
+  if (!isValidID(worldID) || !isValidTurn(turn)) return false;
+  const world = await readWorld(worldID);
+  if (!world) return false;
+  const worldDirectoryName = world.startTimestamp.toString(36);
+  const worldDataFilesPath = `temp/${worldDirectoryName}/${turn}`;
   if (!fs.existsSync(worldDataFilesPath)) return false;
-  const parsedTurnData = parseTurnData(world, turn);
-  const createdWorldData = await createTurnData(world, turn, parsedTurnData);
+  const parsedTurnData = parseTurnData(worldDataFilesPath, turn);
+  const createdWorldData = await createTurnData(world.id, turn, parsedTurnData);
   if (!createdWorldData) return false;
   return true;
 };
@@ -196,6 +222,6 @@ export const handleCreateAnimation = async function (req: Request): Promise<bool
   }
   const animationRecord = await createAnimation(collectionId);
   if (animationRecord === null) return false;
-  const isGifSaved = await saveCollectionGif(animationRecord.id, frames, frameDelay);
+  const isGifSaved = await saveAnimationGif(animationRecord.id, frames, frameDelay);
   return true;
 };

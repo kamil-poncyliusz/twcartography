@@ -27,7 +27,8 @@ const downloadWorldDataFile = function (url: string, path: string, filename: str
 };
 const downloadWorldData = async function (world: World, turn: number) {
   const files = ["village", "player", "ally", "conquer", "kill_all_tribe", "kill_att_tribe", "kill_def_tribe"];
-  const path = `${process.env.ROOT}/temp/${world.id}`;
+  const worldDirectoryName = world.startTimestamp.toString(36);
+  const path = `${process.env.ROOT}/temp/${worldDirectoryName}`;
   if (!fs.existsSync(path)) fs.mkdirSync(path);
   const turnPath = `${path}/${turn}`;
   if (!fs.existsSync(turnPath)) fs.mkdirSync(turnPath);
@@ -47,6 +48,7 @@ const turnDataDownloaderDaemon = async function () {
   const worlds = await readWorlds();
   for (let world of worlds) {
     const serverStart = new Date(world.startTimestamp * 1000);
+    const worldDirectoryName = world.startTimestamp.toString(36);
     const rule = `${serverStart.getMinutes()} ${serverStart.getHours()} * * *`;
     scheduler.scheduleJob(rule, async function () {
       const turn = daysFromStart(serverStart);
@@ -54,9 +56,9 @@ const turnDataDownloaderDaemon = async function () {
       const success = await downloadWorldData(world, turn);
       if (success) {
         console.log(`Downloading turn ${turn} of ${world.server}${world.num} completed`);
-        const parsedWorldData = parseTurnData(world.id, turn);
+        const parsedWorldData = parseTurnData(worldDirectoryName, turn);
         const isCreated = await createTurnData(world.id, turn, parsedWorldData);
-        if (!isCreated) console.log(`Turn data created for ${turn} turn of ${world.server + world.num}`);
+        if (isCreated) console.log(`Turn data created for ${turn} turn of ${world.server + world.num}`);
         else console.log(`Failed to create turn data record in database`);
       } else {
         console.log(`Downloading turn ${turn} of ${world.server}${world.num} failed`);

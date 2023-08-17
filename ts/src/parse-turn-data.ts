@@ -2,8 +2,8 @@ import fs from "fs";
 import zlib from "zlib";
 import { ParsedTurnData } from "./Types";
 
-const parseFile = function (world: number, turn: number, name: string): string[] {
-  const path = `temp/${world}/${turn}/${name}.txt.gz`;
+const parseFile = function (worldDirectoryName: string, turn: number, name: string): string[] {
+  const path = `temp/${worldDirectoryName}/${turn}/${name}.txt.gz`;
   try {
     const fileData = fs.readFileSync(path);
     const unzipped = zlib.unzipSync(fileData);
@@ -16,7 +16,7 @@ const parseFile = function (world: number, turn: number, name: string): string[]
   }
 };
 
-const parseTurnData = function (world_id: number, turn: number): ParsedTurnData {
+const parseTurnData = function (worldDirectoryName: string, turn: number): ParsedTurnData {
   const parsedData: ParsedTurnData = {
     conquer: {},
     tribes: {},
@@ -37,7 +37,7 @@ const parseTurnData = function (world_id: number, turn: number): ParsedTurnData 
     villages: [],
   };
   const playerTribeIds: { [key: string]: string } = {};
-  const tribesData = parseFile(world_id, turn, "ally");
+  const tribesData = parseFile(worldDirectoryName, turn, "ally");
   for (let i = 0; i < tribesData.length; i++) {
     const [id, name, tag, players, villages, points, allPoints, rank] = tribesData[i].split(",");
     parsedData.tribes[id] = {
@@ -52,12 +52,12 @@ const parseTurnData = function (world_id: number, turn: number): ParsedTurnData 
       killDef: 0,
     };
   }
-  const playersData = parseFile(world_id, turn, "player");
+  const playersData = parseFile(worldDirectoryName, turn, "player");
   for (let i = 0; i < playersData.length; i++) {
     const [id, name, tribeID, villages, points, rank] = playersData[i].split(",");
     playerTribeIds[id] = tribeID;
   }
-  const villagesData = parseFile(world_id, turn, "village");
+  const villagesData = parseFile(worldDirectoryName, turn, "village");
   const villagePointsArray: number[] = [];
   for (let i = 0; i < villagesData.length; i++) {
     const [id, name, x, y, playerId, points, rank] = villagesData[i].split(",");
@@ -86,7 +86,7 @@ const parseTurnData = function (world_id: number, turn: number): ParsedTurnData 
     villagePointsSum += villagePointsArray[i];
   }
   parsedData.averageVillagePoints = Math.round(villagePointsSum / villagePointsArray.length);
-  const killAllData = parseFile(world_id, turn, "kill_all_tribe");
+  const killAllData = parseFile(worldDirectoryName, turn, "kill_all_tribe");
   for (let i = 0; i < killAllData.length; i++) {
     const [rank, id, score] = killAllData[i].split(",");
     if (parsedData.tribes[id] === undefined) {
@@ -95,7 +95,7 @@ const parseTurnData = function (world_id: number, turn: number): ParsedTurnData 
       parsedData.tribes[id].killAll = parseInt(score);
     }
   }
-  const killAttData = parseFile(world_id, turn, "kill_att_tribe");
+  const killAttData = parseFile(worldDirectoryName, turn, "kill_att_tribe");
   for (let i = 0; i < killAttData.length; i++) {
     const [rank, id, score] = killAttData[i].split(",");
     if (parsedData.tribes[id] === undefined) {
@@ -104,7 +104,7 @@ const parseTurnData = function (world_id: number, turn: number): ParsedTurnData 
       parsedData.tribes[id].killAtt = parseInt(score);
     }
   }
-  const killDefData = parseFile(world_id, turn, "kill_def_tribe");
+  const killDefData = parseFile(worldDirectoryName, turn, "kill_def_tribe");
   for (let i = 0; i < killDefData.length; i++) {
     const [rank, id, score] = killDefData[i].split(",");
     if (parsedData.tribes[id] === undefined) {
@@ -113,7 +113,7 @@ const parseTurnData = function (world_id: number, turn: number): ParsedTurnData 
       parsedData.tribes[id].killDef = parseInt(score);
     }
   }
-  const conquerData = parseFile(world_id, turn, "conquer");
+  const conquerData = parseFile(worldDirectoryName, turn, "conquer");
   for (let i = 0; i < conquerData.length; i++) {
     const [id, timestamp, newOwner, oldOwner] = conquerData[i].split(",");
   }

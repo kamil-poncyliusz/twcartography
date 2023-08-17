@@ -1,70 +1,48 @@
 import fs from "fs";
-import path from "path";
-import daysFromStart from "./days-from-start.js";
-import { WorldWithWorldData, WorldDataState } from "./Types.js";
+import { WorldWithWorldData, WorldDataState, TurnDataState } from "./Types.js";
 
 const files = ["village", "player", "ally", "conquer", "kill_all_tribe", "kill_att_tribe", "kill_def_tribe"];
 
-const getDirectories = function (path: string): string[] {
-  if (typeof path !== "string") [];
-  const entities = fs.readdirSync(path, { withFileTypes: true });
-  const directories = entities.filter((entity) => entity.isDirectory());
-  const directoryNames = directories.map((directory) => directory.name);
-  return directoryNames;
+// const getDirectories = function (path: string): string[] {
+//   if (typeof path !== "string") [];
+//   const entities = fs.readdirSync(path, { withFileTypes: true });
+//   const directories = entities.filter((entity) => entity.isDirectory());
+//   const directoryNames = directories.map((directory) => directory.name);
+//   return directoryNames;
+// };
+
+const areDataFilesAvailable = function (worldDirectoryName: string, turn: number): boolean {
+  const dataFilesPath = `temp/${worldDirectoryName}/${turn}`;
+  const hasAllWorldDataFiles = files.every((file) => {
+    const dataFilePath = `${dataFilesPath}/${file}.txt.gz`;
+    return fs.existsSync(dataFilePath);
+  });
+  return hasAllWorldDataFiles;
 };
 
-const findWorldDataFiles = function () {
-  const worldDataFiles: { [key: number]: { [key: number]: boolean } } = {};
-  const worldDataFilesPath = "temp";
-  const worldsDirectories = getDirectories(worldDataFilesPath);
-  for (let worldDirectory of worldsDirectories) {
-    const worldId = Number(worldDirectory);
-    worldDataFiles[worldId] = {};
-    const worldPath = path.join(worldDataFilesPath, worldDirectory);
-    const turnsDirectories = getDirectories(worldPath);
-    for (let turnDirectory of turnsDirectories) {
-      const turn = Number(turnDirectory);
-      const turnPath = path.join(worldPath, turnDirectory);
-      const hasAllWorldDataFiles = files.every((file) => {
-        const fileName = `${file}.txt.gz`;
-        const filePath = path.join(turnPath, fileName);
-        return fs.existsSync(filePath);
-      });
-      if (hasAllWorldDataFiles) {
-        worldDataFiles[worldId][turn] = true;
-      }
-    }
-  }
-  return worldDataFiles;
-};
-
-export const getWorldDataState = function (worldsWithWorldData: WorldWithWorldData[]): WorldDataState[] {
-  const worldDataState: WorldDataState[] = [];
+export const getWorldDataStates = function (worldsWithWorldData: WorldWithWorldData[]): WorldDataState[] {
+  const worldDataStates: WorldDataState[] = [];
   for (const world of worldsWithWorldData) {
-    const startTimestamp = new Date(world.startTimestamp * 1000);
-    const numberOfTurns = daysFromStart(startTimestamp);
-    const addedWorld: WorldDataState = {
+    const numberOfTurns = Math.floor((Date.now() - world.startTimestamp * 1000) / 1000 / 60 / 60 / 24);
+    const worldDirectoryName = world.startTimestamp.toString(36);
+    const addedWorldDataState: WorldDataState = {
       id: world.id,
       serverName: world.server + world.num,
-      turns: Array(numberOfTurns + 1)
-        .fill(null)
-        .map(() => ({
-          id: -1,
-          hasFiles: false,
-        })),
+      turns: [],
     };
-    for (const worldDataTurn of world.worldData) {
-      const currentTurn = addedWorld.turns[worldDataTurn.turn];
-      if (currentTurn) currentTurn.id = worldDataTurn.id;
+    for (let turn = 0; turn <= numberOfTurns; turn++) {
+      const areFilesAvailable = areDataFilesAvailable(worldDirectoryName, turn);
+      const turnDataState: TurnDataState = {
+        hasDataFiles: areFilesAvailable,
+        isParsed: false,
+      };
+      addedWorldDataState.turns.push(turnDataState);
     }
-    const worldDataFiles = findWorldDataFiles();
-    const turnsWithFiles = worldDataFiles[world.id];
-    if (turnsWithFiles) {
-      for (const turn in turnsWithFiles) {
-        if (turnsWithFiles[turn] === true && addedWorld.turns[turn]) addedWorld.turns[turn].hasFiles = true;
-      }
+    for (const turnData of world.worldData) {
+      const turn = turnData.turn;
+      addedWorldDataState.turns[turn].isParsed = true;
     }
-    worldDataState.push(addedWorld);
+    worldDataStates.push(addedWorldDataState);
   }
-  return worldDataState;
+  return worldDataStates;
 };

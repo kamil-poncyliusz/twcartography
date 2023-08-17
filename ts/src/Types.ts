@@ -52,10 +52,6 @@ export type CreatedMapWithRelations = CreatedMap & {
   collection: Collection;
 };
 export type WorldWithWorldData = World & { worldData: { id: number; turn: number }[] };
-export interface TurnDataState {
-  id: number;
-  hasFiles: boolean;
-}
 export type UserWithRelations = User & {
   collections: Collection[];
 };
@@ -69,6 +65,10 @@ export interface WorldDataState {
   id: number;
   serverName: string;
   turns: TurnDataState[];
+}
+export interface TurnDataState {
+  hasDataFiles: boolean;
+  isParsed: boolean;
 }
 export interface UserSessionData {
   id: number;
