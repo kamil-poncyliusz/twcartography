@@ -3,14 +3,6 @@ import { WorldWithWorldData, WorldDataState, TurnDataState } from "./Types.js";
 
 const files = ["village", "player", "ally", "conquer", "kill_all_tribe", "kill_att_tribe", "kill_def_tribe"];
 
-// const getDirectories = function (path: string): string[] {
-//   if (typeof path !== "string") [];
-//   const entities = fs.readdirSync(path, { withFileTypes: true });
-//   const directories = entities.filter((entity) => entity.isDirectory());
-//   const directoryNames = directories.map((directory) => directory.name);
-//   return directoryNames;
-// };
-
 const areDataFilesAvailable = function (worldDirectoryName: string, turn: number): boolean {
   const dataFilesPath = `temp/${worldDirectoryName}/${turn}`;
   const hasAllWorldDataFiles = files.every((file) => {

@@ -3,15 +3,16 @@ import express from "express";
 import path from "path";
 import cors from "cors";
 import helmet from "helmet";
+import session from "express-session";
 import { fileURLToPath } from "url";
 import router from "./routes/router.js";
 import api from "./routes/api.js";
 import admin from "./routes/admin.js";
 import { adminAuthorization } from "./src/authorization.js";
-import turnDataDownloaderDaemon from "./src/turn-data-downloader-daemon.js";
-import session from "express-session";
-import { UserSessionData } from "./src/Types.js";
 import { upsertAdminAccount } from "./src/queries/user.js";
+import { createNewWorldsFromFiles } from "./src/synchronize-worlds.js";
+import turnDataDownloaderDaemon from "./src/turn-data-downloader-daemon.js";
+import { UserSessionData } from "./src/Types.js";
 
 declare module "express-session" {
   interface SessionData {
@@ -52,6 +53,8 @@ app.use(
 upsertAdminAccount("Admin", process.env.ADMIN_ACCOUNT_PASSWORD ?? "password").then((success) => {
   if (!success) console.log("Failed to create administrator account");
 });
+
+createNewWorldsFromFiles();
 
 app.use("/", router);
 app.use("/api", api);
