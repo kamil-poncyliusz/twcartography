@@ -1,11 +1,11 @@
 import { Collection, PrismaClient } from "@prisma/client";
 import { CollectionWithRelations } from "../Types";
-import { isValidID } from "../../public/scripts/validators.js";
+import { isValidId } from "../../public/scripts/validators.js";
 
 const prisma = new PrismaClient();
 
 export const readCollection = async function (id: number): Promise<CollectionWithRelations | null> {
-  if (!isValidID(id)) return null;
+  if (!isValidId(id)) return null;
   const result = await prisma.collection
     .findUnique({
       where: {
@@ -29,13 +29,13 @@ export const readCollection = async function (id: number): Promise<CollectionWit
   return result;
 };
 
-export const readCollections = async function (worldID: number | undefined, authorID: number | undefined): Promise<CollectionWithRelations[]> {
-  if (!(worldID === undefined || isValidID(worldID))) return [];
+export const readCollections = async function (worldId: number | undefined, authorId: number | undefined): Promise<CollectionWithRelations[]> {
+  if (!(worldId === undefined || isValidId(worldId))) return [];
   const result = await prisma.collection
     .findMany({
       where: {
-        worldId: worldID,
-        authorId: authorID,
+        worldId: worldId,
+        authorId: authorId,
       },
       include: {
         animations: true,

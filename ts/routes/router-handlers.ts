@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { Request } from "express";
 import { createUser, readCollection, readCollections, readUserByLogin } from "../src/queries/index.js";
-import { isValidID } from "../public/scripts/validators.js";
+import { isValidId } from "../public/scripts/validators.js";
 
 export const handleRegistration = async function (req: Request): Promise<string> {
   const login = req.body.login;
@@ -52,9 +52,9 @@ export const handleLogout = async function (req: Request): Promise<boolean> {
 };
 
 export const handleReadCollection = async function (req: Request) {
-  const collectionID = parseInt(req.params.id);
-  if (!isValidID(collectionID)) return false;
-  const collection = await readCollection(collectionID);
+  const collectionId = parseInt(req.params.id);
+  if (!isValidId(collectionId)) return false;
+  const collection = await readCollection(collectionId);
   if (collection === null) return false;
   const locals = {
     page: "collection",
@@ -65,9 +65,9 @@ export const handleReadCollection = async function (req: Request) {
 };
 
 export const handleReadCollections = async function (req: Request) {
-  const worldID = parseInt(req.params.world);
-  if (!isValidID(worldID)) return false;
-  const collections = await readCollections(worldID, undefined);
+  const worldId = parseInt(req.params.world);
+  if (!isValidId(worldId)) return false;
+  const collections = await readCollections(worldId, undefined);
   for (let collection of collections) {
     if (collection.maps.length > 0) collection.maps = collection.maps.slice(-1);
   }

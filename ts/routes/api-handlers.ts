@@ -25,7 +25,7 @@ import {
   CreateMapRequestValidationCode,
   isValidCollectionDescription,
   isValidCreateMapRequestPayload,
-  isValidID,
+  isValidId,
   isValidMapDescription,
   isValidTitle,
   isValidTurn,
@@ -70,16 +70,16 @@ const deleteWorldDirectory = function (worldDirectoryName: string) {
 
 export const handleReadWorld = async function (req: Request): Promise<World | null> {
   const id = parseInt(req.params.id);
-  if (!isValidID(id)) return null;
+  if (!isValidId(id)) return null;
   const data = await readWorld(id);
   return data;
 };
 
 export const handleReadTurnData = async function (req: Request): Promise<ParsedTurnData | null> {
-  const worldID = parseInt(req.params.world);
+  const worldId = parseInt(req.params.world);
   const turn = parseInt(req.params.turn);
-  if (!isValidID(worldID) || !isValidTurn(turn)) return null;
-  const data = await readTurnData(worldID, turn);
+  if (!isValidId(worldId) || !isValidTurn(turn)) return null;
+  const data = await readTurnData(worldId, turn);
   if (data === null) return null;
   return data;
 };
@@ -133,10 +133,10 @@ export const handleCreateWorld = async function (req: Request): Promise<boolean>
 
 export const handleCreateTurnData = async function (req: Request): Promise<boolean> {
   if (!req.session.user || req.session.user.rank < 10) return false;
-  const worldID = req.body.world as number;
+  const worldId = req.body.world as number;
   const turn = req.body.turn as number;
-  if (!isValidID(worldID) || !isValidTurn(turn)) return false;
-  const world = await readWorld(worldID);
+  if (!isValidId(worldId) || !isValidTurn(turn)) return false;
+  const world = await readWorld(worldId);
   if (!world) return false;
   const worldDirectoryName = world.startTimestamp.toString(36);
   const worldDataFilesPath = `temp/${worldDirectoryName}/${turn}`;
@@ -151,7 +151,7 @@ export const handleUpdateUserRank = async function (req: Request): Promise<boole
   if (!req.session.user || req.session.user.rank < 10) return false;
   const id = req.body.id;
   const rank = req.body.rank;
-  if (!isValidID(id) || !isValidUserRank(rank)) return false;
+  if (!isValidId(id) || !isValidUserRank(rank)) return false;
   const success = await updateUserRank(id, rank);
   return success;
 };
@@ -159,7 +159,7 @@ export const handleUpdateUserRank = async function (req: Request): Promise<boole
 export const handleDeleteWorld = async function (req: Request): Promise<boolean> {
   if (!req.session.user || req.session.user.rank < 10) return false;
   const worldId = req.body.id;
-  if (!isValidID(worldId)) return false;
+  if (!isValidId(worldId)) return false;
   const deletedWorld = await deleteWorld(worldId);
   if (!deletedWorld) return false;
   const worldDirectoryName = deletedWorld.startTimestamp.toString(36);
@@ -171,7 +171,7 @@ export const handleDeleteWorld = async function (req: Request): Promise<boolean>
 export const handleDeleteMap = async function (req: Request): Promise<boolean> {
   if (!req.session.user || req.session.user.rank < 10) return false;
   const mapId = req.body.id;
-  if (!isValidID(mapId)) return false;
+  if (!isValidId(mapId)) return false;
   const isDeleted = await deleteMap(mapId);
   return isDeleted;
 };
@@ -179,14 +179,14 @@ export const handleDeleteMap = async function (req: Request): Promise<boolean> {
 export const handleDeleteCollection = async function (req: Request): Promise<boolean> {
   if (!req.session.user || req.session.user.rank < 10) return false;
   const id = req.body.id;
-  if (!isValidID(id)) return false;
+  if (!isValidId(id)) return false;
   const isDeleted = await deleteCollection(id);
   return isDeleted;
 };
 
 export const handleUpdateCollection = async function (req: Request): Promise<boolean> {
   const id = req.body.id;
-  if (!req.session.user || !isValidID(id)) return false;
+  if (!req.session.user || !isValidId(id)) return false;
   const collection = await readCollection(id);
   if (!collection || collection.author.id !== req.session.user.id) return false;
   const title = req.body.title;
@@ -207,7 +207,7 @@ export const handleUpdateCollection = async function (req: Request): Promise<boo
 
 export const handleUpdateMap = async function (req: Request): Promise<boolean> {
   const id = req.body.id;
-  if (!req.session.user || !isValidID(id)) return false;
+  if (!req.session.user || !isValidId(id)) return false;
   const map = await readMap(id);
   if (!map || map.collection.authorId !== req.session.user.id) return false;
   const title = req.body.title;
@@ -229,12 +229,12 @@ export const handleCreateAnimation = async function (req: Request): Promise<bool
   const collectionId = req.body.collectionId as number;
   const frames = req.body.frames as number[];
   const frameDelay = req.body.frameDelay as number;
-  if (!isValidID(collectionId) || !isValidFrameDelay(frameDelay) || !Array.isArray(frames)) return false;
+  if (!isValidId(collectionId) || !isValidFrameDelay(frameDelay) || !Array.isArray(frames)) return false;
   const collection = await readCollection(collectionId);
   if (!collection || authorId !== collection.authorId) return false;
   const collectionMapsIds = collection.maps.map((map) => map.id);
   for (let frame of frames) {
-    if (!isValidID(frame)) return false;
+    if (!isValidId(frame)) return false;
     if (!collectionMapsIds.includes(frame)) return false;
   }
   const animationRecord = await createAnimation(collectionId);
@@ -246,7 +246,7 @@ export const handleCreateAnimation = async function (req: Request): Promise<bool
 export const handleDeleteAnimation = async function (req: Request): Promise<boolean> {
   if (!req.session.user || req.session.user.rank < 10) return false;
   const animationId = req.body.id;
-  if (!isValidID(animationId)) return false;
+  if (!isValidId(animationId)) return false;
   const isDeleted = await deleteAnimation(animationId);
   return isDeleted;
 };

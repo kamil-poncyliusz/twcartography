@@ -56,7 +56,7 @@ export const isValidCreateWorldRequestPayload = function (payload: CreateWorldRe
   return true;
 };
 
-export const isValidID = function (id: number): boolean {
+export const isValidId = function (id: number): boolean {
   if (typeof id !== "number" || !Number.isInteger(id) || isNaN(id) || id < 1) return false;
   return true;
 };

@@ -1,6 +1,6 @@
 import { handleCreateWorld, handleDeleteWorld } from "../../../routes/api-handlers.js";
 import { postRequest } from "../requests.js";
-import { isValidID, isValidCreateWorldRequestPayload } from "../validators.js";
+import { isValidId, isValidCreateWorldRequestPayload } from "../validators.js";
 
 const createWorldForm = document.querySelector("form");
 const deleteWorldButtons = document.querySelectorAll(".delete-world-button");
@@ -43,11 +43,11 @@ const createWorld = async function (e: Event) {
 
 const deleteWorld = async function (e: Event) {
   const button = e.target as HTMLButtonElement;
-  const worldID = parseInt(button.dataset.worldId ?? "");
-  if (!isValidID(worldID)) return;
-  const isDeleted = await sendDeleteWorldRequest(worldID);
+  const worldId = parseInt(button.dataset.worldId ?? "");
+  if (!isValidId(worldId)) return;
+  const isDeleted = await sendDeleteWorldRequest(worldId);
   if (isDeleted) window.location.reload();
-  else console.log("Failed to delete world with ID", worldID);
+  else console.log("Failed to delete world with ID", worldId);
 };
 
 if (createWorldForm) createWorldForm.addEventListener("submit", createWorld);

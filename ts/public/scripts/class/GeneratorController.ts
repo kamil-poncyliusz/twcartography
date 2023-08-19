@@ -5,7 +5,7 @@ import { getRequest } from "../requests.js";
 import {
   isValidColor,
   isValidGroupName,
-  isValidID,
+  isValidId,
   isValidOutputWidth,
   isValidScale,
   isValidSettings,
@@ -125,8 +125,8 @@ class GeneratorController {
         },
         { skipUpdate: true }
       );
-      for (let tribeID of group.tribes) {
-        const tribe = this.tribes[tribeID];
+      for (let tribeId of group.tribes) {
+        const tribe = this.tribes[tribeId];
         if (tribe) this.addMark(tribe.tag, group.name, { skipUpdate: true });
       }
     }
@@ -169,8 +169,8 @@ class GeneratorController {
     this.turn = turn;
     for (let group of this.markGroups) {
       for (let tribeIndex = group.tribes.length - 1; tribeIndex >= 0; tribeIndex--) {
-        const tribeID = group.tribes[tribeIndex];
-        if (!this.tribes[tribeID]) {
+        const tribeId = group.tribes[tribeIndex];
+        if (!this.tribes[tribeId]) {
           group.tribes.splice(tribeIndex, 1);
         }
       }
@@ -183,7 +183,7 @@ class GeneratorController {
     return true;
   }
   async changeWorld(world: number): Promise<boolean> {
-    if (!isValidID(world)) return false;
+    if (!isValidId(world)) return false;
     if (world === this.world) return true;
     const endpoint = `/api/world/${world}`;
     const worldInfo: Awaited<ReturnType<typeof handleReadWorld>> = await getRequest(endpoint);
@@ -200,7 +200,7 @@ class GeneratorController {
     if (this.turn === -1) return false;
     const group = this.markGroups.find((element) => element.name === groupName);
     if (group === undefined) return false;
-    const tribeIndex = group.tribes.findIndex((tribeID) => this.tribes[tribeID].tag === tribeTag);
+    const tribeIndex = group.tribes.findIndex((tribeId) => this.tribes[tribeId].tag === tribeTag);
     if (tribeIndex === -1) return false;
     group.tribes.splice(tribeIndex, 1);
     this.sortMarkGroups();
@@ -232,8 +232,8 @@ class GeneratorController {
   }
   findTribe(tag: string): Tribe | false {
     if (!this.tribes) return false;
-    for (const tribeID in this.tribes) {
-      if (this.tribes[tribeID].tag === tag) return this.tribes[tribeID];
+    for (const tribeId in this.tribes) {
+      if (this.tribes[tribeId].tag === tag) return this.tribes[tribeId];
     }
     return false;
   }
@@ -251,13 +251,13 @@ class GeneratorController {
     const tribes = this.tribes;
     if (!tribes) return [];
     const suggestions: Tribe[] = [];
-    for (const tribeID in tribes) {
-      if (tribes[tribeID].tag.includes(tag) || tag === "") suggestions.push(tribes[tribeID]);
+    for (const tribeId in tribes) {
+      if (tribes[tribeId].tag.includes(tag) || tag === "") suggestions.push(tribes[tribeId]);
     }
     for (const group of this.markGroups) {
-      for (const tribeID of group.tribes) {
+      for (const tribeId of group.tribes) {
         for (let i = 0; i < suggestions.length; i++) {
-          if (tribeID === suggestions[i].id) suggestions.splice(i, 1);
+          if (tribeId === suggestions[i].id) suggestions.splice(i, 1);
         }
       }
     }
@@ -342,7 +342,7 @@ class GeneratorController {
   sortMarkGroups() {
     const sums: { [key: string]: number } = {};
     for (let group of this.markGroups) {
-      sums[group.name] = group.tribes.reduce((sum, tribeID) => sum + this.tribes[tribeID].points, 0);
+      sums[group.name] = group.tribes.reduce((sum, tribeId) => sum + this.tribes[tribeId].points, 0);
     }
     this.markGroups.sort((a, b) => sums[b.name] - sums[a.name]);
   }

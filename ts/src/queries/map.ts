@@ -1,11 +1,11 @@
 import { CreatedMap, PrismaClient } from "@prisma/client";
-import { isValidID } from "../../public/scripts/validators.js";
+import { isValidId } from "../../public/scripts/validators.js";
 import { CreatedMapWithRelations } from "../Types.js";
 
 const prisma = new PrismaClient();
 
 export const readMap = async function (id: number): Promise<CreatedMapWithRelations | null> {
-  if (!isValidID(id)) return null;
+  if (!isValidId(id)) return null;
   const result = await prisma.createdMap
     .findUnique({
       where: {

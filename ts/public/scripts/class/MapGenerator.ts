@@ -203,9 +203,9 @@ class MapGenerator {
       borderPixel.color = borderColor;
     }
   }
-  #findMarkGroupOfTribe(tribeID: string): MarkGroup | false {
+  #findMarkGroupOfTribe(tribeId: string): MarkGroup | false {
     for (const group of this.#settings.markGroups) {
-      if (group.tribes.includes(tribeID)) return group;
+      if (group.tribes.includes(tribeId)) return group;
     }
     if (this.#settings.displayUnmarked) {
       return {
@@ -267,8 +267,8 @@ class MapGenerator {
       colors[markGoup.name] = parseHexColor(markGoup.color);
     }
     const unmarkedColor = parseHexColor(this.#settings.unmarkedColor);
-    for (const tribeID in this.#turnData.tribes) {
-      const tribe = this.#turnData.tribes[tribeID];
+    for (const tribeId in this.#turnData.tribes) {
+      const tribe = this.#turnData.tribes[tribeId];
       const group = this.#findMarkGroupOfTribe(tribe.id);
       if (group) {
         const color = colors[group.name] ?? unmarkedColor;

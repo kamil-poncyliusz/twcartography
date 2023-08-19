@@ -2,7 +2,7 @@ import express from "express";
 import { readCollections, readUser, readWorlds } from "../src/queries/index.js";
 import { handleAuthentication, handleLogout, handleReadCollection, handleReadCollections, handleRegistration } from "./router-handlers.js";
 import { Collection } from "@prisma/client";
-import { isValidID } from "../public/scripts/validators.js";
+import { isValidId } from "../public/scripts/validators.js";
 
 const router = express.Router();
 
@@ -39,8 +39,8 @@ router.get("/new/:settings?", async (req, res) => {
     collections: [] as Collection[],
   };
   if (req.session.user && req.session.user.rank >= 2) {
-    const authorID = req.session.user.id;
-    const collections = await readCollections(undefined, authorID);
+    const authorId = req.session.user.id;
+    const collections = await readCollections(undefined, authorId);
     locals.collections = collections;
   }
   res.render("new", locals);
@@ -48,7 +48,7 @@ router.get("/new/:settings?", async (req, res) => {
 
 router.get("/user/:id", async (req, res) => {
   const id = parseInt(req.params.id);
-  if (!isValidID(id)) return res.status(404).render("not-found");
+  if (!isValidId(id)) return res.status(404).render("not-found");
   const user = await readUser(id);
   if (user === null) return res.status(404).render("not-found");
   const locals = {

@@ -14,13 +14,13 @@ const findGroupName = function (element: Element) {
 
 const getMarkGroupRowInnerHTML = function (group: MarkGroup, tribes: { [key: string]: Tribe }) {
   let innerHTML = "";
-  for (let tribeID of group.tribes) {
-    const tribe = tribes[tribeID];
+  for (let tribeId of group.tribes) {
+    const tribe = tribes[tribeId];
     innerHTML += `<button class='mark block-element delete-button' title='${tribe.name}'>${tribe.tag}</button>`;
   }
-  const players = group.tribes.reduce((sum, tribeID) => sum + tribes[tribeID].players, 0);
-  const villages = group.tribes.reduce((sum, tribeID) => sum + tribes[tribeID].villages.length, 0);
-  const points = group.tribes.reduce((sum, tribeID) => sum + tribes[tribeID].points, 0);
+  const players = group.tribes.reduce((sum, tribeId) => sum + tribes[tribeId].players, 0);
+  const villages = group.tribes.reduce((sum, tribeId) => sum + tribes[tribeId].villages.length, 0);
+  const points = group.tribes.reduce((sum, tribeId) => sum + tribes[tribeId].points, 0);
   innerHTML = `<td class='group-tribes'>${innerHTML}</td>`;
   innerHTML += `<td class='group-name'><input type='text' class='fill-cell' value='${group.name}' data-old-name='${group.name}' placeholder='nazwa'></td>`;
   innerHTML += `<td><input type='color' class='fill-cell' title='Kliknij prawym aby wylosować kolor' value='${group.color}'></td>`;

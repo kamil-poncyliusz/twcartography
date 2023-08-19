@@ -2,7 +2,7 @@ import { handleDeleteCollection } from "../../routes/api-handlers.js";
 import "./navbar.js";
 import { postRequest } from "./requests.js";
 import { selectInputValue } from "./utils.js";
-import { isValidCollectionDescription, isValidFrameDelay, isValidID, isValidMapDescription, isValidTitle } from "./validators.js";
+import { isValidCollectionDescription, isValidFrameDelay, isValidId, isValidMapDescription, isValidTitle } from "./validators.js";
 
 const mapTiles = document.querySelectorAll("#tiles .map-tile");
 const animationTiles = document.querySelectorAll("#tiles .animation-tile");
@@ -143,7 +143,7 @@ const useKeyboardShortcut = function (e: KeyboardEvent) {
 
 const deleteCollection = async function () {
   const id = parseInt(window.location.pathname.split("/")[2]);
-  if (!isValidID(id)) return;
+  if (!isValidId(id)) return;
   const payload = {
     id: id,
   };
@@ -155,7 +155,7 @@ const deleteCollection = async function () {
 const deleteMap = async function () {
   if (!currentlyDisplayedMap) return;
   const id = parseInt(currentlyDisplayedMap.dataset.id ?? "");
-  if (!isValidID(id)) return;
+  if (!isValidId(id)) return;
   const payload = {
     id: id,
   };
@@ -167,22 +167,22 @@ const deleteMap = async function () {
 
 const editCollectionTitle = async function (e: Event) {
   const target = e.target as HTMLInputElement;
-  const collectionID = parseInt(window.location.pathname.split("/")[2]);
-  if (!isValidID(collectionID)) return;
+  const collectionId = parseInt(window.location.pathname.split("/")[2]);
+  if (!isValidId(collectionId)) return;
   const newTitle = target.value;
   if (!isValidTitle(newTitle)) return target.classList.add("is-invalid");
-  const isUpdated = await postRequest("/api/collection/update", { id: collectionID, title: newTitle });
+  const isUpdated = await postRequest("/api/collection/update", { id: collectionId, title: newTitle });
   if (isUpdated) target.classList.remove("is-invalid");
   else target.classList.add("is-invalid");
 };
 
 const editCollectionDescription = async function (e: Event) {
   const target = e.target as HTMLTextAreaElement;
-  const collectionID = parseInt(window.location.pathname.split("/")[2]);
-  if (!isValidID(collectionID)) return;
+  const collectionId = parseInt(window.location.pathname.split("/")[2]);
+  if (!isValidId(collectionId)) return;
   const newDescription = target.value;
   if (!isValidCollectionDescription(newDescription)) return target.classList.add("is-invalid");
-  const isUpdated = await postRequest("/api/collection/update", { id: collectionID, description: newDescription });
+  const isUpdated = await postRequest("/api/collection/update", { id: collectionId, description: newDescription });
   if (isUpdated) target.classList.remove("is-invalid");
   else target.classList.add("is-invalid");
 };
@@ -190,11 +190,11 @@ const editCollectionDescription = async function (e: Event) {
 const editMapTitle = async function (e: Event) {
   if (!currentlyDisplayedMap) return;
   const target = e.target as HTMLInputElement;
-  const mapID = parseInt(currentlyDisplayedMap.dataset.id ?? "");
-  if (!isValidID(mapID)) return;
+  const mapId = parseInt(currentlyDisplayedMap.dataset.id ?? "");
+  if (!isValidId(mapId)) return;
   const newTitle = target.value;
   if (!isValidTitle(newTitle)) return target.classList.add("is-invalid");
-  const isUpdated = await postRequest("/api/map/update", { id: mapID, title: newTitle });
+  const isUpdated = await postRequest("/api/map/update", { id: mapId, title: newTitle });
   if (isUpdated) target.classList.remove("is-invalid");
   else target.classList.add("is-invalid");
 };
@@ -202,11 +202,11 @@ const editMapTitle = async function (e: Event) {
 const editMapDescription = async function (e: Event) {
   if (!currentlyDisplayedMap) return;
   const target = e.target as HTMLTextAreaElement;
-  const mapID = parseInt(currentlyDisplayedMap.dataset.id ?? "");
-  if (!isValidID(mapID)) return;
+  const mapId = parseInt(currentlyDisplayedMap.dataset.id ?? "");
+  if (!isValidId(mapId)) return;
   const newDescription = target.value;
   if (!isValidMapDescription(newDescription)) return target.classList.add("is-invalid");
-  const isUpdated = await postRequest("/api/map/update", { id: mapID, description: newDescription });
+  const isUpdated = await postRequest("/api/map/update", { id: mapId, description: newDescription });
   if (isUpdated) target.classList.remove("is-invalid");
   else target.classList.add("is-invalid");
 };
@@ -249,13 +249,13 @@ const createAnimation = async function () {
   const frames: number[] = [];
   mapTiles.forEach((element) => {
     const mapTile = element as HTMLDivElement;
-    const mapID = parseInt(mapTile.dataset.id ?? "");
-    if (mapTile.dataset.checked === "checked" && isValidID(mapID)) frames.push(mapID);
+    const mapId = parseInt(mapTile.dataset.id ?? "");
+    if (mapTile.dataset.checked === "checked" && isValidId(mapId)) frames.push(mapId);
   });
-  const collectionID = parseInt(window.location.pathname.split("/")[2]);
-  if (!isValidID(collectionID)) return;
+  const collectionId = parseInt(window.location.pathname.split("/")[2]);
+  if (!isValidId(collectionId)) return;
   const payload = {
-    collectionId: collectionID,
+    collectionId: collectionId,
     frames: frames,
     frameDelay: frameDelay,
   };
