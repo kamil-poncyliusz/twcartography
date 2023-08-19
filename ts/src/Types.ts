@@ -61,6 +61,9 @@ export type CollectionWithRelations = Collection & {
   maps: CreatedMap[];
   world: World;
 };
+export type CreatedAnimationWithRelations = CreatedAnimation & {
+  collection: Collection;
+};
 export interface WorldDataState {
   id: number;
   serverName: string;

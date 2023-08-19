@@ -12,7 +12,7 @@ const findGroupName = function (element: Element) {
   return groupNameInput.value;
 };
 
-const getMarkGroupRowInnerHTML = function (group: MarkGroup, tribes: { [key: string]: Tribe }) {
+const generateMarkGroupRowInnerHTML = function (group: MarkGroup, tribes: { [key: string]: Tribe }) {
   let innerHTML = "";
   for (let tribeId of group.tribes) {
     const tribe = tribes[tribeId];
@@ -76,7 +76,7 @@ class MarkGroupsTab {
     if (!markGroupsTableBody) return;
     markGroupsTableBody.innerHTML = "";
     for (let group of markGroups) {
-      const content = getMarkGroupRowInnerHTML(group, tribes);
+      const content = generateMarkGroupRowInnerHTML(group, tribes);
       const newRow = document.createElement("tr");
       newRow.innerHTML = content;
       markGroupsTableBody.appendChild(newRow);

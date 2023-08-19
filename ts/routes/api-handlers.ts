@@ -16,6 +16,7 @@ import {
   updateMap,
   createAnimation,
   deleteAnimation,
+  readAnimation,
 } from "../src/queries/index.js";
 import MapGenerator from "../public/scripts/class/MapGenerator.js";
 import { encodeSettings } from "../public/scripts/settings-codec.js";
@@ -169,18 +170,26 @@ export const handleDeleteWorld = async function (req: Request): Promise<boolean>
 };
 
 export const handleDeleteMap = async function (req: Request): Promise<boolean> {
-  if (!req.session.user || req.session.user.rank < 10) return false;
+  if (!req.session.user || req.session.user.rank < 1) return false;
+  const userId = req.session.user.id;
   const mapId = req.body.id;
   if (!isValidId(mapId)) return false;
+  const map = await readMap(mapId);
+  if (!map) return false;
+  if (map.collection.authorId !== userId) return false;
   const isDeleted = await deleteMap(mapId);
   return isDeleted;
 };
 
 export const handleDeleteCollection = async function (req: Request): Promise<boolean> {
-  if (!req.session.user || req.session.user.rank < 10) return false;
-  const id = req.body.id;
-  if (!isValidId(id)) return false;
-  const isDeleted = await deleteCollection(id);
+  if (!req.session.user || req.session.user.rank < 1) return false;
+  const userId = req.session.user.id;
+  const collectionId = req.body.id;
+  if (!isValidId(collectionId)) return false;
+  const collection = await readCollection(collectionId);
+  if (!collection) return false;
+  if (collection.authorId !== userId) return false;
+  const isDeleted = await deleteCollection(collectionId);
   return isDeleted;
 };
 
@@ -244,9 +253,13 @@ export const handleCreateAnimation = async function (req: Request): Promise<bool
 };
 
 export const handleDeleteAnimation = async function (req: Request): Promise<boolean> {
-  if (!req.session.user || req.session.user.rank < 10) return false;
+  if (!req.session.user || req.session.user.rank < 1) return false;
+  const userId = req.session.user.id;
   const animationId = req.body.id;
   if (!isValidId(animationId)) return false;
+  const animation = await readAnimation(animationId);
+  if (!animation) return false;
+  if (animation.collection.authorId !== userId) return false;
   const isDeleted = await deleteAnimation(animationId);
   return isDeleted;
 };

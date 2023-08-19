@@ -6,9 +6,8 @@ class CanvasFrame {
   #generator;
   constructor(generatorController: GeneratorController) {
     this.#generator = generatorController;
-    if (!canvasElement) return;
-    canvasElement.addEventListener("mousedown", this.dragStart);
-    canvasElement.addEventListener("mouseup", this.dragEnd);
+    canvasElement?.addEventListener("mousedown", this.dragStart);
+    canvasElement?.addEventListener("mouseup", this.dragEnd);
   }
   dragEnd = (e: Event) => {
     const canvas = e.target as HTMLCanvasElement;

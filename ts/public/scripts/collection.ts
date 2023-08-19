@@ -268,22 +268,18 @@ mapTiles.forEach((tile) => {
 animationTiles.forEach((tile) => {
   tile.addEventListener("click", handleTileClick);
 });
-if (closeMapButton) closeMapButton.addEventListener("click", closeMap);
-if (nextMapButton) nextMapButton.addEventListener("click", viewNextMap);
-if (previousMapButton) previousMapButton.addEventListener("click", viewPreviousMap);
-if (collectionTitle) collectionTitle.addEventListener("change", editCollectionTitle);
-if (collectionDescription) {
-  collectionDescription.addEventListener("change", editCollectionDescription);
-  collectionDescription.addEventListener("input", textAreaAutoResize);
-}
-if (mapTitle) mapTitle.addEventListener("change", editMapTitle);
-if (mapDescription) {
-  mapDescription.addEventListener("change", editMapDescription);
-  mapDescription.addEventListener("input", textAreaAutoResize);
-}
-if (deleteCollectionButton) deleteCollectionButton.addEventListener("click", deleteCollection);
-if (deleteMapButton) deleteMapButton.addEventListener("click", deleteMap);
-if (encodedSettingsInput) encodedSettingsInput.addEventListener("click", selectInputValue);
+closeMapButton?.addEventListener("click", closeMap);
+nextMapButton?.addEventListener("click", viewNextMap);
+previousMapButton?.addEventListener("click", viewPreviousMap);
+collectionTitle?.addEventListener("change", editCollectionTitle);
+collectionDescription?.addEventListener("change", editCollectionDescription);
+collectionDescription?.addEventListener("input", textAreaAutoResize);
+mapTitle?.addEventListener("change", editMapTitle);
+mapDescription?.addEventListener("change", editMapDescription);
+mapDescription?.addEventListener("input", textAreaAutoResize);
+deleteCollectionButton?.addEventListener("click", deleteCollection);
+deleteMapButton?.addEventListener("click", deleteMap);
+encodedSettingsInput?.addEventListener("click", selectInputValue);
 if (animationSettings) {
   animationCreatorModeCheckbox?.addEventListener("change", toggleCreateAnimationMode);
   checkAllMapsButton?.addEventListener("click", checkAllMaps);

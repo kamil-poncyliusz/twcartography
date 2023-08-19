@@ -50,7 +50,7 @@ const deleteWorld = async function (e: Event) {
   else console.log("Failed to delete world with ID", worldId);
 };
 
-if (createWorldForm) createWorldForm.addEventListener("submit", createWorld);
+createWorldForm?.addEventListener("submit", createWorld);
 deleteWorldButtons.forEach((button) => {
   button.addEventListener("click", deleteWorld);
 });

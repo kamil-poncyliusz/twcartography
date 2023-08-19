@@ -1,18 +1,18 @@
 import bcrypt from "bcryptjs";
 import { Request } from "express";
 import { createUser, readCollection, readCollections, readUserByLogin } from "../src/queries/index.js";
-import { isValidId } from "../public/scripts/validators.js";
+import { isValidId, isValidLogin, isValidPassword } from "../public/scripts/validators.js";
 
 export const handleRegistration = async function (req: Request): Promise<string> {
   const login = req.body.login;
   const password = req.body.password;
-  if (!login || login.length < 2 || login.length > 24) return "incorrect login";
-  if (!password || password.length < 8 || password.length > 24) return "incorrect password";
+  if (!isValidLogin(login)) return "incorrect login";
+  if (!isValidPassword(password)) return "incorrect password";
   const user = await readUserByLogin(login);
   if (user === undefined) return "database error";
   if (user !== null) return "login taken";
   const passwordHash = bcrypt.hashSync(password, 5);
-  const createdUser = await createUser(login, passwordHash, 1);
+  const createdUser = await createUser(login, passwordHash, 2);
   if (!createdUser) return "database error";
   return "success";
 };

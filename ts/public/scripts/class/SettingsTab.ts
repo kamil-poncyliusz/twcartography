@@ -30,7 +30,7 @@ class SettingsTab {
   #generator: GeneratorController;
   constructor(generatorController: GeneratorController) {
     this.#generator = generatorController;
-    if (generateButton) generateButton.addEventListener("click", this.#generator.forceRenderCanvas);
+    generateButton?.addEventListener("click", this.#generator.forceRenderCanvas);
     inputs.autoRefresh.addEventListener("input", this.changeAutoRefresh);
     inputs.backgroundColor.addEventListener("change", this.changeBackgroundColor);
     inputs.borderColor.addEventListener("change", this.changeBorderColor);
@@ -41,13 +41,11 @@ class SettingsTab {
     inputs.trim.addEventListener("input", this.changeTrim);
     inputs.turn.addEventListener("change", this.changeTurn);
     inputs.unmarkedColor.addEventListener("change", this.changeUnmarkedColor);
-    if (worldSelect) worldSelect.addEventListener("change", this.changeWorld);
-    if (encodedSettingsInput) {
-      encodedSettingsInput.addEventListener("click", selectInputValue);
-      encodedSettingsInput.addEventListener("input", this.changeEncodedSettings);
-      encodedSettingsInput.dispatchEvent(new Event("input"));
-    }
-    if (publishMapButton !== null) publishMapButton.addEventListener("click", this.publishMap);
+    worldSelect?.addEventListener("change", this.changeWorld);
+    encodedSettingsInput?.addEventListener("click", selectInputValue);
+    encodedSettingsInput?.addEventListener("input", this.changeEncodedSettings);
+    encodedSettingsInput?.dispatchEvent(new Event("input"));
+    publishMapButton?.addEventListener("click", this.publishMap);
   }
   set disabled(value: boolean) {
     for (const key in inputs) {

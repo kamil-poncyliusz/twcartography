@@ -8,10 +8,9 @@ class SuggestionsTab {
   #generator: GeneratorController;
   constructor(generatorController: GeneratorController) {
     this.#generator = generatorController;
-    if (suggestionsSearchInput)
-      suggestionsSearchInput.addEventListener("input", (e: Event) => {
-        this.render();
-      });
+    suggestionsSearchInput?.addEventListener("input", (e: Event) => {
+      this.render();
+    });
   }
   #addMark = (e: Event) => {
     const target = e.target as HTMLSelectElement;

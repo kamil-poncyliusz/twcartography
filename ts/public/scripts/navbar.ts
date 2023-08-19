@@ -61,10 +61,10 @@ const logoutRequest = async function (e: Event) {
 };
 
 const toggleProfileWindow = function (e: Event) {
-  if (profileWindow) profileWindow.classList.toggle("hidden");
+  profileWindow?.classList.toggle("hidden");
 };
 
-if (profileButton) profileButton.addEventListener("click", toggleProfileWindow);
-if (loginForm) loginForm.addEventListener("submit", loginRequest);
-if (logoutButton) logoutButton.addEventListener("click", logoutRequest);
-if (registerButton) registerButton.addEventListener("click", registerRequest);
+profileButton?.addEventListener("click", toggleProfileWindow);
+loginForm?.addEventListener("submit", loginRequest);
+logoutButton?.addEventListener("click", logoutRequest);
+registerButton?.addEventListener("click", registerRequest);
