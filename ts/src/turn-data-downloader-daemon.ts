@@ -44,14 +44,22 @@ const downloadWorldData = async function (world: World, turn: number) {
   }
 };
 
-const turnDataDownloaderDaemon = async function () {
-  const worlds = await readWorlds();
-  for (let world of worlds) {
+const turnDataDownloaderDaemon = {
+  scheduler: scheduler,
+  init: async function () {
+    const worlds = await readWorlds();
+    for (let world of worlds) {
+      this.startDownloading({ ...world });
+    }
+  },
+  startDownloading: function (world: World) {
+    if (process.env.RUN_DOWNLOADER_DAEMON !== "true") return;
     const serverStart = new Date(world.startTimestamp * 1000);
-    const worldDirectoryName = world.startTimestamp.toString(36);
     const rule = `${serverStart.getMinutes()} ${serverStart.getHours()} * * *`;
-    scheduler.scheduleJob(rule, async function () {
+    const jobName = world.id.toString();
+    this.scheduler.scheduleJob(jobName, rule, async function () {
       const turn = daysFromStart(serverStart);
+      const worldDirectoryName = world.startTimestamp.toString(36);
       if (!isValidTurn(turn)) return;
       const success = await downloadWorldData(world, turn);
       if (success) {
@@ -64,7 +72,11 @@ const turnDataDownloaderDaemon = async function () {
         console.log(`Downloading turn ${turn} of ${world.server}${world.num} failed`);
       }
     });
-  }
+  },
+  stopDownloading: function (world: World) {
+    const jobName = world.id.toString();
+    this.scheduler.cancelJob(jobName);
+  },
 };
 
 export default turnDataDownloaderDaemon;

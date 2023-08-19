@@ -44,8 +44,8 @@ export const readWorldsWithWorldData = async function (): Promise<WorldWithWorld
   return result;
 };
 
-export const createWorld = async function (server: string, num: string, domain: string, startTimestamp: number): Promise<boolean> {
-  const result = await prisma.world
+export const createWorld = async function (server: string, num: string, domain: string, startTimestamp: number): Promise<World | null> {
+  const createdWorld = await prisma.world
     .create({
       data: {
         server: server,
@@ -56,13 +56,13 @@ export const createWorld = async function (server: string, num: string, domain: 
     })
     .catch((err) => {
       console.error("Prisma error:", err);
-      return false;
+      return null;
     });
-  return true;
+  return createdWorld;
 };
 
-export const deleteWorld = async function (id: number): Promise<boolean> {
-  const result = await prisma.world
+export const deleteWorld = async function (id: number): Promise<World | null> {
+  const deletedWorld = await prisma.world
     .delete({
       where: {
         id: id,
@@ -70,7 +70,7 @@ export const deleteWorld = async function (id: number): Promise<boolean> {
     })
     .catch((err) => {
       console.error("Prisma error:", err);
-      return false;
+      return null;
     });
-  return true;
+  return deletedWorld;
 };

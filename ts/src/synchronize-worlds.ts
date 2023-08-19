@@ -28,8 +28,10 @@ const parseWorldInfoFile = function (worldDirectoryName: string): CreateWorldReq
     value = value.trim();
     if (typeof key === "string" && typeof value === "string" && key.length > 0) parsed[key] = value;
   }
+  if (parsed.timestamp) parsed.timestamp = parseInt(parsed.timestamp);
   const worldInfo = parsed as CreateWorldRequestPayload;
   const isWorldInfoValid = isValidCreateWorldRequestPayload(worldInfo);
+  if (!isWorldInfoValid) return null;
   const validWorldDirectoryName = worldInfo.timestamp.toString(36);
   if (worldDirectoryName !== validWorldDirectoryName) {
     console.log("Ivalid world data directory:", worldDirectoryName);

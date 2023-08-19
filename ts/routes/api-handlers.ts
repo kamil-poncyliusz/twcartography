@@ -37,8 +37,9 @@ import { World } from "@prisma/client";
 import { Request } from "express";
 import { CreateMapRequestPayload, CreateWorldRequestPayload, ParsedTurnData } from "../src/Types.js";
 import saveAnimationGif from "../src/save-animation-gif.js";
+import turnDataDownloaderDaemon from "../src/turn-data-downloader-daemon.js";
 
-const createWorldDirectory = async function (payload: CreateWorldRequestPayload): Promise<boolean> {
+const createWorldDirectory = function (payload: CreateWorldRequestPayload): Promise<boolean> {
   return new Promise((resolve, reject) => {
     try {
       const worldDirectoryName = payload.timestamp.toString(36);
@@ -57,6 +58,14 @@ const createWorldDirectory = async function (payload: CreateWorldRequestPayload)
       reject(false);
     }
   });
+};
+
+const deleteWorldDirectory = function (worldDirectoryName: string) {
+  const pathToDelete = `temp/${worldDirectoryName}`;
+  if (fs.existsSync(pathToDelete))
+    fs.rm(pathToDelete, { recursive: true, force: true }, (error) => {
+      if (error) throw error;
+    });
 };
 
 export const handleReadWorld = async function (req: Request): Promise<World | null> {
@@ -112,10 +121,13 @@ export const handleCreateWorld = async function (req: Request): Promise<boolean>
     domain: req.body.domain,
     timestamp: modifiedTimestamp,
   };
-  const isCreated = await createWorld(payload.server, payload.num, payload.domain, payload.timestamp);
-  if (!isCreated) return false;
+  const createdWorld = await createWorld(payload.server, payload.num, payload.domain, payload.timestamp);
+  if (!createdWorld) return false;
   const isWorldDirectoryCreated = await createWorldDirectory(payload);
-  if (isWorldDirectoryCreated) console.log("World created");
+  if (isWorldDirectoryCreated) {
+    turnDataDownloaderDaemon.startDownloading(createdWorld);
+    console.log("World created");
+  }
   return isWorldDirectoryCreated;
 };
 
@@ -148,8 +160,12 @@ export const handleDeleteWorld = async function (req: Request): Promise<boolean>
   if (!req.session.user || req.session.user.rank < 10) return false;
   const worldId = req.body.id;
   if (!isValidID(worldId)) return false;
-  const isDeleted = await deleteWorld(worldId);
-  return isDeleted;
+  const deletedWorld = await deleteWorld(worldId);
+  if (!deletedWorld) return false;
+  const worldDirectoryName = deletedWorld.startTimestamp.toString(36);
+  turnDataDownloaderDaemon.stopDownloading(deletedWorld);
+  deleteWorldDirectory(worldDirectoryName);
+  return true;
 };
 
 export const handleDeleteMap = async function (req: Request): Promise<boolean> {
