@@ -95,6 +95,7 @@ class MapGenerator {
     this.#smoothBorders();
     this.#drawBorders();
     this.#generateImageData();
+    this.#writeCaptions();
     this.#writeLegend();
   }
   #generateImageData() {
@@ -383,6 +384,46 @@ class MapGenerator {
     }
     for (let correction of corrections) {
       correction.pixel.color = correction.newColor;
+    }
+  }
+  #writeCaptions() {
+    const captions = this.#settings.captions;
+    const imageData = this.imageData;
+    if (!imageData) return;
+    const width = imageData.width;
+    const height = imageData.height;
+    if (canvasModule !== null) {
+      const canvas = canvasModule.createCanvas(width, height);
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (ctx === null) return;
+      ctx.putImageData(imageData, 0, 0);
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
+      for (let caption of captions) {
+        ctx.font = `${caption.fontSize}px ${LEGEND_FONT_FAMILY}`;
+        ctx.fillStyle = caption.color;
+        ctx.fillText(caption.text, caption.x, caption.y);
+      }
+      const resultImageData = ctx.getImageData(0, 0, imageData.width, imageData.height);
+      this.imageData = resultImageData as ImageData;
+    } else {
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (ctx === null) return;
+      ctx.putImageData(imageData, 0, 0);
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
+      for (let caption of captions) {
+        ctx.font = `${caption.fontSize}px ${LEGEND_FONT_FAMILY}`;
+        ctx.fillStyle = caption.color;
+        ctx.fillText(caption.text, caption.x, caption.y);
+      }
+      const resultImageData = ctx.getImageData(0, 0, imageData.width, imageData.height);
+      this.imageData = resultImageData;
     }
   }
   #writeLegend() {

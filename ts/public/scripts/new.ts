@@ -3,16 +3,17 @@ import "./navbar.js";
 
 const showSettingsButton = document.getElementById("settings-button");
 const showMarksButton = document.getElementById("marks-button");
+const showCaptionsButton = document.getElementById("captions-button");
 
 const showTab = function (tabClassName: string) {
-  const divsToHide = Array.from(document.querySelectorAll("#controls-wrapper > div"));
-  const divsToShow = Array.from(document.querySelectorAll(`#controls-wrapper > .${tabClassName}`));
-  const hideAll = divsToShow[0].classList.contains("hidden") ? false : true;
-  divsToHide.forEach((element) => {
+  const allWindows = Array.from(document.querySelectorAll("#controls-wrapper > div"));
+  const windowsToShow = Array.from(document.querySelectorAll(`#controls-wrapper > .${tabClassName}`));
+  const hideAll = windowsToShow[0].classList.contains("hidden") ? false : true;
+  allWindows.forEach((element) => {
     element.classList.add("hidden");
   });
   if (!hideAll)
-    divsToShow.forEach((element) => {
+    windowsToShow.forEach((element) => {
       element.classList.remove("hidden");
     });
 };
@@ -24,4 +25,7 @@ showSettingsButton?.addEventListener("click", function () {
 });
 showMarksButton?.addEventListener("click", function () {
   showTab("marks-tab");
+});
+showCaptionsButton?.addEventListener("click", function () {
+  showTab("captions-tab");
 });

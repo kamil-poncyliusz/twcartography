@@ -58,6 +58,7 @@ export const decodeSettings = function (input: string): Settings | false {
   const result = {
     backgroundColor: backgroundColor,
     borderColor: borderColor,
+    captions: [],
     displayUnmarked: parseInt(displayUnmarked) === 1 ? true : false,
     markGroups: markGroups,
     outputWidth: parseInt(outputWidth),

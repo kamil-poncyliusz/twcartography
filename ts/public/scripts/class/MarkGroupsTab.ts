@@ -4,7 +4,7 @@ import { randomizeGroupColor } from "../utils.js";
 
 const markGroupsTableBody = document.querySelector("#mark-groups table tbody") as HTMLTableSectionElement | null;
 
-const findGroupName = function (element: Element) {
+const findGroupName = function (element: Element): string {
   const row = element.closest("tr");
   if (!row) return "";
   const groupNameInput = row.querySelector(".group-name > input") as HTMLInputElement | null;
@@ -12,7 +12,7 @@ const findGroupName = function (element: Element) {
   return groupNameInput.value;
 };
 
-const generateMarkGroupRowInnerHTML = function (group: MarkGroup, tribes: { [key: string]: Tribe }) {
+const generateMarkGroupRowInnerHTML = function (group: MarkGroup, tribes: { [key: string]: Tribe }): string {
   let innerHTML = "";
   for (let tribeId of group.tribes) {
     const tribe = tribes[tribeId];
@@ -21,9 +21,9 @@ const generateMarkGroupRowInnerHTML = function (group: MarkGroup, tribes: { [key
   const players = group.tribes.reduce((sum, tribeId) => sum + tribes[tribeId].players, 0);
   const villages = group.tribes.reduce((sum, tribeId) => sum + tribes[tribeId].villages.length, 0);
   const points = group.tribes.reduce((sum, tribeId) => sum + tribes[tribeId].points, 0);
-  innerHTML = `<td class='group-tribes'>${innerHTML}</td>`;
+  innerHTML = `<td class='group-tribes'><div>${innerHTML}</div></td>`;
   innerHTML += `<td class='group-name'><input type='text' class='fill-cell' value='${group.name}' data-old-name='${group.name}' placeholder='nazwa'></td>`;
-  innerHTML += `<td><input type='color' class='fill-cell' title='Kliknij prawym aby wylosować kolor' value='${group.color}'></td>`;
+  innerHTML += `<td><input type='color' class='fill-cell' title='Kliknij prawym aby wylosować kolor' value='${group.color}' style='background-color:${group.color};'></td>`;
   innerHTML += `<td>${group.tribes.length}</td><td>${players}</td><td>${villages}</td><td>${points}</td>`;
   innerHTML += `<td><button class='delete-group delete-button fill-cell'>X</button></td>`;
   return innerHTML;
@@ -76,9 +76,9 @@ class MarkGroupsTab {
     if (!markGroupsTableBody) return;
     markGroupsTableBody.innerHTML = "";
     for (let group of markGroups) {
-      const content = generateMarkGroupRowInnerHTML(group, tribes);
       const newRow = document.createElement("tr");
-      newRow.innerHTML = content;
+      const rowContent = generateMarkGroupRowInnerHTML(group, tribes);
+      newRow.innerHTML = rowContent;
       markGroupsTableBody.appendChild(newRow);
     }
     markGroupsTableBody.querySelectorAll(".mark").forEach((markButton) => {

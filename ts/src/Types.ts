@@ -8,6 +8,7 @@ export interface MarkGroup {
 export interface Settings {
   backgroundColor: string;
   borderColor: string;
+  captions: Caption[];
   displayUnmarked: boolean;
   markGroups: MarkGroup[];
   outputWidth: number;
@@ -22,6 +23,13 @@ export interface ParsedColor {
   r: number;
   g: number;
   b: number;
+}
+export interface Caption {
+  text: string;
+  color: string;
+  fontSize: number;
+  x: number;
+  y: number;
 }
 export interface Tribe {
   id: string;

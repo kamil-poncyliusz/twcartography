@@ -1,8 +1,12 @@
 import MapGenerator from "./MapGenerator.js";
-import { MarkGroup, Settings, ParsedTurnData, Tribe } from "../../../src/Types.js";
+import { MarkGroup, Settings, ParsedTurnData, Tribe, Caption } from "../../../src/Types.js";
 import { handleReadTurnData, handleReadWorld } from "../../../routes/api-handlers.js";
 import { getRequest } from "../requests.js";
 import {
+  isValidCaption,
+  isValidCaptionCoordinate,
+  isValidCaptionFontSize,
+  isValidCaptionText,
   isValidColor,
   isValidGroupName,
   isValidId,
@@ -16,6 +20,7 @@ import MarkGroupsTab from "./MarkGroupsTab.js";
 import SuggestionsTab from "./SuggestionsTab.js";
 import SettingsTab from "./SettingsTab.js";
 import CanvasFrame from "./CanvasFrame.js";
+import CaptionsTab from "./CaptionsTab.js";
 
 const DEFAULT_AUTO_REFRESH = true;
 const DEFAULT_BACKGROUND_COLOR = "#202020";
@@ -33,6 +38,8 @@ class GeneratorController {
   #backgroundColor: string = DEFAULT_BACKGROUND_COLOR;
   #borderColor: string = DEFAULT_BORDER_COLOR;
   #canvasFrame: CanvasFrame;
+  captions: Caption[] = [];
+  #captionsTab: CaptionsTab;
   data: { [key: number]: ParsedTurnData } = {};
   #displayUnmarked: boolean = DEFAULT_DISPLAY_UNMARKED;
   latestTurn: number = -1;
@@ -50,6 +57,7 @@ class GeneratorController {
   world: number = 0;
   constructor() {
     this.#canvasFrame = new CanvasFrame(this);
+    this.#captionsTab = new CaptionsTab(this);
     this.#markGroupsTab = new MarkGroupsTab(this);
     this.#suggestionsTab = new SuggestionsTab(this);
     this.#settingsTab = new SettingsTab(this);
@@ -58,6 +66,7 @@ class GeneratorController {
     return {
       backgroundColor: this.#backgroundColor,
       borderColor: this.#borderColor,
+      captions: this.captions,
       displayUnmarked: this.#displayUnmarked,
       markGroups: this.markGroups,
       outputWidth: this.#outputWidth,
@@ -73,7 +82,14 @@ class GeneratorController {
     if (this.world === 0 || this.turn === -1) return {};
     return this.data[this.turn].tribes;
   }
-  addMark(tribeTag: string, groupName: string, options?: { skipUpdate?: boolean }) {
+  addCaption(caption: Caption): boolean {
+    if (!isValidCaption(caption)) return false;
+    this.captions.push(caption);
+    this.#canvasFrame.render();
+    this.#captionsTab.render();
+    return true;
+  }
+  addMark(tribeTag: string, groupName: string, options?: { skipUpdate?: boolean }): boolean {
     if (this.turn === -1) return false;
     const group = this.markGroups.find((element) => element.name === groupName);
     const tribe = this.findTribe(tribeTag);
@@ -87,7 +103,7 @@ class GeneratorController {
     this.#suggestionsTab.render();
     return true;
   }
-  addMarkGroup(group: MarkGroup, options?: { skipUpdate?: boolean }) {
+  addMarkGroup(group: MarkGroup, options?: { skipUpdate?: boolean }): boolean {
     if (this.turn === -1) return false;
     if (!isValidGroupName(group.name) || !isValidColor(group.color)) return false;
     if (this.isGroupNameTaken(group.name)) return false;
@@ -102,7 +118,7 @@ class GeneratorController {
     this.#settingsTab.update();
     return true;
   }
-  async applySettings(settings: Settings) {
+  async applySettings(settings: Settings): Promise<boolean> {
     if (!isValidSettings(settings)) return false;
     const isWorldChanged = await this.changeWorld(settings.world);
     if (!isWorldChanged) return false;
@@ -134,6 +150,46 @@ class GeneratorController {
     this.#markGroupsTab.render();
     this.#settingsTab.update();
     this.#suggestionsTab.render();
+    return true;
+  }
+  changeCaptionColor(captionIndex: number, newColor: string): boolean {
+    const caption = this.captions[captionIndex];
+    if (!caption) return false;
+    if (!isValidColor(newColor)) return false;
+    caption.color = newColor;
+    this.#canvasFrame.render();
+    return true;
+  }
+  changeCaptionFontSize(captionIndex: number, newFontSize: number): boolean {
+    const caption = this.captions[captionIndex];
+    if (!caption) return false;
+    if (!isValidCaptionFontSize(newFontSize)) return false;
+    caption.fontSize = newFontSize;
+    this.#canvasFrame.render();
+    return true;
+  }
+  changeCaptionText(captionIndex: number, newText: string): boolean {
+    const caption = this.captions[captionIndex];
+    if (!caption) return false;
+    if (!isValidCaptionText(newText)) return false;
+    caption.text = newText;
+    this.#canvasFrame.render();
+    return true;
+  }
+  changeCaptionX(captionIndex: number, newX: number): boolean {
+    const caption = this.captions[captionIndex];
+    if (!caption) return false;
+    if (!isValidCaptionCoordinate(newX)) return false;
+    caption.x = newX;
+    this.#canvasFrame.render();
+    return true;
+  }
+  changeCaptionY(captionIndex: number, newY: number): boolean {
+    const caption = this.captions[captionIndex];
+    if (!caption) return false;
+    if (!isValidCaptionCoordinate(newY)) return false;
+    caption.y = newY;
+    this.#canvasFrame.render();
     return true;
   }
   changeMarkGroupColor(name: string, color: string): boolean {
@@ -194,6 +250,13 @@ class GeneratorController {
     this.world = world;
     this.latestTurn = Math.floor((Date.now() - worldInfo.startTimestamp * 1000) / 1000 / 60 / 60 / 24);
     this.#settingsTab.update();
+    return true;
+  }
+  deleteCaption(captionIndex: number): boolean {
+    if (!this.captions[captionIndex]) return false;
+    this.captions.splice(captionIndex, 1);
+    this.#captionsTab.render();
+    this.#canvasFrame.render();
     return true;
   }
   deleteMark(groupName: string, tribeTag: string): boolean {

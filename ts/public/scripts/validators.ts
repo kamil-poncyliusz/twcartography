@@ -1,5 +1,5 @@
 import { GROUP_NAME_FORBIDDEN_CHARACTERS, VALID_USER_RANKS } from "./constants.js";
-import { CreateMapRequestPayload, CreateWorldRequestPayload, Settings } from "../../src/Types";
+import { Caption, CreateMapRequestPayload, CreateWorldRequestPayload, Settings } from "../../src/Types";
 
 export enum CreateMapRequestValidationCode {
   Ok,
@@ -38,6 +38,10 @@ export const settingsLimits = {
   min: settingsMinValues,
   max: settingsMaxValues,
 };
+
+const CAPTION_TEXT_MAX_LENGTH = 20;
+const CAPTION_MAX_FONT_SIZE = 100;
+const CAPTION_MAX_COORDINATE = 5000;
 
 export const isValidCreateMapRequestPayload = function (payload: CreateMapRequestPayload): CreateMapRequestValidationCode {
   if (!isValidTitle(payload.title)) return CreateMapRequestValidationCode.InvalidTitle;
@@ -156,5 +160,29 @@ export const isValidSettings = function (settings: Settings): boolean {
   if (groupNames.length > uniqueGroupNames.size) return false;
   const uniqueTribes = new Set(tribes);
   if (tribes.length > uniqueTribes.size) return false;
+  return true;
+};
+
+export const isValidCaption = function (caption: Caption): boolean {
+  if (!isValidCaptionText(caption.text)) return false;
+  if (!isValidColor(caption.color)) return false;
+  if (!isValidCaptionFontSize(caption.fontSize)) return false;
+  if (!isValidCaptionCoordinate(caption.x)) return false;
+  if (!isValidCaptionCoordinate(caption.y)) return false;
+  return true;
+};
+
+export const isValidCaptionText = function (captionText: string): boolean {
+  if (typeof captionText !== "string" || captionText.length === 0 || captionText.length > CAPTION_TEXT_MAX_LENGTH) return false;
+  return true;
+};
+
+export const isValidCaptionFontSize = function (captionFontSize: number): boolean {
+  if (typeof captionFontSize !== "number" || captionFontSize <= 0 || captionFontSize > CAPTION_MAX_FONT_SIZE) return false;
+  return true;
+};
+
+export const isValidCaptionCoordinate = function (captionCoordinate: number): boolean {
+  if (typeof captionCoordinate !== "number" || captionCoordinate < 0 || captionCoordinate > CAPTION_MAX_COORDINATE) return false;
   return true;
 };

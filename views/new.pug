@@ -76,7 +76,7 @@ html(lang="pl-PL")
               div
                 select#collection(name="collection", autocomplete="off")
                   option(value="", selected, disabled, hidden) wybierz kolekcję
-                  option(value="0") Utwórz nową
+                  option(value="0")= "<Utwórz nową>"
                   each collection in collections
                     option(value=collection.id) #{ collection.title }
             .row
@@ -125,5 +125,17 @@ html(lang="pl-PL")
                 td -
                 td -
                 td -
+      #captions.captions-tab.utility-window.hidden
+        div
+          table
+            thead
+              tr
+                th TEKST
+                th KOLOR
+                th ROZMIAR
+                th X
+                th Y
+                th 
+            tbody
     #map
       canvas#map-canvas(width="100", height="100")
