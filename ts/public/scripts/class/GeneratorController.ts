@@ -89,7 +89,7 @@ class GeneratorController {
     this.#captionsTab.render();
     return true;
   }
-  addMark(tribeTag: string, groupName: string, options?: { skipUpdate?: boolean }): boolean {
+  addMark(groupName: string, tribeTag: string, options?: { skipUpdate?: boolean }): boolean {
     if (this.turn === -1) return false;
     const group = this.markGroups.find((element) => element.name === groupName);
     const tribe = this.findTribe(tribeTag);
@@ -143,7 +143,7 @@ class GeneratorController {
       );
       for (let tribeId of group.tribes) {
         const tribe = this.tribes[tribeId];
-        if (tribe) this.addMark(tribe.tag, group.name, { skipUpdate: true });
+        if (tribe) this.addMark(group.name, tribe.tag, { skipUpdate: true });
       }
     }
     this.#canvasFrame.render();
@@ -192,25 +192,23 @@ class GeneratorController {
     this.#canvasFrame.render();
     return true;
   }
-  changeMarkGroupColor(name: string, color: string): boolean {
+  changeMarkGroupColor(markGroupIndex: number, newColor: string): boolean {
     if (this.turn === -1) return false;
-    const groupIndex = this.markGroups.findIndex((element) => element.name === name);
-    if (groupIndex === -1) return false;
-    if (!isValidColor(color)) return false;
-    const group = this.markGroups[groupIndex];
-    group.color = color;
+    const markGroup = this.markGroups[markGroupIndex];
+    if (!markGroup) return false;
+    if (!isValidColor(newColor)) return false;
+    markGroup.color = newColor;
     this.#canvasFrame.render();
     this.#markGroupsTab.render();
     return true;
   }
-  changeMarkGroupName(oldName: string, newName: string): boolean {
+  changeMarkGroupName(markGroupIndex: number, newName: string): boolean {
     if (this.turn === -1) return false;
-    const groupIndex = this.markGroups.findIndex((element) => element.name === oldName);
-    if (groupIndex === -1) return false;
-    const group = this.markGroups[groupIndex];
+    const markGroup = this.markGroups[markGroupIndex];
+    if (!markGroup) return false;
     if (!isValidGroupName(newName)) return false;
     if (this.isGroupNameTaken(newName)) return false;
-    group.name = newName;
+    markGroup.name = newName;
     this.#canvasFrame.render();
     this.#markGroupsTab.render();
     this.#suggestionsTab.render();
@@ -259,13 +257,13 @@ class GeneratorController {
     this.#canvasFrame.render();
     return true;
   }
-  deleteMark(groupName: string, tribeTag: string): boolean {
+  deleteMark(markGroupIndex: number, tribeTag: string): boolean {
     if (this.turn === -1) return false;
-    const group = this.markGroups.find((element) => element.name === groupName);
-    if (group === undefined) return false;
-    const tribeIndex = group.tribes.findIndex((tribeId) => this.tribes[tribeId].tag === tribeTag);
+    const markGroup = this.markGroups[markGroupIndex];
+    if (!markGroup) return false;
+    const tribeIndex = markGroup.tribes.findIndex((tribeId) => this.tribes[tribeId].tag === tribeTag);
     if (tribeIndex === -1) return false;
-    group.tribes.splice(tribeIndex, 1);
+    markGroup.tribes.splice(tribeIndex, 1);
     this.sortMarkGroups();
     this.#canvasFrame.render();
     this.#markGroupsTab.render();
@@ -273,10 +271,9 @@ class GeneratorController {
     this.#suggestionsTab.render();
     return true;
   }
-  deleteMarkGroup(name: string): boolean {
-    const groupIndex = this.markGroups.findIndex((element) => element.name === name);
-    if (groupIndex === -1) return false;
-    this.markGroups.splice(groupIndex, 1);
+  deleteMarkGroup(markGroupIndex: number): boolean {
+    if (!this.markGroups[markGroupIndex]) return false;
+    this.markGroups.splice(markGroupIndex, 1);
     this.#canvasFrame.render();
     this.#markGroupsTab.render();
     this.#settingsTab.update();
@@ -293,12 +290,12 @@ class GeneratorController {
     this.data[turn] = turnData;
     return true;
   }
-  findTribe(tag: string): Tribe | false {
-    if (!this.tribes) return false;
+  findTribe(tag: string): Tribe | null {
+    if (!this.tribes) return null;
     for (const tribeId in this.tribes) {
       if (this.tribes[tribeId].tag === tag) return this.tribes[tribeId];
     }
-    return false;
+    return null;
   }
   forceRenderCanvas = () => {
     this.#canvasFrame.render({ force: true });

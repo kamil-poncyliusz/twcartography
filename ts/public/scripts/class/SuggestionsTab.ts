@@ -25,7 +25,7 @@ class SuggestionsTab {
       if (!isMarkGroupAdded) return console.log("Failed to create a new group");
       selectedGroupName = groupName;
     }
-    const isMarkAdded = this.#generator.addMark(suggestionTribeTag, selectedGroupName);
+    const isMarkAdded = this.#generator.addMark(selectedGroupName, suggestionTribeTag);
     if (!isMarkAdded) return console.log("Failed to add a new mark");
   };
   render() {

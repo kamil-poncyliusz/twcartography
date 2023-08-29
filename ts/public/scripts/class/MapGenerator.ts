@@ -5,7 +5,7 @@ import { MAX_VILLAGE_POINTS, TRIBAL_WARS_MAP_SIZE } from "../constants.js";
 const canvasModule = typeof process === "object" ? await import("canvas") : null;
 
 const LEGEND_FONT_SIZE = 5;
-const LEGEND_FONT_FAMILY = "sans-serif";
+const CANVAS_FONT_FAMILY = "sans-serif";
 
 interface RawPixel {
   color: ParsedColor;
@@ -22,10 +22,10 @@ interface ScaledPixel {
   y: number;
 }
 
-const NW = 0,
-  NE = 1,
-  SW = 2,
-  SE = 3;
+const NORTH_WEST = 0,
+  NORTH_EAST = 1,
+  SOUTH_WEST = 2,
+  SOUTH_EAST = 3;
 
 class Legend {
   #groups: { [key: string]: { color: string; corners: number[] } } = {};
@@ -40,11 +40,11 @@ class Legend {
   add(groupName: string, x: number, y: number) {
     if (this.#groups[groupName] === undefined) return;
     if (y < 500) {
-      if (x < 500) this.#groups[groupName].corners[NW]++;
-      else this.#groups[groupName].corners[NE]++;
+      if (x < 500) this.#groups[groupName].corners[NORTH_WEST]++;
+      else this.#groups[groupName].corners[NORTH_EAST]++;
     } else {
-      if (x < 500) this.#groups[groupName].corners[SW]++;
-      else this.#groups[groupName].corners[SE]++;
+      if (x < 500) this.#groups[groupName].corners[SOUTH_WEST]++;
+      else this.#groups[groupName].corners[SOUTH_EAST]++;
     }
   }
   getLegend() {
@@ -402,7 +402,7 @@ class MapGenerator {
       ctx.textAlign = "left";
       ctx.textBaseline = "top";
       for (let caption of captions) {
-        ctx.font = `${caption.fontSize}px ${LEGEND_FONT_FAMILY}`;
+        ctx.font = `${caption.fontSize}px ${CANVAS_FONT_FAMILY}`;
         ctx.fillStyle = caption.color;
         ctx.fillText(caption.text, caption.x, caption.y);
       }
@@ -418,7 +418,7 @@ class MapGenerator {
       ctx.textAlign = "left";
       ctx.textBaseline = "top";
       for (let caption of captions) {
-        ctx.font = `${caption.fontSize}px ${LEGEND_FONT_FAMILY}`;
+        ctx.font = `${caption.fontSize}px ${CANVAS_FONT_FAMILY}`;
         ctx.fillStyle = caption.color;
         ctx.fillText(caption.text, caption.x, caption.y);
       }
@@ -440,19 +440,19 @@ class MapGenerator {
       if (ctx === null) return;
       ctx.putImageData(imageData, 0, 0);
       const fontSize = Math.floor((width / 100) * LEGEND_FONT_SIZE);
-      ctx.font = `${fontSize}px ${LEGEND_FONT_FAMILY}`;
+      ctx.font = `${fontSize}px ${CANVAS_FONT_FAMILY}`;
       for (let cornerIndex = 0; cornerIndex < legend.length; cornerIndex++) {
         let step = 0,
           startX = 0,
           startY = 0;
-        if (cornerIndex === NW || cornerIndex === NE) {
+        if (cornerIndex === NORTH_WEST || cornerIndex === NORTH_EAST) {
           step = fontSize;
           startY = Math.round(fontSize * 0.9);
         } else {
           step = -fontSize;
           startY = Math.round(height - fontSize * 0.2);
         }
-        if (cornerIndex === NW || cornerIndex === SW) {
+        if (cornerIndex === NORTH_WEST || cornerIndex === SOUTH_WEST) {
           ctx.textAlign = "left";
           startX = Math.round(fontSize * 0.1);
         } else {
@@ -477,19 +477,19 @@ class MapGenerator {
       if (ctx === null) return;
       ctx.putImageData(imageData, 0, 0);
       const fontSize = Math.floor((width / 100) * LEGEND_FONT_SIZE);
-      ctx.font = `${fontSize}px ${LEGEND_FONT_FAMILY}`;
+      ctx.font = `${fontSize}px ${CANVAS_FONT_FAMILY}`;
       for (let cornerIndex = 0; cornerIndex < legend.length; cornerIndex++) {
         let step = 0,
           startX = 0,
           startY = 0;
-        if (cornerIndex === NW || cornerIndex === NE) {
+        if (cornerIndex === NORTH_WEST || cornerIndex === NORTH_EAST) {
           step = fontSize;
           startY = Math.round(fontSize * 0.9);
         } else {
           step = -fontSize;
           startY = Math.round(height - fontSize * 0.2);
         }
-        if (cornerIndex === NW || cornerIndex === SW) {
+        if (cornerIndex === NORTH_WEST || cornerIndex === SOUTH_WEST) {
           ctx.textAlign = "left";
           startX = Math.round(fontSize * 0.1);
         } else {

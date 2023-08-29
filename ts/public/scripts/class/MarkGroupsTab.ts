@@ -4,12 +4,12 @@ import { randomizeGroupColor } from "../utils.js";
 
 const markGroupsTableBody = document.querySelector("#mark-groups table tbody") as HTMLTableSectionElement | null;
 
-const findGroupName = function (element: Element): string {
+const getMarkGroupIndex = function (element: Element): number {
   const row = element.closest("tr");
-  if (!row) return "";
-  const groupNameInput = row.querySelector(".group-name > input") as HTMLInputElement | null;
-  if (!groupNameInput) return "";
-  return groupNameInput.value;
+  if (!row) return -1;
+  const index = parseInt(row.dataset.markGroupIndex ?? "");
+  if (isNaN(index) || index < 0) return -1;
+  return index;
 };
 
 const generateMarkGroupRowInnerHTML = function (group: MarkGroup, tribes: { [key: string]: Tribe }): string {
@@ -22,7 +22,7 @@ const generateMarkGroupRowInnerHTML = function (group: MarkGroup, tribes: { [key
   const villages = group.tribes.reduce((sum, tribeId) => sum + tribes[tribeId].villages.length, 0);
   const points = group.tribes.reduce((sum, tribeId) => sum + tribes[tribeId].points, 0);
   innerHTML = `<td class='group-tribes'><div>${innerHTML}</div></td>`;
-  innerHTML += `<td class='group-name'><input type='text' value='${group.name}' data-old-name='${group.name}' placeholder='nazwa'></td>`;
+  innerHTML += `<td class='group-name'><input type='text' value='${group.name}' placeholder='nazwa'></td>`;
   innerHTML += `<td><input type='color' title='Kliknij prawym aby wylosować kolor' value='${group.color}' style='background-color:${group.color};'></td>`;
   innerHTML += `<td>${group.tribes.length}</td><td>${players}</td><td>${villages}</td><td>${points}</td>`;
   innerHTML += `<td><button class='delete-group delete-button'>X</button></td>`;
@@ -35,39 +35,39 @@ class MarkGroupsTab {
     this.#generator = generatorController;
   }
   deleteMarkGroup = (e: Event) => {
-    const deleteMarkGroupButton = e.target as HTMLButtonElement;
-    const groupName = findGroupName(deleteMarkGroupButton);
-    const isDeleted = this.#generator.deleteMarkGroup(groupName);
+    const button = e.target as HTMLButtonElement;
+    const markGroupIndex = getMarkGroupIndex(button);
+    const isDeleted = this.#generator.deleteMarkGroup(markGroupIndex);
     if (!isDeleted) console.log("Failed to delete a mark group");
   };
   changeGroupColor = (e: Event) => {
-    const colorInput = e.target as HTMLInputElement;
-    const newColor = colorInput.value;
-    const groupName = findGroupName(colorInput);
-    const isGroupColorChanged = this.#generator.changeMarkGroupColor(groupName, newColor);
+    const input = e.target as HTMLInputElement;
+    const newColor = input.value;
+    const markGroupIndex = getMarkGroupIndex(input);
+    const isGroupColorChanged = this.#generator.changeMarkGroupColor(markGroupIndex, newColor);
     if (!isGroupColorChanged) console.log("Failed to change a group color");
   };
   changeGroupName = (e: Event) => {
-    const nameInput = e.target as HTMLInputElement;
-    const newName = nameInput.value;
-    const oldName = nameInput.dataset.oldName ?? "";
-    const isGroupNameChanged = this.#generator.changeMarkGroupName(oldName, newName);
-    if (isGroupNameChanged) nameInput.classList.remove("is-invalid");
-    else nameInput.classList.add("is-invalid");
+    const input = e.target as HTMLInputElement;
+    const newName = input.value;
+    const markGroupIndex = getMarkGroupIndex(input);
+    const isGroupNameChanged = this.#generator.changeMarkGroupName(markGroupIndex, newName);
+    if (isGroupNameChanged) input.classList.remove("is-invalid");
+    else input.classList.add("is-invalid");
   };
   deleteMark = (e: Event) => {
-    const deleteMarkButton = e.target as HTMLElement;
-    const tribeTag = deleteMarkButton.textContent ?? "";
-    const groupName = findGroupName(deleteMarkButton);
-    const isMarkDeleted = this.#generator.deleteMark(groupName, tribeTag);
+    const button = e.target as HTMLElement;
+    const tribeTag = button.textContent ?? "";
+    const markGroupIndex = getMarkGroupIndex(button);
+    const isMarkDeleted = this.#generator.deleteMark(markGroupIndex, tribeTag);
     if (!isMarkDeleted) console.log("Failed to delete a mark");
   };
   randomizeColor = (e: Event) => {
     e.preventDefault();
-    const colorInput = e.target as HTMLInputElement;
-    const groupName = findGroupName(colorInput);
+    const input = e.target as HTMLInputElement;
+    const markGroupIndex = getMarkGroupIndex(input);
     const newColor = randomizeGroupColor();
-    const isGroupColorChanged = this.#generator.changeMarkGroupColor(groupName, newColor);
+    const isGroupColorChanged = this.#generator.changeMarkGroupColor(markGroupIndex, newColor);
     if (!isGroupColorChanged) console.log("Failed to change a group color");
   };
   render() {
@@ -75,10 +75,12 @@ class MarkGroupsTab {
     const tribes = this.#generator.tribes;
     if (!markGroupsTableBody) return;
     markGroupsTableBody.innerHTML = "";
-    for (let group of markGroups) {
+    for (let index = 0; index < markGroups.length; index++) {
+      const group = markGroups[index];
       const newRow = document.createElement("tr");
       const rowContent = generateMarkGroupRowInnerHTML(group, tribes);
       newRow.innerHTML = rowContent;
+      newRow.dataset.markGroupIndex = String(index);
       markGroupsTableBody.appendChild(newRow);
     }
     markGroupsTableBody.querySelectorAll(".mark").forEach((markButton) => {
