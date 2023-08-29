@@ -4,9 +4,9 @@ import gifencoder from "gifencoder";
 
 const saveCollectionGif = async function (animationId: number, frames: number[], frameDelay: number) {
   try {
-    const firstFrame = await loadImage(`public/images/maps/${frames[0]}.png`);
-    const width = firstFrame.width;
-    const height = firstFrame.height;
+    const lastFrame = await loadImage(`public/images/maps/${frames[frames.length - 1]}.png`);
+    const width = lastFrame.width;
+    const height = lastFrame.height;
     const encoder = new gifencoder(width, height);
     if (!fs.existsSync("public/images/animations")) fs.mkdirSync("public/images/animations");
     encoder.createReadStream().pipe(fs.createWriteStream(`public/images/animations/${animationId}.gif`));

@@ -147,6 +147,8 @@ const deleteCollection = async function () {
   const payload = {
     id: id,
   };
+  const isDeletionConfirmed = confirm("Na pewno chcesz usunąć całą kolekcję?");
+  if (!isDeletionConfirmed) return;
   const isDeleted: Awaited<ReturnType<typeof handleDeleteCollection>> = await postRequest("/api/collection/delete", payload);
   if (isDeleted) window.location.href = "/";
   else console.log("Failed to delete this collection");

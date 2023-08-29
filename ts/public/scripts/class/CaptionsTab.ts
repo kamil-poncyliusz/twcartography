@@ -4,12 +4,12 @@ import GeneratorController from "./GeneratorController.js";
 const captionsTableBody = document.querySelector("#captions table tbody") as HTMLTableSectionElement | null;
 
 const generateCaptionRowInnerHTML = function (caption: Caption): string {
-  let innerHTML = `<td><input type='text' class='fill-cell caption-text' value="${caption.text}"></td>`;
-  innerHTML += `<td><input type='color' class='fill-cell caption-color' value="${caption.color}"></td>`;
-  innerHTML += `<td><input type='number' class='fill-cell caption-font-size' value="${caption.fontSize}"></td>`;
-  innerHTML += `<td><input type='number' class='fill-cell caption-x' value="${caption.x}"></td>`;
-  innerHTML += `<td><input type='number' class='fill-cell caption-y' value="${caption.y}"></td>`;
-  innerHTML += `<td><button class='fill-cell delete-button delete-caption'>X</button></td>`;
+  let innerHTML = `<td><input type='text' class='caption-text' value="${caption.text}"></td>`;
+  innerHTML += `<td><input type='color' class='caption-color' value="${caption.color}"></td>`;
+  innerHTML += `<td><input type='number' class='caption-font-size' value="${caption.fontSize}"></td>`;
+  innerHTML += `<td><input type='number' class='caption-x' value="${caption.x}"></td>`;
+  innerHTML += `<td><input type='number' class='caption-y' value="${caption.y}"></td>`;
+  innerHTML += `<td><button class='delete-button delete-caption'>X</button></td>`;
   return innerHTML;
 };
 
@@ -99,12 +99,12 @@ class CaptionsTab {
       captionsTableBody.appendChild(newRow);
     }
     const newCaptionRow = document.createElement("tr");
-    let rowContent = "<td><input type='text' class='fill-cell new-caption-text'></td>";
-    rowContent += "<td><input type='color' class='fill-cell new-caption-color' value='#FFFFFF'></td>";
-    rowContent += "<td><input type='number' class='fill-cell new-caption-font-size' value='10'></td>";
-    rowContent += "<td><input type='number' class='fill-cell new-caption-x' value='0'></td>";
-    rowContent += "<td><input type='number' class='fill-cell new-caption-y' value='0'></td>";
-    rowContent += "<td><button class='fill-cell add-new-caption'>+</button></td>";
+    let rowContent = "<td><input type='text' class='new-caption-text'></td>";
+    rowContent += "<td><input type='color' class='new-caption-color' value='#FFFFFF'></td>";
+    rowContent += "<td><input type='number' class='new-caption-font-size' value='10'></td>";
+    rowContent += "<td><input type='number' class='new-caption-x' value='0'></td>";
+    rowContent += "<td><input type='number' class='new-caption-y' value='0'></td>";
+    rowContent += "<td><button class='add-new-caption'>+</button></td>";
     newCaptionRow.innerHTML = rowContent;
     captionsTableBody.appendChild(newCaptionRow);
     const addNewCaptionButton = newCaptionRow.querySelector(".add-new-caption") as HTMLButtonElement | null;

@@ -44,7 +44,7 @@ class SuggestionsTab {
       let rowInnerHTML = "";
       rowInnerHTML += `<td class='suggestion-name'>${tribe.name}</td><td class='suggestion-tag'>${tribe.tag}</td>`;
       rowInnerHTML += `<td>${tribe.players}</td><td>${tribe.villages.length}</td><td>${tribe.points}</td>`;
-      rowInnerHTML += `<td><select class="fill-cell">${groupOptions}</select></td>`;
+      rowInnerHTML += `<td><select>${groupOptions}</select></td>`;
       newRow.innerHTML = rowInnerHTML;
       suggestionsTableBody.appendChild(newRow);
     }
