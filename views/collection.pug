@@ -53,7 +53,7 @@ html(lang="pl-PL")
               size="20"
             )
           if isAuthor || isAdmin
-            button#delete-collection.label-button(type="button") usuń
+            button#delete-collection.label-button(type="button") usuń kolekcję
         div
           span= `Stworzona przez `
           a.label-button(href=`/user/${collection.author.id}`) #{ collection.author.login }
@@ -70,7 +70,7 @@ html(lang="pl-PL")
             else
               input#map-title(type="text", name="map-title", placeholder="Tytuł", value="", readonly="readonly", autocomplete="off", size="20")
             if isAuthor || isAdmin
-              button#delete-map.label-button(type="button") usuń
+              button#delete-map.label-button(type="button") usuń mapę
           div
             if isAuthor
               textarea#map-description(cols="1", autocomplete="off")

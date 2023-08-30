@@ -9,6 +9,7 @@
   --light-font: #a1a1a1;
   --disabled-font: #707070;
   --danger: #800000;
+  --success: #004000;
   --navbar-height: 2rem;
 }
 @media (max-width: 1920px) {
@@ -228,4 +229,12 @@ a.block-element {
 }
 .hidden {
   display: none;
+}
+.success {
+  background-color: var(--success);
+  color: var(--font);
+}
+.danger {
+  background-color: var(--danger);
+  color: var(--font);
 }

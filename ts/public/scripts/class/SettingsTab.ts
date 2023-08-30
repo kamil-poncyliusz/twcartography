@@ -26,6 +26,28 @@ const mapDescriptionInput = document.getElementById("map-description") as HTMLIn
 const mapTitleInput = document.getElementById("map-title") as HTMLInputElement | null;
 const worldSelect = document.getElementById("world-select") as HTMLSelectElement | null;
 
+const sendAndHandleCreateMapRequest = async function (payload: CreateMapRequestPayload) {
+  if (!mapTitleInput || !mapDescriptionInput || !collectionSelect || !publishMapButton) return;
+  publishMapButton.disabled = true;
+  publishMapButton.innerHTML = "oczekiwanie";
+  const createMapResponse: Awaited<ReturnType<typeof handleCreateMap>> = await postRequest("/api/map/create", payload);
+  if (!createMapResponse.success) {
+    publishMapButton.innerHTML = "Wystąpił błąd";
+    publishMapButton.classList.add("danger");
+    return console.log("Failed to publish the map");
+  }
+  if (createMapResponse.newCollection) {
+    const newOptionElement = document.createElement("option");
+    newOptionElement.value = String(createMapResponse.newCollection.id);
+    newOptionElement.innerHTML = createMapResponse.newCollection.title;
+    collectionSelect.add(newOptionElement);
+    newOptionElement.selected = true;
+  }
+  publishMapButton.innerHTML = "Dodałeś mapę do kolekcji";
+  publishMapButton.classList.add("success");
+  console.log("Map published succesfully");
+};
+
 class SettingsTab {
   #generator: GeneratorController;
   constructor(generatorController: GeneratorController) {
@@ -168,10 +190,10 @@ class SettingsTab {
         break;
       }
       case CreateMapRequestValidationCode.Ok: {
-        const createdMapId: Awaited<ReturnType<typeof handleCreateMap>> = await postRequest("/api/map/create", payload);
-        if (createdMapId === 0) console.log("Failed to publish the map");
-        else console.log("Map published succesfully");
         collectionSelect.classList.remove("is-invalid");
+        mapDescriptionInput.classList.remove("is-invalid");
+        mapTitleInput.classList.remove("is-invalid");
+        sendAndHandleCreateMapRequest(payload);
       }
     }
   };
@@ -201,6 +223,11 @@ class SettingsTab {
       if (!inputs.displayUnmarked.checked) inputs.unmarkedColor.disabled = true;
       if (inputs.trim.checked) inputs.outputWidth.disabled = true;
       if (inputs.autoRefresh.checked && generateButton) generateButton.disabled = true;
+      if (publishMapButton) {
+        publishMapButton.disabled = false;
+        publishMapButton.innerHTML = "Dodaj do kolekcji";
+        publishMapButton.classList.remove("success", "danger");
+      }
     }
     const turnPlaceholder = this.#generator.latestTurn >= 0 ? `0-${this.#generator.latestTurn}` : "-";
     inputs.turn.setAttribute("placeholder", turnPlaceholder);

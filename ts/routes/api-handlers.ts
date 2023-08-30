@@ -40,6 +40,14 @@ import { CreateMapRequestPayload, CreateWorldRequestPayload, ParsedTurnData } fr
 import saveAnimationGif from "../src/save-animation-gif.js";
 import turnDataDownloaderDaemon from "../src/turn-data-downloader-daemon.js";
 
+interface CreateMapResponse {
+  success: boolean;
+  newCollection?: {
+    id: number;
+    title: string;
+  };
+}
+
 const createWorldDirectory = async function (payload: CreateWorldRequestPayload): Promise<boolean> {
   const worldDirectoryName = payload.timestamp.toString(36);
   const worldDirectoryPath = `${process.env.ROOT}/temp/${worldDirectoryName}`;
@@ -93,32 +101,34 @@ export const handleReadTurnData = async function (req: Request): Promise<ParsedT
   return data;
 };
 
-export const handleCreateMap = async function (req: Request): Promise<number> {
-  if (!req.session.user || req.session.user.rank < 2) return 0;
+export const handleCreateMap = async function (req: Request): Promise<CreateMapResponse> {
+  if (!req.session.user || req.session.user.rank < 2) return { success: false };
   const authorId = req.session.user.id;
-  const payload: CreateMapRequestPayload = {
+  const newMapPayload: CreateMapRequestPayload = {
     settings: req.body.settings,
     title: req.body.title,
     description: req.body.description,
     collection: req.body.collection,
   };
-  const settings = payload.settings;
+  const settings = newMapPayload.settings;
   const encodedSettings = encodeSettings(settings);
-  const payloadValidationCode = isValidCreateMapRequestPayload(payload);
-  if (payloadValidationCode !== CreateMapRequestValidationCode.Ok) return 0;
+  const payloadValidationCode = isValidCreateMapRequestPayload(newMapPayload);
+  if (payloadValidationCode !== CreateMapRequestValidationCode.Ok) return { success: false };
   const turnData = await readTurnData(settings.world, settings.turn);
-  if (turnData === null) return 0;
+  if (turnData === null) return { success: false };
   const generator = new MapGenerator(turnData, settings);
-  if (payload.collection === 0) {
-    const collectionTitle = `Nowa kolekcja ${req.session.user.login}`;
-    const createdCollection = await createCollection(settings.world, authorId, collectionTitle, "bez opisu");
-    if (!createdCollection) return 0;
-    payload.collection = createdCollection.id;
+  const collectionExists = newMapPayload.collection > 0;
+  const newCollectionTitle = `Nowa kolekcja ${req.session.user.login}`;
+  if (!collectionExists) {
+    const createdCollection = await createCollection(settings.world, authorId, newCollectionTitle, "bez opisu");
+    if (!createdCollection) return { success: false };
+    newMapPayload.collection = createdCollection.id;
   }
-  const createdMap = await createMap(settings.turn, payload.title, payload.description, encodedSettings, payload.collection);
-  if (!createdMap) return 0;
+  const createdMap = await createMap(settings.turn, newMapPayload.title, newMapPayload.description, encodedSettings, newMapPayload.collection);
+  if (!createdMap) return { success: false };
   saveMapPng(createdMap.id, generator.imageData as ImageData);
-  return createdMap.id;
+  if (collectionExists) return { success: true };
+  else return { success: true, newCollection: { id: createdMap.id, title: newCollectionTitle } };
 };
 
 export const handleCreateWorld = async function (req: Request): Promise<boolean> {
