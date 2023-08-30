@@ -1,4 +1,4 @@
-import fs from "fs";
+import fs from "fs/promises";
 import scheduler from "node-schedule";
 import { DownloaderHelper } from "node-downloader-helper";
 import { createTurnData, readWorlds } from "./queries/index.js";
@@ -20,7 +20,7 @@ const downloadWorldDataFile = function (url: string, path: string, filename: str
       reject();
     });
     dl.start().catch((err) => {
-      console.log("DOwnload failed ", err);
+      console.log("Download failed ", err);
       reject();
     });
   });
@@ -28,13 +28,15 @@ const downloadWorldDataFile = function (url: string, path: string, filename: str
 const downloadWorldData = async function (world: World, turn: number) {
   const files = ["village", "player", "ally", "conquer", "kill_all_tribe", "kill_att_tribe", "kill_def_tribe"];
   const worldDirectoryName = world.startTimestamp.toString(36);
-  const path = `${process.env.ROOT}/temp/${worldDirectoryName}`;
-  if (!fs.existsSync(path)) fs.mkdirSync(path);
-  const turnPath = `${path}/${turn}`;
-  if (!fs.existsSync(turnPath)) fs.mkdirSync(turnPath);
+  const turnDirectoryPath = `${process.env.ROOT}/temp/${worldDirectoryName}/${turn}`;
+  try {
+    await fs.access(turnDirectoryPath);
+  } catch {
+    await fs.mkdir(turnDirectoryPath, { recursive: true });
+  }
   const downloadPromises = files.map((file) => {
     const url = `https://${world.server}${world.num}.${world.domain}/map/${file}.txt.gz`;
-    return downloadWorldDataFile(url, turnPath, file);
+    return downloadWorldDataFile(url, turnDirectoryPath, file);
   });
   try {
     await Promise.all(downloadPromises);
@@ -64,7 +66,7 @@ const turnDataDownloaderDaemon = {
       const success = await downloadWorldData(world, turn);
       if (success) {
         console.log(`Downloading turn ${turn} of ${world.server}${world.num} completed`);
-        const parsedWorldData = parseTurnData(worldDirectoryName, turn);
+        const parsedWorldData = await parseTurnData(worldDirectoryName, turn);
         const isCreated = await createTurnData(world.id, turn, parsedWorldData);
         if (isCreated) console.log(`Turn data created for ${turn} turn of ${world.server + world.num}`);
         else console.log(`Failed to create turn data record in database`);

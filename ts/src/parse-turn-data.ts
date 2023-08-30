@@ -1,11 +1,11 @@
-import fs from "fs";
+import { promises as fs } from "fs";
 import zlib from "zlib";
 import { ParsedTurnData } from "./Types";
 
-const parseFile = function (worldDirectoryName: string, turn: number, name: string): string[] {
+const parseFile = async function (worldDirectoryName: string, turn: number, name: string): Promise<string[]> {
   const path = `temp/${worldDirectoryName}/${turn}/${name}.txt.gz`;
   try {
-    const fileData = fs.readFileSync(path);
+    const fileData = await fs.readFile(path);
     const unzipped = zlib.unzipSync(fileData);
     let rows = unzipped.toString().split(/\r?\n/);
     rows.splice(-1);
@@ -16,7 +16,7 @@ const parseFile = function (worldDirectoryName: string, turn: number, name: stri
   }
 };
 
-const parseTurnData = function (worldDirectoryName: string, turn: number): ParsedTurnData {
+const parseTurnData = async function (worldDirectoryName: string, turn: number): Promise<ParsedTurnData> {
   const parsedData: ParsedTurnData = {
     conquer: {},
     tribes: {},
@@ -37,7 +37,7 @@ const parseTurnData = function (worldDirectoryName: string, turn: number): Parse
     villages: [],
   };
   const playerTribeIds: { [key: string]: string } = {};
-  const tribesData = parseFile(worldDirectoryName, turn, "ally");
+  const tribesData = await parseFile(worldDirectoryName, turn, "ally");
   for (let i = 0; i < tribesData.length; i++) {
     const [id, name, tag, players, villages, points, allPoints, rank] = tribesData[i].split(",");
     parsedData.tribes[id] = {
@@ -52,12 +52,12 @@ const parseTurnData = function (worldDirectoryName: string, turn: number): Parse
       killDef: 0,
     };
   }
-  const playersData = parseFile(worldDirectoryName, turn, "player");
+  const playersData = await parseFile(worldDirectoryName, turn, "player");
   for (let i = 0; i < playersData.length; i++) {
     const [id, name, tribeId, villages, points, rank] = playersData[i].split(",");
     playerTribeIds[id] = tribeId;
   }
-  const villagesData = parseFile(worldDirectoryName, turn, "village");
+  const villagesData = await parseFile(worldDirectoryName, turn, "village");
   const villagePointsArray: number[] = [];
   for (let i = 0; i < villagesData.length; i++) {
     const [id, name, x, y, playerId, points, rank] = villagesData[i].split(",");
@@ -86,7 +86,7 @@ const parseTurnData = function (worldDirectoryName: string, turn: number): Parse
     villagePointsSum += villagePointsArray[i];
   }
   parsedData.averageVillagePoints = Math.round(villagePointsSum / villagePointsArray.length);
-  const killAllData = parseFile(worldDirectoryName, turn, "kill_all_tribe");
+  const killAllData = await parseFile(worldDirectoryName, turn, "kill_all_tribe");
   for (let i = 0; i < killAllData.length; i++) {
     const [rank, id, score] = killAllData[i].split(",");
     if (parsedData.tribes[id] === undefined) {
@@ -95,7 +95,7 @@ const parseTurnData = function (worldDirectoryName: string, turn: number): Parse
       parsedData.tribes[id].killAll = parseInt(score);
     }
   }
-  const killAttData = parseFile(worldDirectoryName, turn, "kill_att_tribe");
+  const killAttData = await parseFile(worldDirectoryName, turn, "kill_att_tribe");
   for (let i = 0; i < killAttData.length; i++) {
     const [rank, id, score] = killAttData[i].split(",");
     if (parsedData.tribes[id] === undefined) {
@@ -104,7 +104,7 @@ const parseTurnData = function (worldDirectoryName: string, turn: number): Parse
       parsedData.tribes[id].killAtt = parseInt(score);
     }
   }
-  const killDefData = parseFile(worldDirectoryName, turn, "kill_def_tribe");
+  const killDefData = await parseFile(worldDirectoryName, turn, "kill_def_tribe");
   for (let i = 0; i < killDefData.length; i++) {
     const [rank, id, score] = killDefData[i].split(",");
     if (parsedData.tribes[id] === undefined) {
@@ -113,7 +113,7 @@ const parseTurnData = function (worldDirectoryName: string, turn: number): Parse
       parsedData.tribes[id].killDef = parseInt(score);
     }
   }
-  const conquerData = parseFile(worldDirectoryName, turn, "conquer");
+  const conquerData = await parseFile(worldDirectoryName, turn, "conquer");
   for (let i = 0; i < conquerData.length; i++) {
     const [id, timestamp, newOwner, oldOwner] = conquerData[i].split(",");
   }

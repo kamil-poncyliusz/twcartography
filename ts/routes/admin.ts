@@ -13,7 +13,7 @@ admin.get("/worlds", async (req, res) => {
 });
 admin.get("/world-data", async (req, res) => {
   const worldsWithWorldData = await readWorldsWithWorldData();
-  const worldDataStates = getWorldDataStates(worldsWithWorldData);
+  const worldDataStates = await getWorldDataStates(worldsWithWorldData);
   return res.render("admin/world-data", { state: worldDataStates });
 });
 admin.get("/users", async (req, res) => {

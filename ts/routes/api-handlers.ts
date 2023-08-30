@@ -1,4 +1,4 @@
-import fs from "fs";
+import { promises as fs } from "fs";
 import {
   createMap,
   readTurnData,
@@ -40,33 +40,41 @@ import { CreateMapRequestPayload, CreateWorldRequestPayload, ParsedTurnData } fr
 import saveAnimationGif from "../src/save-animation-gif.js";
 import turnDataDownloaderDaemon from "../src/turn-data-downloader-daemon.js";
 
-const createWorldDirectory = function (payload: CreateWorldRequestPayload): Promise<boolean> {
-  return new Promise((resolve, reject) => {
-    try {
-      const worldDirectoryName = payload.timestamp.toString(36);
-      const worldDirectoryPath = `${process.env.ROOT}/temp/${worldDirectoryName}`;
-      const worldDirectoryInfoFilePath = `${worldDirectoryPath}/info`;
-      if (!fs.existsSync(worldDirectoryPath)) fs.mkdirSync(worldDirectoryPath);
-      if (fs.existsSync(worldDirectoryInfoFilePath)) fs.unlinkSync(worldDirectoryInfoFilePath);
-      const fileString = Object.entries(payload)
-        .map(([key, value]) => `${key}=${value}`)
-        .join("\n");
-      fs.writeFile(worldDirectoryInfoFilePath, fileString, (error) => {
-        if (error) reject(false);
-        else resolve(true);
-      });
-    } catch {
-      reject(false);
-    }
-  });
+const createWorldDirectory = async function (payload: CreateWorldRequestPayload): Promise<boolean> {
+  const worldDirectoryName = payload.timestamp.toString(36);
+  const worldDirectoryPath = `${process.env.ROOT}/temp/${worldDirectoryName}`;
+  const worldDirectoryInfoFilePath = `${worldDirectoryPath}/info`;
+  const fileString = Object.entries(payload)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("\n");
+  try {
+    await fs.mkdir(worldDirectoryPath, { recursive: true });
+  } catch (error) {
+    console.log(error);
+  }
+  try {
+    await fs.access(worldDirectoryInfoFilePath);
+    await fs.unlink(worldDirectoryInfoFilePath);
+  } catch (error) {
+    //
+  }
+  try {
+    await fs.writeFile(worldDirectoryInfoFilePath, fileString);
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
 };
 
-const deleteWorldDirectory = function (worldDirectoryName: string) {
+const deleteWorldDirectory = async function (worldDirectoryName: string) {
   const pathToDelete = `temp/${worldDirectoryName}`;
-  if (fs.existsSync(pathToDelete))
-    fs.rm(pathToDelete, { recursive: true, force: true }, (error) => {
-      if (error) throw error;
-    });
+  try {
+    await fs.access(pathToDelete);
+    await fs.rm(pathToDelete, { recursive: true, force: true });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const handleReadWorld = async function (req: Request): Promise<World | null> {
@@ -102,7 +110,8 @@ export const handleCreateMap = async function (req: Request): Promise<number> {
   if (turnData === null) return 0;
   const generator = new MapGenerator(turnData, settings);
   if (payload.collection === 0) {
-    const createdCollection = await createCollection(settings.world, authorId, "Kolekcja", "bez opisu");
+    const collectionTitle = `Nowa kolekcja ${req.session.user.login}`;
+    const createdCollection = await createCollection(settings.world, authorId, collectionTitle, "bez opisu");
     if (!createdCollection) return 0;
     payload.collection = createdCollection.id;
   }
@@ -141,8 +150,13 @@ export const handleCreateTurnData = async function (req: Request): Promise<boole
   if (!world) return false;
   const worldDirectoryName = world.startTimestamp.toString(36);
   const worldDataFilesPath = `temp/${worldDirectoryName}/${turn}`;
-  if (!fs.existsSync(worldDataFilesPath)) return false;
-  const parsedTurnData = parseTurnData(worldDirectoryName, turn);
+  try {
+    await fs.access(worldDataFilesPath);
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+  const parsedTurnData = await parseTurnData(worldDirectoryName, turn);
   const createdWorldData = await createTurnData(world.id, turn, parsedTurnData);
   if (!createdWorldData) return false;
   return true;
