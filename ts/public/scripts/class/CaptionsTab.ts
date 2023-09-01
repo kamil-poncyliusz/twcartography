@@ -52,6 +52,7 @@ class CaptionsTab {
     const captionIndex = getCaptionIndex(colorInput);
     const isColorChanged = this.#generator.changeCaptionColor(captionIndex, newColor);
     if (!isColorChanged) colorInput.classList.add("is-invalid");
+    else colorInput.classList.remove("is-invalid");
   };
   changeCaptionFontSize = (e: Event) => {
     const fontSizeInput = e.target as HTMLInputElement;
@@ -59,6 +60,7 @@ class CaptionsTab {
     const captionIndex = getCaptionIndex(fontSizeInput);
     const isFontSizeChanged = this.#generator.changeCaptionFontSize(captionIndex, newFontSize);
     if (!isFontSizeChanged) fontSizeInput.classList.add("is-invalid");
+    else fontSizeInput.classList.remove("is-invalid");
   };
   changeCaptionText = (e: Event) => {
     const textInput = e.target as HTMLInputElement;
@@ -66,6 +68,7 @@ class CaptionsTab {
     const captionIndex = getCaptionIndex(textInput);
     const isTextChanged = this.#generator.changeCaptionText(captionIndex, newText);
     if (!isTextChanged) textInput.classList.add("is-invalid");
+    else textInput.classList.remove("is-invalid");
   };
   changeCaptionX = (e: Event) => {
     const xInput = e.target as HTMLInputElement;
@@ -73,6 +76,7 @@ class CaptionsTab {
     const captionIndex = getCaptionIndex(xInput);
     const isXChanged = this.#generator.changeCaptionX(captionIndex, newX);
     if (!isXChanged) xInput.classList.add("is-invalid");
+    else xInput.classList.remove("is-invalid");
   };
   changeCaptionY = (e: Event) => {
     const yInput = e.target as HTMLInputElement;
@@ -80,6 +84,7 @@ class CaptionsTab {
     const captionIndex = getCaptionIndex(yInput);
     const isYChanged = this.#generator.changeCaptionY(captionIndex, newY);
     if (!isYChanged) yInput.classList.add("is-invalid");
+    else yInput.classList.remove("is-invalid");
   };
   deleteCaption = (e: Event) => {
     const target = e.target as HTMLButtonElement;
@@ -101,7 +106,7 @@ class CaptionsTab {
     const newCaptionRow = document.createElement("tr");
     let rowContent = "<td><input type='text' class='new-caption-text'></td>";
     rowContent += "<td><input type='color' class='new-caption-color' value='#FFFFFF'></td>";
-    rowContent += "<td><input type='number' class='new-caption-font-size' value='10'></td>";
+    rowContent += "<td><input type='number' class='new-caption-font-size' value='40'></td>";
     rowContent += "<td><input type='number' class='new-caption-x' value='0'></td>";
     rowContent += "<td><input type='number' class='new-caption-y' value='0'></td>";
     rowContent += "<td><button class='add-new-caption'>+</button></td>";

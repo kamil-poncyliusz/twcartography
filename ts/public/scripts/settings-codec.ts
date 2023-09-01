@@ -1,5 +1,5 @@
 import { Base64 } from "./base64.js";
-import { MarkGroup, Settings } from "../../src/Types.js";
+import { Caption, MarkGroup, Settings } from "../../src/Types.js";
 
 const minorSeparator = ",";
 const majorSeparator = ";";
@@ -27,6 +27,20 @@ export const encodeSettings = function (settings: Settings): string {
   result += settings.turn + minorSeparator;
   result += settings.unmarkedColor + minorSeparator;
   result += settings.world;
+  result += majorSeparator;
+  for (const caption of settings.captions) {
+    result +=
+      majorSeparator +
+      caption.color +
+      minorSeparator +
+      String(caption.fontSize) +
+      minorSeparator +
+      caption.text +
+      minorSeparator +
+      String(caption.x) +
+      minorSeparator +
+      String(caption.y);
+  }
   const encoded = Base64.encode(result);
   return encodeURIComponent(encoded);
 };
@@ -41,24 +55,37 @@ export const decodeSettings = function (input: string): Settings | false {
     return false;
   }
   const markGroups: MarkGroup[] = [];
-  const [markGroupsString, settingsString] = string.split(majorSeparator + majorSeparator);
+  const captions: Caption[] = [];
+  const [markGroupsString, settingsString, captionsString] = string.split(majorSeparator + majorSeparator);
   if (markGroupsString === "" || !markGroupsString || settingsString === "" || !settingsString) return false;
   const markGroupsArray = markGroupsString.split(majorSeparator);
   const settingsArray = settingsString.split(minorSeparator);
+  const captionsArray = captionsString ? captionsString.split(majorSeparator) : [];
   for (const markGroup of markGroupsArray) {
     const groupArray = markGroup.split(minorSeparator);
-    const group = {
+    const group: MarkGroup = {
       name: groupArray[0],
       color: groupArray[1],
       tribes: groupArray.slice(2),
     };
     markGroups.push(group);
   }
+  for (const captionString of captionsArray) {
+    const captionArray = captionString.split(minorSeparator);
+    const caption: Caption = {
+      color: captionArray[0],
+      fontSize: parseInt(captionArray[1]),
+      text: captionArray[2],
+      x: parseInt(captionArray[3]),
+      y: parseInt(captionArray[4]),
+    };
+    captions.push(caption);
+  }
   const [backgroundColor, borderColor, displayUnmarked, outputWidth, scale, spotsFilter, trim, turn, unmarkedColor, world] = settingsArray;
   const result = {
     backgroundColor: backgroundColor,
     borderColor: borderColor,
-    captions: [],
+    captions: captions,
     displayUnmarked: parseInt(displayUnmarked) === 1 ? true : false,
     markGroups: markGroups,
     outputWidth: parseInt(outputWidth),

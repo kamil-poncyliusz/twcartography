@@ -82,11 +82,13 @@ class GeneratorController {
     if (this.world === 0 || this.turn === -1) return {};
     return this.data[this.turn].tribes;
   }
-  addCaption(caption: Caption): boolean {
+  addCaption(caption: Caption, options?: { skipUpdate?: boolean }): boolean {
     if (!isValidCaption(caption)) return false;
     this.captions.push(caption);
+    if (options?.skipUpdate) return true;
     this.#canvasFrame.render();
     this.#captionsTab.render();
+    this.#settingsTab.update();
     return true;
   }
   addMark(groupName: string, tribeTag: string, options?: { skipUpdate?: boolean }): boolean {
@@ -132,7 +134,7 @@ class GeneratorController {
     const isTurnChanged = await this.changeTurn(settings.turn);
     if (!isTurnChanged) return false;
     this.markGroups = [];
-    for (let group of settings.markGroups) {
+    for (const group of settings.markGroups) {
       this.addMarkGroup(
         {
           tribes: [],
@@ -146,7 +148,11 @@ class GeneratorController {
         if (tribe) this.addMark(group.name, tribe.tag, { skipUpdate: true });
       }
     }
+    for (const caption of settings.captions) {
+      this.addCaption(caption, { skipUpdate: true });
+    }
     this.#canvasFrame.render();
+    this.#captionsTab.render();
     this.#markGroupsTab.render();
     this.#settingsTab.update();
     this.#suggestionsTab.render();
