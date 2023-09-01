@@ -4,29 +4,42 @@ import { postRequest } from "./requests.js";
 import { selectInputValue } from "./utils.js";
 import { isValidCollectionDescription, isValidFrameDelay, isValidId, isValidMapDescription, isValidTitle } from "./validators.js";
 
-const mapTiles = document.querySelectorAll("#tiles .map-tile");
-const animationTiles = document.querySelectorAll("#tiles .animation-tile");
-const displayedMap = document.getElementById("displayed-map");
-const displayedMapImage = document.querySelector("#image-wrapper > img");
-const closeMapButton = document.getElementById("close-map");
-const previousMapButton = document.getElementById("previous-map");
-const nextMapButton = document.getElementById("next-map");
-const collectionTitle = document.getElementById("collection-title") as HTMLInputElement | null;
-const collectionDescription = document.getElementById("collection-description") as HTMLTextAreaElement | null;
-const deleteCollectionButton = document.getElementById("delete-collection");
-const mapInfo = document.getElementById("map-info");
-const mapTitle = document.getElementById("map-title") as HTMLInputElement | null;
-const mapDescription = document.getElementById("map-description") as HTMLTextAreaElement | null;
+const mapTiles = document.querySelectorAll("#tiles .map-tile") as NodeListOf<HTMLDivElement>;
+const animationTiles = document.querySelectorAll("#tiles .animation-tile") as NodeListOf<HTMLDivElement>;
+const displayedMap = document.getElementById("displayed-map") as HTMLDivElement;
+const displayedMapImage = document.querySelector("#image-wrapper > img") as HTMLImageElement;
+const closeMapButton = document.getElementById("close-map") as HTMLButtonElement;
+const previousMapButton = document.getElementById("previous-map") as HTMLButtonElement;
+const nextMapButton = document.getElementById("next-map") as HTMLButtonElement;
+const collectionTitle = document.getElementById("collection-title") as HTMLInputElement;
+const collectionDescription = document.getElementById("collection-description") as HTMLTextAreaElement;
+const deleteCollectionButton = document.getElementById("delete-collection") as HTMLButtonElement | null;
+const mapInfo = document.getElementById("map-info") as HTMLDivElement;
+const mapTitle = document.getElementById("map-title") as HTMLInputElement;
+const mapDescription = document.getElementById("map-description") as HTMLTextAreaElement;
 const deleteMapButton = document.getElementById("delete-map") as HTMLButtonElement | null;
-const encodedSettingsInput = document.getElementById("encoded-settings") as HTMLInputElement | null;
-const animationSettings = document.getElementById("animation-settings");
+const encodedSettingsInput = document.getElementById("encoded-settings") as HTMLInputElement;
+const animationSettings = document.getElementById("animation-settings") as HTMLDivElement | null;
 const animationCreatorModeCheckbox = document.getElementById("animation-creator-mode") as HTMLInputElement | null;
-const checkAllMapsButton = document.getElementById("check-all-maps") as HTMLButtonElement | null;
-const uncheckAllMapsButton = document.getElementById("uncheck-all-maps") as HTMLButtonElement | null;
+const checkAllFramesButton = document.getElementById("check-all-frames") as HTMLButtonElement | null;
+const uncheckAllFramesButton = document.getElementById("uncheck-all-frames") as HTMLButtonElement | null;
 const frameDelayInput = document.getElementById("frame-delay") as HTMLInputElement | null;
 const createAnimationButton = document.getElementById("create-animation") as HTMLButtonElement | null;
 
 let currentlyDisplayedMap: HTMLDivElement | null = null;
+
+const getCollectionId = function (): number {
+  const id = parseInt(window.location.pathname.split("/")[2]);
+  if (!isValidId(id)) throw new Error("Cannot delete collection: Invalid collection Id");
+  return id;
+};
+
+const getDisplayedMapId = function (): number {
+  if (!currentlyDisplayedMap) throw new Error("Cannot get map Id: currentlyDisplayedMap is null");
+  const mapId = parseInt(currentlyDisplayedMap.dataset.id ?? "");
+  if (!isValidId(mapId)) throw new Error("Cannot edit map: Invalid collection Id");
+  return mapId;
+};
 
 const textAreaAutoResize = function (e: Event) {
   const target = e.target as HTMLTextAreaElement;
@@ -41,49 +54,41 @@ const isAnyTextFieldFocused = function () {
 };
 
 const displayMap = function () {
-  if (!currentlyDisplayedMap) return;
-  const id = parseInt(currentlyDisplayedMap.dataset.id ?? "0");
+  if (!currentlyDisplayedMap) throw new Error("Cannot display map: currentlyDisplayedMap is null");
+  const id = parseInt(currentlyDisplayedMap.dataset.id ?? "");
   const title = currentlyDisplayedMap.dataset.title;
   const description = currentlyDisplayedMap.dataset.description;
-  if (isNaN(id)) return;
-  const src = typeof title === "string" && typeof description === "string" ? `/images/maps/${id}.png` : `/images/animations/${id}.gif`;
-  if (displayedMapImage) displayedMapImage.setAttribute("src", src);
-  if (displayedMap) displayedMap.style.visibility = "visible";
+  if (isNaN(id)) throw new Error("Cannot display map: Invalid Map Id");
+  const isAnimation = typeof title === "string" && typeof description === "string";
+  const imageSrc = isAnimation ? `/images/maps/${id}.png` : `/images/animations/${id}.gif`;
+  displayedMapImage.setAttribute("src", imageSrc);
+  displayedMap.style.visibility = "visible";
   updateMapInfo();
 };
 
 const closeMap = function () {
-  if (displayedMap) displayedMap.style.visibility = "hidden";
+  displayedMap.style.visibility = "hidden";
   currentlyDisplayedMap = null;
   updateMapInfo();
 };
 
 const viewNextMap = function () {
-  if (!currentlyDisplayedMap) return;
   if (isAnyTextFieldFocused()) return;
+  if (!currentlyDisplayedMap) throw new Error("Cannot change current map: currentlyDisplayedMap is null");
   const nextSibling = currentlyDisplayedMap.nextElementSibling as HTMLDivElement | null;
   if (nextSibling) currentlyDisplayedMap = nextSibling;
-  else {
-    const tilesContainer = currentlyDisplayedMap.parentElement as HTMLDivElement;
-    currentlyDisplayedMap = tilesContainer.lastElementChild as HTMLDivElement;
-  }
   displayMap();
 };
 
 const viewPreviousMap = function () {
-  if (!currentlyDisplayedMap) return;
   if (isAnyTextFieldFocused()) return;
+  if (!currentlyDisplayedMap) throw new Error("Cannot change current map: currentlyDisplayedMap is null");
   const previousSibling = currentlyDisplayedMap.previousElementSibling as HTMLDivElement | null;
   if (previousSibling) currentlyDisplayedMap = previousSibling;
-  else {
-    const tilesContainer = currentlyDisplayedMap.parentElement as HTMLDivElement;
-    currentlyDisplayedMap = tilesContainer.firstElementChild as HTMLDivElement;
-  }
   displayMap();
 };
 
 const updateMapInfo = function () {
-  if (!mapInfo || !mapTitle || !mapDescription || !encodedSettingsInput) return;
   const title = currentlyDisplayedMap?.dataset.title ?? "";
   const description = currentlyDisplayedMap?.dataset.description ?? "";
   const encodedSettings = currentlyDisplayedMap?.dataset.encodedSettings ?? "";
@@ -91,15 +96,16 @@ const updateMapInfo = function () {
   mapDescription.textContent = description;
   encodedSettingsInput.value = encodedSettings;
   if (currentlyDisplayedMap) {
-    if (currentlyDisplayedMap.classList.contains("map-tile")) {
+    const isAnimation = !currentlyDisplayedMap.classList.contains("map-tile");
+    if (isAnimation) {
+      mapTitle.classList.add("hidden");
+      mapDescription.classList.add("hidden");
+      encodedSettingsInput.classList.add("hidden");
+    } else {
       mapTitle.classList.remove("hidden");
       mapDescription.classList.remove("hidden");
       encodedSettingsInput.classList.remove("hidden");
       mapDescription.dispatchEvent(new Event("input"));
-    } else {
-      mapTitle.classList.add("hidden");
-      mapDescription.classList.add("hidden");
-      encodedSettingsInput.classList.add("hidden");
     }
     mapInfo.classList.remove("hidden");
     animationSettings?.classList.add("hidden");
@@ -110,17 +116,19 @@ const updateMapInfo = function () {
 };
 
 const handleTileClick = function (e: Event) {
-  let tile = e.target as HTMLDivElement;
-  if (tile.tagName === "IMG") tile = tile.closest("div[data-id]") as HTMLDivElement;
-  if (!tile) return console.log("Clicked element is not a valid tile");
-  // if (!tile || !tile.dataset.id || !tile.dataset.title || typeof tile.dataset.description !== "string") return;
+  let tile = e.target as HTMLDivElement | null;
+  if (tile?.tagName === "IMG") tile = tile.closest("div[data-id]") as HTMLDivElement | null;
+  if (!tile) throw new Error("Clicked element is not a valid tile");
   const animationCreatorMode = animationCreatorModeCheckbox !== null && animationCreatorModeCheckbox.checked;
-  if (!animationCreatorMode) currentlyDisplayedMap = tile;
-  else if (tile.classList.contains("map-tile")) {
-    if (tile.dataset.checked !== "checked") tile.dataset.checked = "checked";
-    else tile.dataset.checked = "";
+  const isTileMap = tile.classList.contains("map-tile");
+  if (!animationCreatorMode) {
+    currentlyDisplayedMap = tile;
+    displayMap();
+    return;
   }
-  displayMap();
+  if (!isTileMap) return;
+  if (tile.dataset.checked !== "checked") tile.dataset.checked = "checked";
+  else tile.dataset.checked = "";
 };
 
 const useKeyboardShortcut = function (e: KeyboardEvent) {
@@ -142,8 +150,7 @@ const useKeyboardShortcut = function (e: KeyboardEvent) {
 };
 
 const deleteCollection = async function () {
-  const id = parseInt(window.location.pathname.split("/")[2]);
-  if (!isValidId(id)) return;
+  const id = getCollectionId();
   const payload = {
     id: id,
   };
@@ -155,9 +162,8 @@ const deleteCollection = async function () {
 };
 
 const deleteMap = async function () {
-  if (!currentlyDisplayedMap) return;
-  const id = parseInt(currentlyDisplayedMap.dataset.id ?? "");
-  if (!isValidId(id)) return;
+  if (!currentlyDisplayedMap) throw new Error("Cannot get map Id: currentlyDisplayedMap is null");
+  const id = getDisplayedMapId();
   const payload = {
     id: id,
   };
@@ -169,8 +175,7 @@ const deleteMap = async function () {
 
 const editCollectionTitle = async function (e: Event) {
   const target = e.target as HTMLInputElement;
-  const collectionId = parseInt(window.location.pathname.split("/")[2]);
-  if (!isValidId(collectionId)) return;
+  const collectionId = getCollectionId();
   const newTitle = target.value;
   if (!isValidTitle(newTitle)) return target.classList.add("is-invalid");
   const isUpdated = await postRequest("/api/collection/update", { id: collectionId, title: newTitle });
@@ -180,8 +185,7 @@ const editCollectionTitle = async function (e: Event) {
 
 const editCollectionDescription = async function (e: Event) {
   const target = e.target as HTMLTextAreaElement;
-  const collectionId = parseInt(window.location.pathname.split("/")[2]);
-  if (!isValidId(collectionId)) return;
+  const collectionId = getCollectionId();
   const newDescription = target.value;
   if (!isValidCollectionDescription(newDescription)) return target.classList.add("is-invalid");
   const isUpdated = await postRequest("/api/collection/update", { id: collectionId, description: newDescription });
@@ -190,10 +194,8 @@ const editCollectionDescription = async function (e: Event) {
 };
 
 const editMapTitle = async function (e: Event) {
-  if (!currentlyDisplayedMap) return;
   const target = e.target as HTMLInputElement;
-  const mapId = parseInt(currentlyDisplayedMap.dataset.id ?? "");
-  if (!isValidId(mapId)) return;
+  const mapId = getDisplayedMapId();
   const newTitle = target.value;
   if (!isValidTitle(newTitle)) return target.classList.add("is-invalid");
   const isUpdated = await postRequest("/api/map/update", { id: mapId, title: newTitle });
@@ -202,10 +204,8 @@ const editMapTitle = async function (e: Event) {
 };
 
 const editMapDescription = async function (e: Event) {
-  if (!currentlyDisplayedMap) return;
   const target = e.target as HTMLTextAreaElement;
-  const mapId = parseInt(currentlyDisplayedMap.dataset.id ?? "");
-  if (!isValidId(mapId)) return;
+  const mapId = getDisplayedMapId();
   const newDescription = target.value;
   if (!isValidMapDescription(newDescription)) return target.classList.add("is-invalid");
   const isUpdated = await postRequest("/api/map/update", { id: mapId, description: newDescription });
@@ -214,54 +214,59 @@ const editMapDescription = async function (e: Event) {
 };
 
 const toggleCreateAnimationMode = function (e: Event) {
-  if (!checkAllMapsButton || !uncheckAllMapsButton || !frameDelayInput || !createAnimationButton) return;
+  if (!checkAllFramesButton || !uncheckAllFramesButton || !frameDelayInput || !createAnimationButton)
+    throw new Error("Animation creator interface element is null");
   const target = e.target as HTMLInputElement;
   const animationCreatorMode = target.checked;
   if (animationCreatorMode) {
-    checkAllMapsButton.disabled = false;
-    uncheckAllMapsButton.disabled = false;
+    checkAllFramesButton.disabled = false;
+    uncheckAllFramesButton.disabled = false;
     frameDelayInput.disabled = false;
     createAnimationButton.disabled = false;
   } else {
-    checkAllMapsButton.disabled = true;
-    uncheckAllMapsButton.disabled = true;
+    checkAllFramesButton.disabled = true;
+    uncheckAllFramesButton.disabled = true;
     frameDelayInput.disabled = true;
     createAnimationButton.disabled = true;
-    checkAllMaps();
+    checkAllFrames();
   }
 };
 
-const checkAllMaps = function () {
+const checkAllFrames = function () {
   mapTiles.forEach((element) => {
-    const mapTile = element as HTMLDivElement;
+    const mapTile = element;
     mapTile.dataset.checked = "checked";
   });
 };
 
-const uncheckAllMaps = function () {
+const uncheckAllFrames = function () {
   mapTiles.forEach((element) => {
-    const mapTile = element as HTMLDivElement;
+    const mapTile = element;
     mapTile.dataset.checked = "";
   });
 };
 
 const createAnimation = async function () {
-  const frameDelay = parseInt(frameDelayInput?.value ?? "");
-  if (!isValidFrameDelay(frameDelay)) return;
+  if (!frameDelayInput) throw new Error("Animation creator interface element is missing");
+  const frameDelay = parseInt(frameDelayInput.value ?? "");
+  if (!isValidFrameDelay(frameDelay)) return frameDelayInput.classList.add("is-invalid");
+  else frameDelayInput.classList.remove("is-invalid");
   const frames: number[] = [];
   mapTiles.forEach((element) => {
-    const mapTile = element as HTMLDivElement;
+    const mapTile = element;
     const mapId = parseInt(mapTile.dataset.id ?? "");
     if (mapTile.dataset.checked === "checked" && isValidId(mapId)) frames.push(mapId);
   });
-  const collectionId = parseInt(window.location.pathname.split("/")[2]);
-  if (!isValidId(collectionId)) return;
+  const collectionId = getCollectionId();
+  if (frames.length === 0) return console.log("No selected frames found");
   const payload = {
     collectionId: collectionId,
     frames: frames,
     frameDelay: frameDelay,
   };
   const isAnimationCreated = await postRequest("/api/animation/create", payload);
+  if (isAnimationCreated) window.location.reload();
+  else console.log("Failed to create an animation");
 };
 
 mapTiles.forEach((tile) => {
@@ -284,8 +289,8 @@ deleteMapButton?.addEventListener("click", deleteMap);
 encodedSettingsInput?.addEventListener("click", selectInputValue);
 if (animationSettings) {
   animationCreatorModeCheckbox?.addEventListener("change", toggleCreateAnimationMode);
-  checkAllMapsButton?.addEventListener("click", checkAllMaps);
-  uncheckAllMapsButton?.addEventListener("click", uncheckAllMaps);
+  checkAllFramesButton?.addEventListener("click", checkAllFrames);
+  uncheckAllFramesButton?.addEventListener("click", uncheckAllFrames);
   createAnimationButton?.addEventListener("click", createAnimation);
 }
 document.body.addEventListener("keydown", useKeyboardShortcut);

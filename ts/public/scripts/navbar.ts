@@ -2,8 +2,8 @@ import { handleAuthentication, handleLogout, handleRegistration } from "../../ro
 import { postRequest } from "./requests.js";
 import { isValidLogin, isValidPassword } from "./validators.js";
 
-const profileButton = document.getElementById("profile-button");
-const profileWindow = document.getElementById("profile");
+const profileButton = document.getElementById("profile-button") as HTMLButtonElement;
+const profileWindow = document.getElementById("profile") as HTMLDivElement;
 const loginForm = document.getElementById("login-form") as HTMLFormElement | null;
 const logoutButton = document.getElementById("logout-button") as HTMLButtonElement | null;
 const registerButton = document.getElementById("register-button") as HTMLButtonElement | null;
@@ -12,7 +12,7 @@ const passwordInput = loginForm?.querySelector("#password") as HTMLInputElement 
 const messageParagraph = document.getElementById("message") as HTMLParagraphElement | null;
 
 const viewMessage = function (message: string) {
-  if (!messageParagraph) return;
+  if (!messageParagraph) throw new Error("messageParagraph is null");
   messageParagraph.innerHTML = message;
   if (message === "") messageParagraph.classList.add("hidden");
   else messageParagraph.classList.remove("hidden");
@@ -20,7 +20,7 @@ const viewMessage = function (message: string) {
 
 const loginRequest = async function (e: Event) {
   e.preventDefault();
-  if (!loginInput || !passwordInput) return;
+  if (!loginInput || !passwordInput) throw new Error("Login or password input is null");
   const login = loginInput.value;
   const password = passwordInput.value;
   if (!isValidLogin(login)) return loginInput.classList.add("is-invalid");
@@ -38,7 +38,7 @@ const loginRequest = async function (e: Event) {
 };
 
 const registerRequest = async function (e: Event) {
-  if (!loginInput || !passwordInput) return;
+  if (!loginInput || !passwordInput) throw new Error("Login or password input is null");
   const login = loginInput.value;
   const password = passwordInput.value;
   if (!isValidLogin(login)) return loginInput.classList.add("is-invalid");

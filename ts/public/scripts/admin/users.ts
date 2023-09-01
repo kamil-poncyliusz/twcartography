@@ -8,7 +8,8 @@ const changeUserRank = async function (e: Event) {
   const selectElement = e.target as HTMLSelectElement;
   const id = parseInt(selectElement.dataset.userId ?? "");
   const rank = parseInt(selectElement.value);
-  if (!isValidId(id) || !isValidUserRank(rank)) return;
+  if (!isValidId(id)) throw new Error("Invalid user id");
+  if (!isValidUserRank(rank)) throw new Error("Invalid user rank");
   const payload = { id: id, rank: rank };
   const response: Awaited<ReturnType<typeof handleUpdateUserRank>> = await postRequest("/api/user/update/rank", payload);
   if (response) return window.location.reload();

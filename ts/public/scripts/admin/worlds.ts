@@ -2,7 +2,7 @@ import { handleCreateWorld, handleDeleteWorld } from "../../../routes/api-handle
 import { postRequest } from "../requests.js";
 import { isValidId, isValidCreateWorldRequestPayload } from "../validators.js";
 
-const createWorldForm = document.querySelector("form");
+const createWorldForm = document.querySelector("form") as HTMLFormElement;
 const deleteWorldButtons = document.querySelectorAll(".delete-world-button");
 
 const sendDeleteWorldRequest = async function (worldId: number) {
@@ -22,13 +22,10 @@ const sendDeleteWorldRequest = async function (worldId: number) {
 
 const createWorld = async function (e: Event) {
   e.preventDefault();
-  const form = createWorldForm;
-  if (!form) return;
-  const serverInput = form.querySelector("input[name='server']") as HTMLInputElement | null;
-  const numInput = form.querySelector("input[name='num']") as HTMLInputElement | null;
-  const domainInput = form.querySelector("input[name='domain']") as HTMLInputElement | null;
-  const timestampInput = form.querySelector("input[name='start-timestamp']") as HTMLInputElement | null;
-  if (!serverInput || !numInput || !domainInput || !timestampInput) return;
+  const serverInput = createWorldForm.querySelector("input[name='server']") as HTMLInputElement;
+  const numInput = createWorldForm.querySelector("input[name='num']") as HTMLInputElement;
+  const domainInput = createWorldForm.querySelector("input[name='domain']") as HTMLInputElement;
+  const timestampInput = createWorldForm.querySelector("input[name='start-timestamp']") as HTMLInputElement;
   const payload = {
     server: serverInput.value,
     num: numInput.value,
@@ -44,7 +41,7 @@ const createWorld = async function (e: Event) {
 const deleteWorld = async function (e: Event) {
   const button = e.target as HTMLButtonElement;
   const worldId = parseInt(button.dataset.worldId ?? "");
-  if (!isValidId(worldId)) return;
+  if (!isValidId(worldId)) throw new Error("Invalid world id");
   const isDeleted = await sendDeleteWorldRequest(worldId);
   if (isDeleted) window.location.reload();
   else console.log("Failed to delete world with ID", worldId);
