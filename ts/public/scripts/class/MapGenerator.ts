@@ -7,6 +7,9 @@ const canvasModule = typeof process === "object" ? await import("canvas") : null
 const LEGEND_FONT_SIZE = 5;
 const CANVAS_FONT_FAMILY = "sans-serif";
 
+const MIN_SPOT_SIZE = 1;
+const MAX_SPOT_SIZE = 8;
+
 interface RawPixel {
   color: ParsedColor;
   counted: boolean;
@@ -71,20 +74,14 @@ class MapGenerator {
   #rawPixels: RawPixel[][] = [];
   #scaledPixels: ScaledPixel[][] = [];
   #settings: Settings;
-  #spotSizeStep: number;
   #turnData: ParsedTurnData;
-  #maxSpotSize: number;
-  #villageFilter: number;
+  #villagePointThresholds: number[] | undefined = undefined;
   #widthModifier: number = 0;
   constructor(data: ParsedTurnData, settings: Settings) {
     this.#turnData = data;
     this.#settings = settings;
     this.#backgroundColor = parseHexColor(settings.backgroundColor);
-    this.#maxSpotSize = 5 + Math.ceil(((MAX_VILLAGE_POINTS - data.averageVillagePoints) / MAX_VILLAGE_POINTS) * 5);
-    this.#villageFilter = Math.min(Math.floor(data.averageVillagePoints * 0.9), Math.floor(MAX_VILLAGE_POINTS / 4));
-    this.#spotSizeStep = Math.round((data.topVillagePoints - this.#villageFilter) / this.#maxSpotSize);
-    // console.log("Filter:", this.#villageFilter, "Step:", this.#spotSizeStep, "Median:", data.medianVillagePoints, "Max spot:", this.#maxSpotSize);
-    this.#expansionArray = calcExpansionArray(this.#maxSpotSize);
+    this.#expansionArray = calcExpansionArray(MAX_SPOT_SIZE);
     this.#offset = Math.round((TRIBAL_WARS_MAP_SIZE - data.width) / 2);
     this.#legend = new Legend(this.#settings.markGroups);
     this.generateRawPixels();
@@ -97,6 +94,29 @@ class MapGenerator {
     this.#generateImageData();
     this.#writeCaptions();
     this.#writeLegend();
+  }
+  get villagePointThresholds(): number[] {
+    const numberOfThresholds = MAX_SPOT_SIZE - MIN_SPOT_SIZE + 1;
+    if (!this.#villagePointThresholds) {
+      const villagePointsArray: number[] = [];
+      const thresholds: number[] = [];
+      for (const markGroup of this.#settings.markGroups) {
+        for (const tribeId of markGroup.tribes) {
+          const tribe = this.#turnData.tribes[tribeId];
+          for (const village of tribe.villages) {
+            villagePointsArray.push(village.points);
+          }
+        }
+      }
+      villagePointsArray.sort((a, b) => a - b);
+      const numberOfVillages = villagePointsArray.length;
+      for (let n = 0; n < numberOfThresholds; n++) {
+        const index = Math.round((numberOfVillages / numberOfThresholds) * n);
+        thresholds.push(villagePointsArray[index]);
+      }
+      this.#villagePointThresholds = thresholds;
+    }
+    return this.#villagePointThresholds;
   }
   #generateImageData() {
     const scaled = this.#scaledPixels;
@@ -144,13 +164,20 @@ class MapGenerator {
     return 0;
   }
   #calcSpotSize(villagePoints: number): number {
-    const maxSize = this.#maxSpotSize;
-    const minSize = 1;
-    const minPoints = this.#villageFilter;
-    const spotSizeStep = this.#spotSizeStep;
-    const result = minSize + Math.floor((villagePoints - minPoints) / spotSizeStep);
-    if (result > maxSize) return maxSize;
-    return result;
+    const thresholds = this.villagePointThresholds;
+    let left = 0;
+    let right = thresholds.length - 1;
+    let result = 0;
+    while (left <= right) {
+      const pointer = Math.floor((left + right) / 2);
+      if (thresholds[pointer] < villagePoints) {
+        result = pointer;
+        left = pointer + 1;
+      } else {
+        right = pointer - 1;
+      }
+    }
+    return result + MIN_SPOT_SIZE;
   }
   #distributeArea(area: RawPixel[]) {
     const pixels = this.#rawPixels;
@@ -274,10 +301,8 @@ class MapGenerator {
       if (group) {
         const color = colors[group.name] ?? unmarkedColor;
         for (const village of tribe.villages) {
-          if (village.points >= this.#villageFilter) {
-            this.#printVillageSpot(village, color);
-            this.#legend.add(group.name, village.x, village.y);
-          }
+          this.#printVillageSpot(village, color);
+          this.#legend.add(group.name, village.x, village.y);
         }
       }
     }
