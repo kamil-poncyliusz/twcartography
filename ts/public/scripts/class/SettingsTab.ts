@@ -14,6 +14,7 @@ const inputs: { [key: string]: HTMLInputElement } = {
   outputWidth: document.getElementById("output-width") as HTMLInputElement,
   scale: document.getElementById("scale") as HTMLInputElement,
   spotsFilter: document.getElementById("spots-filter") as HTMLInputElement,
+  topSpotSize: document.getElementById("top-spot-size") as HTMLInputElement,
   trim: document.getElementById("trim") as HTMLInputElement,
   turn: document.getElementById("turn-input") as HTMLInputElement,
   unmarkedColor: document.getElementById("unmarked-color") as HTMLInputElement,
@@ -60,6 +61,7 @@ class SettingsTab {
     inputs.outputWidth.addEventListener("change", this.changeOutputWidth);
     inputs.scale.addEventListener("change", this.changeScale);
     inputs.spotsFilter.addEventListener("change", this.changeSpotsFilter);
+    inputs.topSpotSize.addEventListener("change", this.changeTopSpotSize);
     inputs.trim.addEventListener("input", this.changeTrim);
     inputs.turn.addEventListener("change", this.changeTurn);
     inputs.unmarkedColor.addEventListener("change", this.changeUnmarkedColor);
@@ -129,6 +131,13 @@ class SettingsTab {
     const input = e.target as HTMLInputElement;
     const value = Number(input.value);
     const isChanged = this.#generator.setSpotsFilter(value);
+    if (isChanged) input.classList.remove("is-invalid");
+    else input.classList.add("is-invalid");
+  };
+  changeTopSpotSize = (e: Event) => {
+    const input = e.target as HTMLInputElement;
+    const value = Number(input.value);
+    const isChanged = this.#generator.setTopSpotSize(value);
     if (isChanged) input.classList.remove("is-invalid");
     else input.classList.add("is-invalid");
   };

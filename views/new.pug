@@ -37,6 +37,10 @@ html(lang="pl-PL")
             div
               input#scale(type="number", name="scale", autocomplete="off", disabled)
           .row
+            label(for="top-spot-size", title="Promień plamki najlepiej punktowanych wiosek") Rozmiar plamki:
+            div
+              input#top-spot-size(type="number", name="top-spot-size", autocomplete="off", disabled) 
+          .row
             label(for="spots-filter", title="Terytoria o powierzchni niższej niż podana zostaną usunięte i rozdzielone miedzy sąsiadów") Filtr plamek:
             div
               input#spots-filter(type="number", name="spots-filter", autocomplete="off", disabled)

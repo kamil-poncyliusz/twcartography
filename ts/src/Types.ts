@@ -15,6 +15,7 @@ export interface Settings {
   scale: number;
   spotsFilter: number;
   trim: boolean;
+  topSpotSize: number;
   turn: number;
   unmarkedColor: string;
   world: number;

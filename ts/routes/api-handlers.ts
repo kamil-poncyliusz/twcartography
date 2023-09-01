@@ -128,7 +128,7 @@ export const handleCreateMap = async function (req: Request): Promise<CreateMapR
   if (!createdMap) return { success: false };
   saveMapPng(createdMap.id, generator.imageData as ImageData);
   if (collectionExists) return { success: true };
-  else return { success: true, newCollection: { id: createdMap.id, title: newCollectionTitle } };
+  else return { success: true, newCollection: { id: newMapPayload.collection, title: newCollectionTitle } };
 };
 
 export const handleCreateWorld = async function (req: Request): Promise<boolean> {

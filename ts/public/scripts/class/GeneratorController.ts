@@ -14,6 +14,7 @@ import {
   isValidScale,
   isValidSettings,
   isValidSpotsFilter,
+  isValidTopSpotSize,
   isValidTurn,
 } from "../validators.js";
 import MarkGroupsTab from "./MarkGroupsTab.js";
@@ -28,7 +29,8 @@ const DEFAULT_BORDER_COLOR = "#808080";
 const DEFAULT_DISPLAY_UNMARKED = false;
 const DEFAULT_OUTPUT_WIDTH = 500;
 const DEFAULT_SCALE = 2;
-const DEFAULT_SPOTS_FILTER = 8;
+const DEFAULT_SPOTS_FILTER = 10;
+const DEFAULT_TOP_SPOT_SIZE = 8;
 const DEFAULT_TRIM = true;
 const DEFAULT_UNMARKED_COLOR = "#808080";
 const MAX_TRIBE_SUGGESTIONS = 20;
@@ -51,6 +53,7 @@ class GeneratorController {
   #server: string = "";
   #settingsTab: SettingsTab;
   #suggestionsTab: SuggestionsTab;
+  #topSpotSize: number = DEFAULT_TOP_SPOT_SIZE;
   #trim: boolean = DEFAULT_TRIM;
   turn: number = -1;
   #unmarkedColor: string = DEFAULT_UNMARKED_COLOR;
@@ -72,6 +75,7 @@ class GeneratorController {
       outputWidth: this.#outputWidth,
       scale: this.#scale,
       spotsFilter: this.#spotsFilter,
+      topSpotSize: this.#topSpotSize,
       trim: this.#trim,
       turn: this.turn,
       unmarkedColor: this.#unmarkedColor,
@@ -129,6 +133,7 @@ class GeneratorController {
     this.#outputWidth = settings.outputWidth;
     this.#scale = settings.scale;
     this.#spotsFilter = settings.spotsFilter;
+    this.#topSpotSize = settings.topSpotSize;
     this.#trim = settings.trim;
     this.#unmarkedColor = settings.unmarkedColor;
     const isTurnChanged = await this.changeTurn(settings.turn);
@@ -385,6 +390,14 @@ class GeneratorController {
     if (this.turn === -1) return false;
     if (!isValidSpotsFilter(value)) return false;
     this.#spotsFilter = value;
+    this.#canvasFrame.render();
+    this.#settingsTab.update();
+    return true;
+  }
+  setTopSpotSize(value: number): boolean {
+    if (this.turn === -1) return false;
+    if (!isValidTopSpotSize(value)) return false;
+    this.#topSpotSize = value;
     this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;

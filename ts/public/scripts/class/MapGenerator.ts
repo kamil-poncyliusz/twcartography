@@ -1,6 +1,6 @@
 import { parseHexColor, calcExpansionArray } from "../utils.js";
 import { Settings, ParsedColor, ParsedTurnData, Village, MarkGroup } from "../../../src/Types.js";
-import { MAX_VILLAGE_POINTS, TRIBAL_WARS_MAP_SIZE } from "../constants.js";
+import { TRIBAL_WARS_MAP_SIZE } from "../constants.js";
 
 const canvasModule = typeof process === "object" ? await import("canvas") : null;
 
@@ -8,7 +8,6 @@ const LEGEND_FONT_SIZE = 5;
 const CANVAS_FONT_FAMILY = "sans-serif";
 
 const MIN_SPOT_SIZE = 1;
-const MAX_SPOT_SIZE = 8;
 
 interface RawPixel {
   color: ParsedColor;
@@ -81,7 +80,7 @@ class MapGenerator {
     this.#turnData = data;
     this.#settings = settings;
     this.#backgroundColor = parseHexColor(settings.backgroundColor);
-    this.#expansionArray = calcExpansionArray(MAX_SPOT_SIZE);
+    this.#expansionArray = calcExpansionArray(this.#settings.topSpotSize);
     this.#offset = Math.round((TRIBAL_WARS_MAP_SIZE - data.width) / 2);
     this.#legend = new Legend(this.#settings.markGroups);
     this.generateRawPixels();
@@ -96,7 +95,7 @@ class MapGenerator {
     this.#writeLegend();
   }
   get villagePointThresholds(): number[] {
-    const numberOfThresholds = MAX_SPOT_SIZE - MIN_SPOT_SIZE + 1;
+    const numberOfThresholds = this.#settings.topSpotSize - MIN_SPOT_SIZE + 1;
     if (!this.#villagePointThresholds) {
       const villagePointsArray: number[] = [];
       const thresholds: number[] = [];

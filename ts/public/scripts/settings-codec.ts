@@ -26,7 +26,8 @@ export const encodeSettings = function (settings: Settings): string {
   result += Number(settings.trim) + minorSeparator;
   result += settings.turn + minorSeparator;
   result += settings.unmarkedColor + minorSeparator;
-  result += settings.world;
+  result += settings.world + minorSeparator;
+  result += settings.topSpotSize;
   result += majorSeparator;
   for (const caption of settings.captions) {
     result +=
@@ -81,7 +82,8 @@ export const decodeSettings = function (input: string): Settings | false {
     };
     captions.push(caption);
   }
-  const [backgroundColor, borderColor, displayUnmarked, outputWidth, scale, spotsFilter, trim, turn, unmarkedColor, world] = settingsArray;
+  const [backgroundColor, borderColor, displayUnmarked, outputWidth, scale, spotsFilter, trim, turn, unmarkedColor, world, topSpotSize] =
+    settingsArray;
   const result = {
     backgroundColor: backgroundColor,
     borderColor: borderColor,
@@ -91,6 +93,7 @@ export const decodeSettings = function (input: string): Settings | false {
     outputWidth: parseInt(outputWidth),
     scale: parseInt(scale),
     spotsFilter: parseInt(spotsFilter),
+    topSpotSize: parseInt(topSpotSize ? topSpotSize : "8"),
     trim: parseInt(trim) === 1 ? true : false,
     turn: parseInt(turn),
     unmarkedColor: unmarkedColor,
