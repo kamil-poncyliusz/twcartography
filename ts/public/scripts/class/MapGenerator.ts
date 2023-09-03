@@ -10,10 +10,7 @@ const CANVAS_FONT_FAMILY = "sans-serif";
 const MIN_SPOT_SIZE = 1;
 
 interface RawPixel {
-  color: ParsedColor;
-  counted: boolean;
-  priority: number;
-  newColor?: ParsedColor;
+  markGroups: { [markGroupIndex: number]: number };
   x: number;
   y: number;
 }
@@ -28,6 +25,20 @@ const NORTH_WEST = 0,
   NORTH_EAST = 1,
   SOUTH_WEST = 2,
   SOUTH_EAST = 3;
+
+const getPixelStrongestMarkGroupIndex = function (markGroups: { [markGroupIndex: number]: number }) {
+  let strongest = -1;
+  let maxStrength = 0;
+  for (const markGroupIndex in markGroups) {
+    const strength = markGroups[markGroupIndex];
+    const indexAsNumber = parseInt(markGroupIndex);
+    if (strength > maxStrength) {
+      strongest = indexAsNumber;
+      maxStrength = strength;
+    }
+  }
+  return strongest;
+};
 
 class Legend {
   #groups: { [key: string]: { color: string; corners: number[] } } = {};
@@ -84,8 +95,6 @@ class MapGenerator {
     this.#offset = Math.round((TRIBAL_WARS_MAP_SIZE - data.width) / 2);
     this.#legend = new Legend(this.#settings.markGroups);
     this.generateRawPixels();
-    const smallSpots = this.#findSmallSpots();
-    this.#distributeArea(smallSpots);
     this.#widthModifier = this.#calcWidthModifier();
     this.#generateScaledPixels();
     this.#smoothBorders();
@@ -144,19 +153,19 @@ class MapGenerator {
       let x = width;
       let y = width;
       while (x < this.#rawPixels.length - 1 - width) {
-        if (this.#rawPixels[x][y].color !== this.#backgroundColor) return margin - width;
+        if (Object.keys(this.#rawPixels[x][y].markGroups).length > 0) return margin - width;
         x++;
       }
       while (y < this.#rawPixels.length - 1 - width) {
-        if (this.#rawPixels[x][y].color !== this.#backgroundColor) return margin - width;
+        if (Object.keys(this.#rawPixels[x][y].markGroups).length > 0) return margin - width;
         y++;
       }
       while (x > width + 1) {
-        if (this.#rawPixels[x][y].color !== this.#backgroundColor) return margin - width;
+        if (Object.keys(this.#rawPixels[x][y].markGroups).length > 0) return margin - width;
         x--;
       }
       while (y > width + 1) {
-        if (this.#rawPixels[x][y].color !== this.#backgroundColor) return margin - width;
+        if (Object.keys(this.#rawPixels[x][y].markGroups).length > 0) return margin - width;
         y--;
       }
     }
@@ -178,34 +187,34 @@ class MapGenerator {
     }
     return result + MIN_SPOT_SIZE;
   }
-  #distributeArea(area: RawPixel[]) {
-    const pixels = this.#rawPixels;
-    const deletedColor = parseHexColor("#123456");
-    for (let pixel of area) {
-      pixel.color = deletedColor;
-    }
-    while (area.length > 0) {
-      for (let pixel of area) {
-        const x = pixel.x,
-          y = pixel.y,
-          color = pixel.color,
-          neighbors = [pixels[x + 1][y], pixels[x - 1][y], pixels[x][y + 1], pixels[x][y - 1]];
-        for (const neighbor of neighbors) {
-          if (neighbor.color !== color) {
-            pixel.newColor = neighbor.color;
-            break;
-          }
-        }
-      }
-      for (let i = area.length - 1; i >= 0; i--) {
-        const pixel = area[i];
-        if (pixel.newColor) {
-          pixel.color = pixel.newColor;
-          area.splice(i, 1);
-        }
-      }
-    }
-  }
+  // #distributeArea(area: RawPixel[]) {
+  //   const pixels = this.#rawPixels;
+  //   const deletedColor = parseHexColor("#123456");
+  //   for (let pixel of area) {
+  //     pixel.color = deletedColor;
+  //   }
+  //   while (area.length > 0) {
+  //     for (let pixel of area) {
+  //       const x = pixel.x,
+  //         y = pixel.y,
+  //         color = pixel.color,
+  //         neighbors = [pixels[x + 1][y], pixels[x - 1][y], pixels[x][y + 1], pixels[x][y - 1]];
+  //       for (const neighbor of neighbors) {
+  //         if (neighbor.color !== color) {
+  //           pixel.newColor = neighbor.color;
+  //           break;
+  //         }
+  //       }
+  //     }
+  //     for (let i = area.length - 1; i >= 0; i--) {
+  //       const pixel = area[i];
+  //       if (pixel.newColor) {
+  //         pixel.color = pixel.newColor;
+  //         area.splice(i, 1);
+  //       }
+  //     }
+  //   }
+  // }
   #drawBorders() {
     const margin = 2;
     const pixels = this.#scaledPixels;
@@ -230,78 +239,72 @@ class MapGenerator {
       borderPixel.color = borderColor;
     }
   }
-  #findMarkGroupOfTribe(tribeId: string): MarkGroup | false {
-    for (const group of this.#settings.markGroups) {
-      if (group.tribes.includes(tribeId)) return group;
+  #findMarkGroupIndexOfTribe(tribeId: string): number {
+    for (let index = 0; index < this.#settings.markGroups.length; index++) {
+      const group = this.#settings.markGroups[index];
+      if (group.tribes.includes(tribeId)) return index;
     }
-    if (this.#settings.displayUnmarked) {
-      return {
-        tribes: [],
-        name: "Unmarked",
-        color: this.#settings.unmarkedColor,
-      };
-    }
-    return false;
+    // if (this.#settings.displayUnmarked) {
+    //   return {
+    //     tribes: [],
+    //     name: "Unmarked",
+    //     color: this.#settings.unmarkedColor,
+    //   };
+    // }
+    return -1;
   }
-  #findSmallSpots(): RawPixel[] {
-    const pixels = this.#rawPixels;
-    const smallSpots: RawPixel[] = [];
-    for (let x = 0; x < pixels.length; x++) {
-      for (let y = 0; y < pixels.length; y++) {
-        const pixel = pixels[x][y];
-        if (!pixel.counted) {
-          let area = 0;
-          const areaPixels: RawPixel[] = [];
-          const color = pixel.color;
-          const toCheck: RawPixel[] = [];
-          toCheck.push(pixel);
-          while (toCheck.length > 0) {
-            const checkedPixel = toCheck.pop() as RawPixel;
-            if (!checkedPixel.counted && checkedPixel.color === color) {
-              checkedPixel.counted = true;
-              if (area < this.#settings.spotsFilter) areaPixels.push(checkedPixel);
-              area++;
-              toCheck.push(pixels[checkedPixel.x + 1][checkedPixel.y]);
-              toCheck.push(pixels[checkedPixel.x - 1][checkedPixel.y]);
-              toCheck.push(pixels[checkedPixel.x][checkedPixel.y + 1]);
-              toCheck.push(pixels[checkedPixel.x][checkedPixel.y - 1]);
-            }
-          }
-          if (area < this.#settings.spotsFilter) {
-            smallSpots.push(...areaPixels);
-          }
-        }
-      }
-    }
-    return smallSpots;
-  }
+  // #findSmallSpots(): RawPixel[] {
+  //   const pixels = this.#rawPixels;
+  //   const smallSpots: RawPixel[] = [];
+  //   for (let x = 0; x < pixels.length; x++) {
+  //     for (let y = 0; y < pixels.length; y++) {
+  //       const pixel = pixels[x][y];
+  //       if (!pixel.counted) {
+  //         let area = 0;
+  //         const areaPixels: RawPixel[] = [];
+  //         const color = pixel.color;
+  //         const toCheck: RawPixel[] = [];
+  //         toCheck.push(pixel);
+  //         while (toCheck.length > 0) {
+  //           const checkedPixel = toCheck.pop() as RawPixel;
+  //           if (!checkedPixel.counted && checkedPixel.color === color) {
+  //             checkedPixel.counted = true;
+  //             if (area < this.#settings.spotsFilter) areaPixels.push(checkedPixel);
+  //             area++;
+  //             toCheck.push(pixels[checkedPixel.x + 1][checkedPixel.y]);
+  //             toCheck.push(pixels[checkedPixel.x - 1][checkedPixel.y]);
+  //             toCheck.push(pixels[checkedPixel.x][checkedPixel.y + 1]);
+  //             toCheck.push(pixels[checkedPixel.x][checkedPixel.y - 1]);
+  //           }
+  //         }
+  //         if (area < this.#settings.spotsFilter) {
+  //           smallSpots.push(...areaPixels);
+  //         }
+  //       }
+  //     }
+  //   }
+  //   return smallSpots;
+  // }
   generateRawPixels() {
     for (let x = 0; x < this.#turnData.width; x++) {
       const row: RawPixel[] = [];
       for (let y = 0; y < this.#turnData.width; y++) {
         row.push({
-          color: this.#backgroundColor,
-          priority: 0,
-          counted: true,
+          markGroups: {},
           x: x,
           y: y,
         });
       }
       this.#rawPixels.push(row);
     }
-    const colors: { [groupName: string]: ParsedColor } = {};
-    for (let markGoup of this.#settings.markGroups) {
-      colors[markGoup.name] = parseHexColor(markGoup.color);
-    }
-    const unmarkedColor = parseHexColor(this.#settings.unmarkedColor);
     for (const tribeId in this.#turnData.tribes) {
       const tribe = this.#turnData.tribes[tribeId];
-      const group = this.#findMarkGroupOfTribe(tribe.id);
-      if (group) {
-        const color = colors[group.name] ?? unmarkedColor;
+      const markGroupIndex = this.#findMarkGroupIndexOfTribe(tribe.id);
+      const markGroup = this.#settings.markGroups[markGroupIndex];
+      if (markGroupIndex >= 0) {
         for (const village of tribe.villages) {
-          this.#printVillageSpot(village, color);
-          this.#legend.add(group.name, village.x, village.y);
+          this.#printVillageSpot(village, markGroupIndex);
+          this.#legend.add(markGroup.name, village.x, village.y);
         }
       }
     }
@@ -311,6 +314,10 @@ class MapGenerator {
     const scale = this.#settings.scale;
     const widthModifier = this.#widthModifier;
     const modifiedWidth = width + 2 * widthModifier;
+    const markGroupColors: ParsedColor[] = [];
+    for (let markGroup of this.#settings.markGroups) {
+      markGroupColors.push(parseHexColor(markGroup.color));
+    }
     for (let i = 0; i < modifiedWidth * scale; i++) {
       const row: ScaledPixel[] = [];
       for (let j = 0; j < modifiedWidth * scale; j++) {
@@ -326,9 +333,11 @@ class MapGenerator {
       for (let x = 0; x < modifiedWidth; x++) {
         for (let y = 0; y < modifiedWidth; y++) {
           const pixel = this.#rawPixels[x - widthModifier][y - widthModifier];
+          const markGroupIndex = getPixelStrongestMarkGroupIndex(pixel.markGroups);
+          if (markGroupIndex === -1) continue;
           for (let newY = y * scale; newY < y * scale + scale; newY++) {
             for (let newX = x * scale; newX < x * scale + scale; newX++) {
-              this.#scaledPixels[newX][newY].color = pixel.color;
+              this.#scaledPixels[newX][newY].color = markGroupColors[markGroupIndex];
             }
           }
         }
@@ -337,27 +346,26 @@ class MapGenerator {
       for (let x = widthModifier; x < width + widthModifier; x++) {
         for (let y = widthModifier; y < width + widthModifier; y++) {
           const pixel = this.#rawPixels[x - widthModifier][y - widthModifier];
+          const markGroupIndex = getPixelStrongestMarkGroupIndex(pixel.markGroups);
+          if (markGroupIndex === -1) continue;
           for (let newY = y * scale; newY < y * scale + scale; newY++) {
             for (let newX = x * scale; newX < x * scale + scale; newX++) {
-              this.#scaledPixels[newX][newY].color = pixel.color;
+              this.#scaledPixels[newX][newY].color = markGroupColors[markGroupIndex];
             }
           }
         }
       }
     }
   }
-  #printVillageSpot(village: Village, color: ParsedColor) {
+  #printVillageSpot(village: Village, markGroupIndex: number) {
     const x = village.x - this.#offset;
     const y = village.y - this.#offset;
     const spotSize = this.#calcSpotSize(village.points);
     for (let d = 0; d <= spotSize; d++) {
       for (let expansion of this.#expansionArray[d]) {
         const pixel = this.#rawPixels[x + expansion.x][y + expansion.y];
-        if (pixel && spotSize - d > pixel.priority) {
-          pixel.priority = spotSize - d;
-          pixel.color = color;
-          pixel.counted = false;
-        }
+        if (pixel.markGroups[markGroupIndex]) pixel.markGroups[markGroupIndex] += spotSize - d;
+        else pixel.markGroups[markGroupIndex] = spotSize - d;
       }
     }
   }
