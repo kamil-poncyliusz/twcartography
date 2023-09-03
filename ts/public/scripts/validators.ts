@@ -26,13 +26,11 @@ const FRAME_DELAY_MAX_MILISECONDS = 60000;
 const settingsMinValues: { [key: string]: number } = {
   outputWidth: 100,
   scale: 1,
-  spotsFilter: 1,
   topSpotSize: 2,
 };
 const settingsMaxValues: { [key: string]: number } = {
   outputWidth: 1000,
   scale: 5,
-  spotsFilter: 500,
   topSpotSize: 15,
 };
 
@@ -134,12 +132,6 @@ export const isValidScale = function (input: number): boolean {
   return true;
 };
 
-export const isValidSpotsFilter = function (input: number): boolean {
-  if (typeof input !== "number" || !Number.isInteger(input) || input < settingsLimits.min.spotsFilter || input > settingsLimits.max.spotsFilter)
-    return false;
-  return true;
-};
-
 export const isValidTopSpotSize = function (input: number): boolean {
   if (typeof input !== "number" || !Number.isInteger(input) || input < settingsLimits.min.topSpotSize || input > settingsLimits.max.topSpotSize)
     return false;
@@ -149,14 +141,11 @@ export const isValidTopSpotSize = function (input: number): boolean {
 export const isValidSettings = function (settings: Settings): boolean {
   if (typeof settings !== "object") return false;
   if (!isValidColor(settings.backgroundColor)) return false;
-  if (typeof settings.displayUnmarked !== "boolean") return false;
   if (!isValidColor(settings.borderColor)) return false;
   if (!isValidOutputWidth(settings.outputWidth)) return false;
   if (!isValidScale(settings.scale)) return false;
-  if (!isValidSpotsFilter(settings.spotsFilter)) return false;
   if (!isValidTopSpotSize(settings.topSpotSize)) return false;
   if (typeof settings.trim !== "boolean") return false;
-  if (!isValidColor(settings.unmarkedColor)) return false;
   const groupNames: string[] = [];
   const tribes: string[] = [];
   for (const group of settings.markGroups) {

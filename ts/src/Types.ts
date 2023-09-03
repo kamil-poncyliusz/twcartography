@@ -9,15 +9,12 @@ export interface Settings {
   backgroundColor: string;
   borderColor: string;
   captions: Caption[];
-  displayUnmarked: boolean;
   markGroups: MarkGroup[];
   outputWidth: number;
   scale: number;
-  spotsFilter: number;
   trim: boolean;
   topSpotSize: number;
   turn: number;
-  unmarkedColor: string;
   world: number;
 }
 export interface ParsedColor {

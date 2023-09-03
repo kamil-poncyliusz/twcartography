@@ -10,14 +10,11 @@ const inputs: { [key: string]: HTMLInputElement } = {
   autoRefresh: document.getElementById("auto-refresh") as HTMLInputElement,
   backgroundColor: document.getElementById("background-color") as HTMLInputElement,
   borderColor: document.getElementById("border-color") as HTMLInputElement,
-  displayUnmarked: document.getElementById("display-unmarked") as HTMLInputElement,
   outputWidth: document.getElementById("output-width") as HTMLInputElement,
   scale: document.getElementById("scale") as HTMLInputElement,
-  spotsFilter: document.getElementById("spots-filter") as HTMLInputElement,
   topSpotSize: document.getElementById("top-spot-size") as HTMLInputElement,
   trim: document.getElementById("trim") as HTMLInputElement,
   turn: document.getElementById("turn-input") as HTMLInputElement,
-  unmarkedColor: document.getElementById("unmarked-color") as HTMLInputElement,
 };
 const collectionSelect = document.getElementById("collection") as HTMLSelectElement | null;
 const encodedSettingsInput = document.getElementById("encoded-settings") as HTMLInputElement | null;
@@ -57,14 +54,11 @@ class SettingsTab {
     inputs.autoRefresh.addEventListener("input", this.changeAutoRefresh);
     inputs.backgroundColor.addEventListener("change", this.changeBackgroundColor);
     inputs.borderColor.addEventListener("change", this.changeBorderColor);
-    inputs.displayUnmarked.addEventListener("input", this.changeDisplayUnmarked);
     inputs.outputWidth.addEventListener("change", this.changeOutputWidth);
     inputs.scale.addEventListener("change", this.changeScale);
-    inputs.spotsFilter.addEventListener("change", this.changeSpotsFilter);
     inputs.topSpotSize.addEventListener("change", this.changeTopSpotSize);
     inputs.trim.addEventListener("input", this.changeTrim);
     inputs.turn.addEventListener("change", this.changeTurn);
-    inputs.unmarkedColor.addEventListener("change", this.changeUnmarkedColor);
     worldSelect?.addEventListener("change", this.changeWorld);
     encodedSettingsInput?.addEventListener("click", selectInputValue);
     encodedSettingsInput?.addEventListener("input", this.changeEncodedSettings);
@@ -97,12 +91,6 @@ class SettingsTab {
     if (isChanged) inputs.borderColor.classList.remove("is-invalid");
     else inputs.borderColor.classList.add("is-invalid");
   };
-  changeDisplayUnmarked = (e: Event) => {
-    const input = e.target as HTMLInputElement;
-    const isChanged = this.#generator.setDisplayUnmarked(input.checked);
-    if (isChanged) input.classList.remove("is-invalid");
-    else input.classList.add("is-invalid");
-  };
   changeEncodedSettings = async (e: Event) => {
     const input = e.target as HTMLInputElement;
     const value = input.value;
@@ -127,13 +115,6 @@ class SettingsTab {
     if (isChanged) input.classList.remove("is-invalid");
     else input.classList.add("is-invalid");
   };
-  changeSpotsFilter = (e: Event) => {
-    const input = e.target as HTMLInputElement;
-    const value = Number(input.value);
-    const isChanged = this.#generator.setSpotsFilter(value);
-    if (isChanged) input.classList.remove("is-invalid");
-    else input.classList.add("is-invalid");
-  };
   changeTopSpotSize = (e: Event) => {
     const input = e.target as HTMLInputElement;
     const value = Number(input.value);
@@ -152,12 +133,6 @@ class SettingsTab {
     const input = e.target as HTMLInputElement;
     const turn = parseInt(input.value);
     const isChanged = await this.#generator.changeTurn(turn);
-    if (isChanged) input.classList.remove("is-invalid");
-    else input.classList.add("is-invalid");
-  };
-  changeUnmarkedColor = (e: Event) => {
-    const input = e.target as HTMLInputElement;
-    const isChanged = this.#generator.setUnmarkedColor(input.value);
     if (isChanged) input.classList.remove("is-invalid");
     else input.classList.add("is-invalid");
   };
@@ -229,7 +204,6 @@ class SettingsTab {
       inputs.turn.value = "";
     } else {
       this.disabled = false;
-      if (!inputs.displayUnmarked.checked) inputs.unmarkedColor.disabled = true;
       if (inputs.trim.checked) inputs.outputWidth.disabled = true;
       if (inputs.autoRefresh.checked && generateButton) generateButton.disabled = true;
       if (publishMapButton) {

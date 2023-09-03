@@ -19,13 +19,13 @@ export const encodeSettings = function (settings: Settings): string {
   result += majorSeparator;
   result += settings.backgroundColor + minorSeparator;
   result += settings.borderColor + minorSeparator;
-  result += Number(settings.displayUnmarked) + minorSeparator;
+  result += "x" + minorSeparator;
   result += settings.outputWidth + minorSeparator;
   result += settings.scale + minorSeparator;
-  result += settings.spotsFilter + minorSeparator;
+  result += "x" + minorSeparator;
   result += Number(settings.trim) + minorSeparator;
   result += settings.turn + minorSeparator;
-  result += settings.unmarkedColor + minorSeparator;
+  result += "x" + minorSeparator;
   result += settings.world + minorSeparator;
   result += settings.topSpotSize;
   result += majorSeparator;
@@ -84,19 +84,16 @@ export const decodeSettings = function (input: string): Settings | false {
   }
   const [backgroundColor, borderColor, displayUnmarked, outputWidth, scale, spotsFilter, trim, turn, unmarkedColor, world, topSpotSize] =
     settingsArray;
-  const result = {
+  const result: Settings = {
     backgroundColor: backgroundColor,
     borderColor: borderColor,
     captions: captions,
-    displayUnmarked: parseInt(displayUnmarked) === 1 ? true : false,
     markGroups: markGroups,
     outputWidth: parseInt(outputWidth),
     scale: parseInt(scale),
-    spotsFilter: parseInt(spotsFilter),
     topSpotSize: parseInt(topSpotSize ? topSpotSize : "8"),
     trim: parseInt(trim) === 1 ? true : false,
     turn: parseInt(turn),
-    unmarkedColor: unmarkedColor,
     world: parseInt(world),
   };
   return result;

@@ -13,7 +13,6 @@ import {
   isValidOutputWidth,
   isValidScale,
   isValidSettings,
-  isValidSpotsFilter,
   isValidTopSpotSize,
   isValidTurn,
 } from "../validators.js";
@@ -26,13 +25,10 @@ import CaptionsTab from "./CaptionsTab.js";
 const DEFAULT_AUTO_REFRESH = true;
 const DEFAULT_BACKGROUND_COLOR = "#202020";
 const DEFAULT_BORDER_COLOR = "#808080";
-const DEFAULT_DISPLAY_UNMARKED = false;
 const DEFAULT_OUTPUT_WIDTH = 500;
 const DEFAULT_SCALE = 2;
-const DEFAULT_SPOTS_FILTER = 10;
 const DEFAULT_TOP_SPOT_SIZE = 8;
 const DEFAULT_TRIM = true;
-const DEFAULT_UNMARKED_COLOR = "#808080";
 const MAX_TRIBE_SUGGESTIONS = 20;
 
 class GeneratorController {
@@ -43,12 +39,10 @@ class GeneratorController {
   captions: Caption[] = [];
   #captionsTab: CaptionsTab;
   data: { [key: number]: ParsedTurnData } = {};
-  #displayUnmarked: boolean = DEFAULT_DISPLAY_UNMARKED;
   latestTurn: number = -1;
   markGroups: MarkGroup[] = [];
   #markGroupsTab: MarkGroupsTab;
   #outputWidth: number = DEFAULT_OUTPUT_WIDTH;
-  #spotsFilter: number = DEFAULT_SPOTS_FILTER;
   #scale: number = DEFAULT_SCALE;
   #server: string = "";
   #settingsTab: SettingsTab;
@@ -56,7 +50,6 @@ class GeneratorController {
   #topSpotSize: number = DEFAULT_TOP_SPOT_SIZE;
   #trim: boolean = DEFAULT_TRIM;
   turn: number = -1;
-  #unmarkedColor: string = DEFAULT_UNMARKED_COLOR;
   world: number = 0;
   constructor() {
     this.#canvasFrame = new CanvasFrame(this);
@@ -70,15 +63,12 @@ class GeneratorController {
       backgroundColor: this.#backgroundColor,
       borderColor: this.#borderColor,
       captions: this.captions,
-      displayUnmarked: this.#displayUnmarked,
       markGroups: this.markGroups,
       outputWidth: this.#outputWidth,
       scale: this.#scale,
-      spotsFilter: this.#spotsFilter,
       topSpotSize: this.#topSpotSize,
       trim: this.#trim,
       turn: this.turn,
-      unmarkedColor: this.#unmarkedColor,
       world: this.world,
     };
   }
@@ -129,13 +119,10 @@ class GeneratorController {
     const isWorldChanged = await this.changeWorld(settings.world);
     if (!isWorldChanged) return false;
     this.#backgroundColor = settings.backgroundColor;
-    this.#displayUnmarked = settings.displayUnmarked;
     this.#outputWidth = settings.outputWidth;
     this.#scale = settings.scale;
-    this.#spotsFilter = settings.spotsFilter;
     this.#topSpotSize = settings.topSpotSize;
     this.#trim = settings.trim;
-    this.#unmarkedColor = settings.unmarkedColor;
     const isTurnChanged = await this.changeTurn(settings.turn);
     if (!isTurnChanged) return false;
     this.markGroups = [];
@@ -362,14 +349,6 @@ class GeneratorController {
     this.#settingsTab.update();
     return true;
   }
-  setDisplayUnmarked(value: boolean): boolean {
-    if (this.turn === -1) return false;
-    if (typeof value !== "boolean") return false;
-    this.#displayUnmarked = value;
-    this.#canvasFrame.render();
-    this.#settingsTab.update();
-    return true;
-  }
   setOutputWidth(value: number): boolean {
     if (this.turn === -1) return false;
     if (!isValidOutputWidth(value)) return false;
@@ -386,14 +365,6 @@ class GeneratorController {
     this.#settingsTab.update();
     return true;
   }
-  setSpotsFilter(value: number): boolean {
-    if (this.turn === -1) return false;
-    if (!isValidSpotsFilter(value)) return false;
-    this.#spotsFilter = value;
-    this.#canvasFrame.render();
-    this.#settingsTab.update();
-    return true;
-  }
   setTopSpotSize(value: number): boolean {
     if (this.turn === -1) return false;
     if (!isValidTopSpotSize(value)) return false;
@@ -406,14 +377,6 @@ class GeneratorController {
     if (this.turn === -1) return false;
     if (typeof value !== "boolean") return false;
     this.#trim = value;
-    this.#canvasFrame.render();
-    this.#settingsTab.update();
-    return true;
-  }
-  setUnmarkedColor(color: string): boolean {
-    if (this.turn === -1) return false;
-    if (!isValidColor(color)) return false;
-    this.#unmarkedColor = color;
     this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
