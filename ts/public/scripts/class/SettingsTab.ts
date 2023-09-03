@@ -2,7 +2,7 @@ import GeneratorController from "./GeneratorController.js";
 import { decodeSettings, encodeSettings } from "../settings-codec.js";
 import { handleCreateMap } from "../../../routes/api-handlers.js";
 import { postRequest } from "../requests.js";
-import { CreateMapRequestValidationCode, isValidCreateMapRequestPayload, settingsLimits } from "../validators.js";
+import { CreateMapRequestValidationCode, isValidCreateMapRequestPayload, isValidId, settingsLimits } from "../validators.js";
 import { CreateMapRequestPayload, Settings } from "../../../src/Types.js";
 import { selectInputValue } from "../utils.js";
 
@@ -222,6 +222,18 @@ class SettingsTab {
       const currentPlaceholder = inputs[setting].getAttribute("placeholder");
       inputs[setting].setAttribute("placeholder", currentPlaceholder + String(settingsLimits.max[setting]));
       inputs[setting].setAttribute("max", String(settingsLimits.max[setting]));
+    }
+    if (collectionSelect) {
+      const collectionOptions = collectionSelect.querySelectorAll("option");
+      collectionOptions.forEach((option) => {
+        const collectionId = parseInt(option.value);
+        const collectionWorldId = parseInt(option.dataset.worldId ?? "");
+        if (collectionId > 0) {
+          if (!isValidId(collectionWorldId)) throw new Error("Collection option: Invalid data-world-id property");
+          const isMatchingWorldId = collectionWorldId === this.#generator.world;
+          option.disabled = !isMatchingWorldId;
+        }
+      });
     }
   }
 }

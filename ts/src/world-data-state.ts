@@ -3,18 +3,17 @@ import { WorldWithWorldData, WorldDataState, TurnDataState } from "./Types.js";
 
 const files = ["village", "player", "ally", "conquer", "kill_all_tribe", "kill_att_tribe", "kill_def_tribe"];
 
-const areDataFilesAvailable = async function (worldDirectoryName: string, turn: number): Promise<boolean> {
+export const areDataFilesAvailable = async function (worldDirectoryName: string, turn: number): Promise<boolean> {
   const dataFilesPath = `temp/${worldDirectoryName}/${turn}`;
-  const hasAllWorldDataFiles = files.every(async (file) => {
+  for (const file of files) {
     const dataFilePath = `${dataFilesPath}/${file}.txt.gz`;
     try {
       await fs.access(dataFilePath);
-      return true;
     } catch {
       return false;
     }
-  });
-  return hasAllWorldDataFiles;
+  }
+  return true;
 };
 
 export const getWorldDataStates = async function (worldsWithWorldData: WorldWithWorldData[]): Promise<WorldDataState[]> {

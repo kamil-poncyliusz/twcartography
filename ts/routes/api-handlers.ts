@@ -39,6 +39,7 @@ import { Request } from "express";
 import { CreateMapRequestPayload, CreateWorldRequestPayload, ParsedTurnData } from "../src/Types.js";
 import saveAnimationGif from "../src/save-animation-gif.js";
 import turnDataDownloaderDaemon from "../src/turn-data-downloader-daemon.js";
+import { areDataFilesAvailable } from "../src/world-data-state.js";
 
 interface CreateMapResponse {
   success: boolean;
@@ -159,13 +160,8 @@ export const handleCreateTurnData = async function (req: Request): Promise<boole
   const world = await readWorld(worldId);
   if (!world) return false;
   const worldDirectoryName = world.startTimestamp.toString(36);
-  const worldDataFilesPath = `temp/${worldDirectoryName}/${turn}`;
-  try {
-    await fs.access(worldDataFilesPath);
-  } catch (error) {
-    console.log(error);
-    return false;
-  }
+  const areFilesAvailable = await areDataFilesAvailable(worldDirectoryName, turn);
+  if (!areFilesAvailable) return false;
   const parsedTurnData = await parseTurnData(worldDirectoryName, turn);
   const createdWorldData = await createTurnData(world.id, turn, parsedTurnData);
   if (!createdWorldData) return false;

@@ -73,7 +73,7 @@ html(lang="pl-PL")
                   option(value="", selected, disabled, hidden) wybierz kolekcję
                   option(value="0")= "<Utwórz nową>"
                   each collection in collections
-                    option(value=collection.id) #{ collection.title }
+                    option(value=collection.id, data-world-id=collection.worldId) #{ collection.title }
             .row
               div
                 button#publish-button(disabled) Dodaj do kolekcji

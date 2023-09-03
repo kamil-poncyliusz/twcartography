@@ -9,7 +9,7 @@ services:
       - DATABASE_URL=postgresql://dbuser:dbpassword@database:5432/twmap?schema=public
       - NODE_ENV=production
     ports:
-      - "80:8080"
+      - "8080:8080"
     depends_on:
       database:
         condition: service_healthy

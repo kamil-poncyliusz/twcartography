@@ -16,7 +16,6 @@ const createTurnData = async function (e: Event) {
   };
   const endpoint = `/api/world-data/create`;
   const isCreated: Awaited<ReturnType<typeof handleCreateTurnData>> = await postRequest(endpoint, payload);
-  console.log(isCreated);
   if (isCreated) window.location.reload();
   else console.log("Failed to create turn data");
 };
