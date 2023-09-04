@@ -85,12 +85,12 @@ class GeneratorController {
     this.#settingsTab.update();
     return true;
   }
-  addMark(groupName: string, tribeTag: string, options?: { skipUpdate?: boolean }): boolean {
+  addMark(markGroupIndex: number, tribeTag: string, options?: { skipUpdate?: boolean }): boolean {
     if (this.turn === -1) return false;
-    const group = this.markGroups.find((element) => element.name === groupName);
+    const markGroup = this.markGroups[markGroupIndex];
     const tribe = this.findTribe(tribeTag);
-    if (!tribe || !group) return false;
-    group.tribes.push(tribe.id);
+    if (!tribe || !markGroup) return false;
+    markGroup.tribes.push(tribe.id);
     this.sortMarkGroups();
     if (options?.skipUpdate) return true;
     this.#canvasFrame.render();
@@ -137,7 +137,7 @@ class GeneratorController {
       );
       for (let tribeId of group.tribes) {
         const tribe = this.tribes[tribeId];
-        if (tribe) this.addMark(group.name, tribe.tag, { skipUpdate: true });
+        if (tribe) this.addMark(this.markGroups.length - 1, tribe.tag, { skipUpdate: true });
       }
     }
     for (const caption of settings.captions) {

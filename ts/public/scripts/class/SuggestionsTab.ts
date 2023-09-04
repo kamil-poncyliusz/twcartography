@@ -17,15 +17,19 @@ class SuggestionsTab {
     const row = target.closest("tr") as HTMLTableRowElement;
     const suggestionTagCell = row.querySelector(".suggestion-tag") as HTMLTableCellElement;
     const suggestionTribeTag = suggestionTagCell.textContent ?? "";
-    let selectedGroupName = target.value;
-    if (selectedGroupName === "Utwórz grupę") {
-      const groupName = suggestionTribeTag.replaceAll(",", ".").replaceAll(" ", "_");
+    let selectedGroupIndex = parseInt(target.value);
+    if (!(selectedGroupIndex >= -1 && selectedGroupIndex < this.#generator.markGroups.length)) {
+      target.classList.add("is-invalid");
+      return;
+    }
+    if (selectedGroupIndex === -1) {
+      const groupName = suggestionTribeTag.replaceAll(",", ".").replaceAll(" ", "_").replaceAll(";", "");
       const groupColor = randomizeGroupColor();
       const isMarkGroupAdded = this.#generator.addMarkGroup({ name: groupName, color: groupColor, tribes: [] });
       if (!isMarkGroupAdded) return console.log("Failed to create a new group");
-      selectedGroupName = groupName;
+      selectedGroupIndex = this.#generator.markGroups.length - 1;
     }
-    const isMarkAdded = this.#generator.addMark(selectedGroupName, suggestionTribeTag);
+    const isMarkAdded = this.#generator.addMark(selectedGroupIndex, suggestionTribeTag);
     if (!isMarkAdded) return console.log("Failed to add a new mark");
   };
   render() {
@@ -33,11 +37,11 @@ class SuggestionsTab {
     const tag = suggestionsSearchInput ? suggestionsSearchInput.value : "";
     const suggestions = this.#generator.getSuggestions(tag, 30);
     suggestionsTableBody.innerHTML = "";
-    const groupNames = this.#generator.markGroups.map((group) => group.name);
     let groupOptions = "<option selected disabled hidden>Dodaj</option>";
-    groupOptions += `<option>Utwórz grupę</option>`;
-    for (let groupName of groupNames) {
-      groupOptions += `<option>${groupName}</option>`;
+    groupOptions += `<option value="-1"}">Utwórz grupę</option>`;
+    for (let markGroupIndex = 0; markGroupIndex < this.#generator.markGroups.length; markGroupIndex++) {
+      const markGroup = this.#generator.markGroups[markGroupIndex];
+      groupOptions += `<option value="${markGroupIndex}">${markGroup.name}</option>`;
     }
     for (let tribe of suggestions) {
       const newRow = document.createElement("tr");
