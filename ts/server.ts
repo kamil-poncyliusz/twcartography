@@ -13,6 +13,7 @@ import { upsertAdminAccount } from "./src/queries/user.js";
 import { createNewWorldsFromFiles } from "./src/synchronize-worlds.js";
 import turnDataDownloaderDaemon from "./src/turn-data-downloader-daemon.js";
 import { UserSessionData } from "./src/Types.js";
+import { parseAvailableTurnData } from "./src/world-data-state.js";
 
 declare module "express-session" {
   interface SessionData {
@@ -50,11 +51,13 @@ app.use(
   })
 );
 
-upsertAdminAccount("Admin", process.env.ADMIN_ACCOUNT_PASSWORD ?? "password").then((success) => {
+await upsertAdminAccount("Admin", process.env.ADMIN_ACCOUNT_PASSWORD ?? "password").then((success) => {
   if (!success) console.log("Failed to create administrator account");
 });
 
-createNewWorldsFromFiles();
+await createNewWorldsFromFiles();
+
+await parseAvailableTurnData();
 
 app.use("/", router);
 app.use("/api", api);

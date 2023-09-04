@@ -1,5 +1,5 @@
 import express from "express";
-import { readUsers, readWorlds, readWorldsWithWorldData } from "../src/queries/index.js";
+import { readUsers, readWorlds } from "../src/queries/index.js";
 import { getWorldDataStates } from "../src/world-data-state.js";
 
 const admin = express.Router();
@@ -12,8 +12,7 @@ admin.get("/worlds", async (req, res) => {
   return res.render("admin/worlds", { worlds: worlds });
 });
 admin.get("/world-data", async (req, res) => {
-  const worldsWithWorldData = await readWorldsWithWorldData();
-  const worldDataStates = await getWorldDataStates(worldsWithWorldData);
+  const worldDataStates = await getWorldDataStates();
   return res.render("admin/world-data", { state: worldDataStates });
 });
 admin.get("/users", async (req, res) => {

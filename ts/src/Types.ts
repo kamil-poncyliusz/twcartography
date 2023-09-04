@@ -71,6 +71,7 @@ export type CreatedAnimationWithRelations = CreatedAnimation & {
   collection: Collection;
 };
 export interface WorldDataState {
+  filesDirectoryName: string;
   id: number;
   serverName: string;
   turns: TurnDataState[];
