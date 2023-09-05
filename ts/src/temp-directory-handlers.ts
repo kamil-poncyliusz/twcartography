@@ -17,6 +17,43 @@ const getDirectories = async function (path: string): Promise<string[]> {
   }
 };
 
+export const createWorldDirectory = async function (payload: CreateWorldRequestPayload): Promise<boolean> {
+  const worldDirectoryName = payload.timestamp.toString(36);
+  const worldDirectoryPath = `${process.env.ROOT}/temp/${worldDirectoryName}`;
+  const worldDirectoryInfoFilePath = `${worldDirectoryPath}/info`;
+  const fileString = Object.entries(payload)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("\n");
+  try {
+    await fs.mkdir(worldDirectoryPath, { recursive: true });
+  } catch (error) {
+    console.log(error);
+  }
+  try {
+    await fs.access(worldDirectoryInfoFilePath);
+    await fs.unlink(worldDirectoryInfoFilePath);
+  } catch (error) {
+    //
+  }
+  try {
+    await fs.writeFile(worldDirectoryInfoFilePath, fileString);
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
+
+export const deleteWorldDirectory = async function (worldDirectoryName: string) {
+  const pathToDelete = `temp/${worldDirectoryName}`;
+  try {
+    await fs.access(pathToDelete);
+    await fs.rm(pathToDelete, { recursive: true, force: true });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const parseWorldInfoFile = async function (worldDirectoryName: string): Promise<CreateWorldRequestPayload | null> {
   const infoFilePath = `${worldDirectoriesPath}/${worldDirectoryName}/info`;
   try {

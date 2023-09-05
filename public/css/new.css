@@ -45,9 +45,13 @@ table td > input[type="number"] {
   display: block;
   width: 100%;
   font-size: 1rem;
+  height: 3rem;
+  padding: 0 0.5rem;
 }
 #settings input[type="color"] {
-  height: 2.75rem;
+  height: 3rem;
+  padding: 0;
+  overflow: hidden;
 }
 .row {
   display: flex;
@@ -70,7 +74,8 @@ table td > input[type="number"] {
   flex-basis: 0;
 }
 .row > div > input[type="checkbox"] {
-  flex-basis: 2.5rem;
+  height: 3rem;
+  flex-basis: 3rem;
   flex-grow: 0;
 }
 #mark-suggestions select {

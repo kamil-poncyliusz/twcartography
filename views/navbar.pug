@@ -14,6 +14,7 @@
     div
       if user
         p Zalogowany jako #{ user.login }
+        a(href=`/user/${user.id}`) Moje kolekcje
         button#logout-button(type="button") Wyloguj się
       else
         form#login-form

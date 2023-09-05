@@ -1,4 +1,3 @@
-import { promises as fs } from "fs";
 import {
   createMap,
   readTurnData,
@@ -40,6 +39,7 @@ import { CreateMapRequestPayload, CreateWorldRequestPayload, ParsedTurnData } fr
 import saveAnimationGif from "../src/save-animation-gif.js";
 import turnDataDownloaderDaemon from "../src/turn-data-downloader-daemon.js";
 import { areDataFilesAvailable } from "../src/world-data-state.js";
+import { createWorldDirectory, deleteWorldDirectory } from "../src/temp-directory-handlers.js";
 
 interface CreateMapResponse {
   success: boolean;
@@ -48,43 +48,6 @@ interface CreateMapResponse {
     title: string;
   };
 }
-
-const createWorldDirectory = async function (payload: CreateWorldRequestPayload): Promise<boolean> {
-  const worldDirectoryName = payload.timestamp.toString(36);
-  const worldDirectoryPath = `${process.env.ROOT}/temp/${worldDirectoryName}`;
-  const worldDirectoryInfoFilePath = `${worldDirectoryPath}/info`;
-  const fileString = Object.entries(payload)
-    .map(([key, value]) => `${key}=${value}`)
-    .join("\n");
-  try {
-    await fs.mkdir(worldDirectoryPath, { recursive: true });
-  } catch (error) {
-    console.log(error);
-  }
-  try {
-    await fs.access(worldDirectoryInfoFilePath);
-    await fs.unlink(worldDirectoryInfoFilePath);
-  } catch (error) {
-    //
-  }
-  try {
-    await fs.writeFile(worldDirectoryInfoFilePath, fileString);
-    return true;
-  } catch (error) {
-    console.log(error);
-    return false;
-  }
-};
-
-const deleteWorldDirectory = async function (worldDirectoryName: string) {
-  const pathToDelete = `temp/${worldDirectoryName}`;
-  try {
-    await fs.access(pathToDelete);
-    await fs.rm(pathToDelete, { recursive: true, force: true });
-  } catch (error) {
-    console.log(error);
-  }
-};
 
 export const handleReadWorld = async function (req: Request): Promise<World | null> {
   const id = parseInt(req.params.id);
@@ -135,7 +98,7 @@ export const handleCreateMap = async function (req: Request): Promise<CreateMapR
 export const handleCreateWorld = async function (req: Request): Promise<boolean> {
   if (!req.session.user || req.session.user.rank < 10) return false;
   if (!isValidCreateWorldRequestPayload(req.body)) return false;
-  const modifiedTimestamp: number = req.body.timestamp + Math.floor(Math.random() * 100);
+  const modifiedTimestamp: number = req.body.timestamp + Math.floor(Math.random() * 15);
   const payload: CreateWorldRequestPayload = {
     server: req.body.server,
     num: req.body.num,
@@ -185,7 +148,7 @@ export const handleDeleteWorld = async function (req: Request): Promise<boolean>
   if (!deletedWorld) return false;
   const worldDirectoryName = deletedWorld.startTimestamp.toString(36);
   turnDataDownloaderDaemon.stopDownloading(deletedWorld);
-  deleteWorldDirectory(worldDirectoryName);
+  await deleteWorldDirectory(worldDirectoryName);
   return true;
 };
 

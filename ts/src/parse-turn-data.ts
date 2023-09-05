@@ -1,17 +1,23 @@
-import { promises as fs } from "fs";
+import fs from "fs/promises";
 import zlib from "zlib";
 import { ParsedTurnData } from "./Types";
 
-const parseFile = async function (worldDirectoryName: string, turn: number, name: string): Promise<string[]> {
-  const path = `temp/${worldDirectoryName}/${turn}/${name}.txt.gz`;
+const parseFile = async function (worldDirectoryName: string, turn: number, fileName: string): Promise<string[]> {
+  const directoryPath = `temp/${worldDirectoryName}/${turn}`;
   try {
-    const fileData = await fs.readFile(path);
-    const unzipped = zlib.unzipSync(fileData);
-    let rows = unzipped.toString().split(/\r?\n/);
-    rows.splice(-1);
-    return rows;
-  } catch {
-    console.log(`Parsing failed for ${path}`);
+    if (fileName === "conquer") {
+      const fileData = await fs.readFile(`${directoryPath}/${fileName}.txt`);
+      let rows = fileData.toString().split(/\r?\n/);
+      return rows;
+    } else {
+      const fileData = await fs.readFile(`${directoryPath}/${fileName}.txt.gz`);
+      const unzipped = zlib.unzipSync(fileData);
+      let rows = unzipped.toString().split(/\r?\n/);
+      rows.splice(-1);
+      return rows;
+    }
+  } catch (error) {
+    console.log(`Parsing failed for ${directoryPath}/${fileName}: ${error}`);
     return [];
   }
 };
@@ -115,7 +121,7 @@ const parseTurnData = async function (worldDirectoryName: string, turn: number):
   }
   const conquerData = await parseFile(worldDirectoryName, turn, "conquer");
   for (let i = 0; i < conquerData.length; i++) {
-    const [id, timestamp, newOwner, oldOwner] = conquerData[i].split(",");
+    const [villageId, timestamp, newOwner, oldOwner] = conquerData[i].split(",");
   }
   let maxDistance = 0;
   let distance = 0;

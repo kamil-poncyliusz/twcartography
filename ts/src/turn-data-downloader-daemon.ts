@@ -7,9 +7,10 @@ import daysFromStart from "./days-from-start.js";
 import { World } from "@prisma/client";
 import { isValidTurn } from "../public/scripts/validators.js";
 
-const downloadWorldDataFile = function (url: string, path: string, filename: string) {
+const downloadWorldDataFile = function (url: string, path: string, file: string) {
+  const fileName = file === "conquer" ? `${file}.txt` : `${file}.txt.gz`;
   const dl = new DownloaderHelper(url, path, {
-    fileName: `${filename}.txt.gz`,
+    fileName: fileName,
   });
   return new Promise<void>((resolve, reject) => {
     dl.on("end", () => {
@@ -25,6 +26,7 @@ const downloadWorldDataFile = function (url: string, path: string, filename: str
     });
   });
 };
+
 const downloadWorldData = async function (world: World, turn: number) {
   const files = ["village", "player", "ally", "conquer", "kill_all_tribe", "kill_att_tribe", "kill_def_tribe"];
   const worldDirectoryName = world.startTimestamp.toString(36);
@@ -35,7 +37,13 @@ const downloadWorldData = async function (world: World, turn: number) {
     await fs.mkdir(turnDirectoryPath, { recursive: true });
   }
   const downloadPromises = files.map((file) => {
-    const url = `https://${world.server}${world.num}.${world.domain}/map/${file}.txt.gz`;
+    let url = `https://${world.server}${world.num}.${world.domain}/map/${file}.txt.gz`;
+    if (file === "conquer") {
+      const secondsInADay = 24 * 60 * 60;
+      const margin = 15;
+      const dayAgoTimestamp = Math.ceil(Date.now() / 1000 - secondsInADay + margin);
+      url = `https://${world.server}${world.num}.${world.domain}/interface.php?func=get_conquer&since=${dayAgoTimestamp}`;
+    }
     return downloadWorldDataFile(url, turnDirectoryPath, file);
   });
   try {

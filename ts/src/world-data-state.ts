@@ -9,10 +9,16 @@ export const areDataFilesAvailable = async function (worldDirectoryName: string,
   const dataFilesPath = `temp/${worldDirectoryName}/${turn}`;
   for (const file of files) {
     const dataFilePath = `${dataFilesPath}/${file}.txt.gz`;
+    const alternativeDataFilePath = `${dataFilesPath}/${file}.txt`;
     try {
       await fs.access(dataFilePath);
     } catch {
-      return false;
+      if (file !== "conquer") return false;
+      try {
+        await fs.access(alternativeDataFilePath);
+      } catch {
+        return false;
+      }
     }
   }
   return true;

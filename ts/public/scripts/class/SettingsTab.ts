@@ -64,6 +64,10 @@ class SettingsTab {
     encodedSettingsInput?.addEventListener("input", this.changeEncodedSettings);
     encodedSettingsInput?.dispatchEvent(new Event("input"));
     publishMapButton?.addEventListener("click", this.publishMap);
+    window.addEventListener("beforeunload", (event) => {
+      const isWorldSelected = Boolean(worldSelect?.value);
+      if (isWorldSelected) event.preventDefault();
+    });
   }
   set disabled(value: boolean) {
     for (const key in inputs) {
@@ -194,7 +198,10 @@ class SettingsTab {
       else input.value = String(value);
       input.classList.remove("is-invalid");
     }
-    if (encodedSettingsInput) encodedSettingsInput.value = encodedSettings;
+    if (encodedSettingsInput) {
+      encodedSettingsInput.value = encodedSettings;
+      encodedSettingsInput.classList.remove("is-invalid");
+    }
     inputs.autoRefresh.checked = this.#generator.autoRefresh;
     if (this.#generator.world === 0) {
       this.disabled = true;
