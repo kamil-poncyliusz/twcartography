@@ -8,6 +8,7 @@ import {
   handleDeleteCollection,
   handleDeleteMap,
   handleDeleteWorld,
+  handleReadCollections,
   handleReadTurnData,
   handleReadWorld,
   handleUpdateCollection,
@@ -79,6 +80,11 @@ api.post("/animation/create", async (req, res) => {
 
 api.post("/animation/delete", async (req, res) => {
   const responseData = await handleDeleteAnimation(req);
+  return res.json(responseData);
+});
+
+api.post("/collections", async (req, res) => {
+  const responseData = await handleReadCollections(req);
   return res.json(responseData);
 });
 

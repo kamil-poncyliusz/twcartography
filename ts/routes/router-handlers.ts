@@ -63,18 +63,3 @@ export const handleReadCollection = async function (req: Request) {
   };
   return locals;
 };
-
-export const handleReadCollections = async function (req: Request) {
-  const worldId = parseInt(req.params.world);
-  if (!isValidId(worldId)) return false;
-  const collections = await readCollections(worldId, undefined);
-  for (let collection of collections) {
-    if (collection.maps.length > 0) collection.maps = collection.maps.slice(-1);
-  }
-  const locals = {
-    page: "collections",
-    user: req.session.user,
-    collections: collections,
-  };
-  return locals;
-};

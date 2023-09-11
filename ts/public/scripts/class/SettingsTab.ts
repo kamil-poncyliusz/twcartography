@@ -38,6 +38,7 @@ const sendAndHandleCreateMapRequest = async function (payload: CreateMapRequestP
     const newOptionElement = document.createElement("option");
     newOptionElement.value = String(createMapResponse.newCollection.id);
     newOptionElement.innerHTML = createMapResponse.newCollection.title;
+    newOptionElement.dataset.worldId = String(createMapResponse.newCollection.worldId);
     collectionSelect.add(newOptionElement);
     newOptionElement.selected = true;
   }
@@ -236,7 +237,7 @@ class SettingsTab {
         const collectionId = parseInt(option.value);
         const collectionWorldId = parseInt(option.dataset.worldId ?? "");
         if (collectionId > 0) {
-          if (!isValidId(collectionWorldId)) throw new Error("Collection option: Invalid data-world-id property");
+          if (!isValidId(collectionWorldId)) throw new Error("Invalid data-world-id property: ");
           const isMatchingWorldId = collectionWorldId === this.#generator.world;
           option.disabled = !isMatchingWorldId;
         }

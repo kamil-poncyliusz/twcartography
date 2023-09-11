@@ -35,17 +35,19 @@ import {
 } from "../public/scripts/validators.js";
 import { World } from "@prisma/client";
 import { Request } from "express";
-import { CreateMapRequestPayload, CreateWorldRequestPayload, ParsedTurnData } from "../src/Types.js";
+import { CollectionWithRelations, CreateMapRequestPayload, CreateWorldRequestPayload, ParsedTurnData } from "../src/Types.js";
 import saveAnimationGif from "../src/save-animation-gif.js";
 import turnDataDownloaderDaemon from "../src/turn-data-downloader-daemon.js";
 import { areDataFilesAvailable } from "../src/world-data-state.js";
 import { createWorldDirectory, deleteWorldDirectory } from "../src/temp-directory-handlers.js";
+import { readCollections } from "../src/queries/collection.js";
 
 interface CreateMapResponse {
   success: boolean;
   newCollection?: {
     id: number;
     title: string;
+    worldId: number;
   };
 }
 
@@ -63,6 +65,13 @@ export const handleReadTurnData = async function (req: Request): Promise<ParsedT
   const data = await readTurnData(worldId, turn);
   if (data === null) return null;
   return data;
+};
+
+export const handleReadCollections = async function (req: Request): Promise<CollectionWithRelations[]> {
+  const page = req.body.page as number;
+  if (typeof page !== "number" || page < 0) return [];
+  const collections = await readCollections(page, {});
+  return collections;
 };
 
 export const handleCreateMap = async function (req: Request): Promise<CreateMapResponse> {
@@ -92,7 +101,7 @@ export const handleCreateMap = async function (req: Request): Promise<CreateMapR
   if (!createdMap) return { success: false };
   saveMapPng(createdMap.id, generator.imageData as ImageData);
   if (collectionExists) return { success: true };
-  else return { success: true, newCollection: { id: newMapPayload.collection, title: newCollectionTitle } };
+  else return { success: true, newCollection: { id: newMapPayload.collection, title: newCollectionTitle, worldId: settings.world } };
 };
 
 export const handleCreateWorld = async function (req: Request): Promise<boolean> {

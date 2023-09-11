@@ -29,13 +29,16 @@ export const readCollection = async function (id: number): Promise<CollectionWit
   return result;
 };
 
-export const readCollections = async function (worldId: number | undefined, authorId: number | undefined): Promise<CollectionWithRelations[]> {
-  if (!(worldId === undefined || isValidId(worldId))) return [];
+export const readCollections = async function (page: number, filters: { worldId?: number; authorId?: number }): Promise<CollectionWithRelations[]> {
+  const defaultItemsPerPage = 5;
+  const isPaginationEnabled = page > 0;
+  const itemsPerPage = isPaginationEnabled ? defaultItemsPerPage : undefined;
+  const itemsOffset = isPaginationEnabled ? (page - 1) * defaultItemsPerPage : undefined;
   const result = await prisma.collection
     .findMany({
       where: {
-        worldId: worldId,
-        authorId: authorId,
+        worldId: filters.worldId,
+        authorId: filters.authorId,
       },
       include: {
         animations: true,
@@ -43,11 +46,19 @@ export const readCollections = async function (worldId: number | undefined, auth
         maps: true,
         world: true,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
+      skip: itemsOffset,
+      take: itemsPerPage,
     })
     .catch((err) => {
       console.error("Prisma error:", err);
       return [];
     });
+  for (let collection of result) {
+    if (collection.maps.length > 0) collection.maps = collection.maps.slice(-1);
+  }
   return result;
 };
 

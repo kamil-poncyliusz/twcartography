@@ -1,6 +1,6 @@
 import express from "express";
 import { readCollections, readUser, readWorlds } from "../src/queries/index.js";
-import { handleAuthentication, handleLogout, handleReadCollection, handleReadCollections, handleRegistration } from "./router-handlers.js";
+import { handleAuthentication, handleLogout, handleReadCollection, handleRegistration } from "./router-handlers.js";
 import { Collection } from "@prisma/client";
 import { isValidId } from "../public/scripts/validators.js";
 
@@ -40,7 +40,7 @@ router.get("/new/:settings?", async (req, res) => {
   };
   if (req.session.user && req.session.user.rank >= 2) {
     const authorId = req.session.user.id;
-    const collections = await readCollections(undefined, authorId);
+    const collections = await readCollections(0, { authorId: authorId });
     locals.collections = collections;
   }
   res.render("new", locals);
@@ -49,12 +49,12 @@ router.get("/new/:settings?", async (req, res) => {
 router.get("/user/:id", async (req, res) => {
   const id = parseInt(req.params.id);
   if (!isValidId(id)) return res.status(404).render("not-found");
-  const user = await readUser(id);
-  if (user === null) return res.status(404).render("not-found");
+  const displayedUser = await readUser(id);
+  if (displayedUser === null) return res.status(404).render("not-found");
   const locals = {
     page: "user",
     user: req.session.user,
-    displayedUser: user,
+    displayedUser: displayedUser,
   };
   return res.render("user", locals);
 });
@@ -62,16 +62,10 @@ router.get("/user/:id", async (req, res) => {
 router.get("/collections", async (req, res) => {
   const worlds = await readWorlds();
   const locals = {
-    page: "collections-worlds-list",
+    page: "collections",
     user: req.session.user,
     worlds: worlds,
   };
-  return res.render("collections-worlds-list", locals);
-});
-
-router.get("/collections/:world", async (req, res) => {
-  const locals = await handleReadCollections(req);
-  if (locals === false) return res.status(404).render("not-found");
   return res.render("collections", locals);
 });
 
