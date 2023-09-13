@@ -1,6 +1,6 @@
 import GeneratorController from "./GeneratorController.js";
 import { decodeSettings, encodeSettings } from "../settings-codec.js";
-import { handleCreateMap } from "../../../routes/api-handlers.js";
+import { CreateMapResponse, handleCreateMap } from "../../../routes/api-handlers.js";
 import { postRequest } from "../requests.js";
 import { CreateMapRequestValidationCode, isValidCreateMapRequestPayload, isValidId, settingsLimits } from "../validators.js";
 import { CreateMapRequestPayload, Settings } from "../../../src/Types.js";
@@ -24,6 +24,15 @@ const mapDescriptionInput = document.getElementById("map-description") as HTMLIn
 const mapTitleInput = document.getElementById("map-title") as HTMLInputElement | null;
 const worldSelect = document.getElementById("world-select") as HTMLSelectElement | null;
 
+const addNewCollectionOption = function (newCollection: { id: number; title: string; worldId: number }) {
+  const newOptionElement = document.createElement("option");
+  newOptionElement.value = String(newCollection.id);
+  newOptionElement.innerHTML = newCollection.title;
+  newOptionElement.dataset.worldId = String(newCollection.worldId);
+  newOptionElement.selected = true;
+  collectionSelect?.add(newOptionElement);
+};
+
 const sendAndHandleCreateMapRequest = async function (payload: CreateMapRequestPayload) {
   if (!mapTitleInput || !mapDescriptionInput || !collectionSelect || !publishMapButton) return;
   publishMapButton.disabled = true;
@@ -34,14 +43,7 @@ const sendAndHandleCreateMapRequest = async function (payload: CreateMapRequestP
     publishMapButton.classList.add("danger");
     return console.log("Failed to publish the map");
   }
-  if (createMapResponse.newCollection) {
-    const newOptionElement = document.createElement("option");
-    newOptionElement.value = String(createMapResponse.newCollection.id);
-    newOptionElement.innerHTML = createMapResponse.newCollection.title;
-    newOptionElement.dataset.worldId = String(createMapResponse.newCollection.worldId);
-    collectionSelect.add(newOptionElement);
-    newOptionElement.selected = true;
-  }
+  if (createMapResponse.newCollection) addNewCollectionOption(createMapResponse.newCollection);
   publishMapButton.innerHTML = "Dodałeś mapę do kolekcji";
   publishMapButton.classList.add("success");
   console.log("Map published succesfully");

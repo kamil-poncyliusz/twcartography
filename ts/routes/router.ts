@@ -31,6 +31,10 @@ router.post("/register", async (req, res) => {
 
 router.get("/new/:settings?", async (req, res) => {
   const worlds = await readWorlds();
+  worlds.sort((a, b) => {
+    if (a.server + a.num < b.server + b.num) return -1;
+    return 1;
+  });
   const locals = {
     page: "new",
     user: req.session.user,

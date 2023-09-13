@@ -49,7 +49,7 @@ import { areDataFilesAvailable } from "../src/world-data-state.js";
 import { createWorldDirectory, deleteWorldDirectory } from "../src/temp-directory-handlers.js";
 import { readCollections } from "../src/queries/collection.js";
 
-interface CreateMapResponse {
+export interface CreateMapResponse {
   success: boolean;
   newCollection?: {
     id: number;

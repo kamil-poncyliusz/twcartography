@@ -1,8 +1,18 @@
 import GeneratorController from "./GeneratorController.js";
 import { randomizeGroupColor } from "../utils.js";
+import { GROUP_NAME_FORBIDDEN_CHARACTERS } from "../constants.js";
 
 const suggestionsTableBody = document.querySelector("#mark-suggestions tbody") as HTMLTableSectionElement | null;
 const suggestionsSearchInput = document.querySelector("#mark-suggestions thead input") as HTMLInputElement | null;
+
+const removeForbiddenCharactersFromGroupName = function (groupName: string): string {
+  let result = groupName;
+  const forbidden = GROUP_NAME_FORBIDDEN_CHARACTERS.split("");
+  for (const character of forbidden) {
+    result = result.replaceAll(character, "");
+  }
+  return result;
+};
 
 class SuggestionsTab {
   #generator: GeneratorController;
@@ -23,7 +33,7 @@ class SuggestionsTab {
       return;
     }
     if (selectedGroupIndex === -1) {
-      const groupName = suggestionTribeTag.replaceAll(",", ".").replaceAll(" ", "_").replaceAll(";", "");
+      const groupName = removeForbiddenCharactersFromGroupName(suggestionTribeTag);
       const groupColor = randomizeGroupColor();
       const isMarkGroupAdded = this.#generator.addMarkGroup({ name: groupName, color: groupColor, tribes: [] });
       if (!isMarkGroupAdded) return console.log("Failed to create a new group");

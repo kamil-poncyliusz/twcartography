@@ -20,12 +20,12 @@ const showTab = function (tabClassName: string) {
 
 const generatorController = new GeneratorController();
 
-showSettingsButton?.addEventListener("click", function () {
+showSettingsButton?.addEventListener("click", () => {
   showTab("settings-tab");
 });
-showMarksButton?.addEventListener("click", function () {
+showMarksButton?.addEventListener("click", () => {
   showTab("marks-tab");
 });
-showCaptionsButton?.addEventListener("click", function () {
+showCaptionsButton?.addEventListener("click", () => {
   showTab("captions-tab");
 });

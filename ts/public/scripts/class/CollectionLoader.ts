@@ -29,6 +29,7 @@ class CollectionLoader {
     const newNode = document.createElement("div");
     newNode.classList.add("collection-card");
     let content = `<h1>${collection.title}</h1>`;
+    content += `<p>Świat ${collection.world.server + collection.world.num}</p>`;
     content += `<p>Stworzona przez ${collection.author.login} ${createdAt}</p>`;
     content = `<a href="/collection/${collection.id}"><div><img src="/images/maps/${collection.maps[0].id}.png" alt="img"></div><div>${content}</div></a>`;
     newNode.innerHTML = content;
