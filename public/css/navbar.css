@@ -2,11 +2,13 @@
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  position: relative;
+  position: sticky;
+  top: 0;
   width: 100%;
   height: var(--navbar-height);
   background-color: var(--section);
   z-index: 2;
+  margin-bottom: 1rem;
 }
 .navbar-button {
   width: 10rem;

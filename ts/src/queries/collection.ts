@@ -29,16 +29,18 @@ export const readCollection = async function (id: number): Promise<CollectionWit
   return result;
 };
 
-export const readCollections = async function (page: number, filters: { worldId?: number; authorId?: number }): Promise<CollectionWithRelations[]> {
+export const readCollections = async function (page: number, filters: { worldId: number; authorId: number }): Promise<CollectionWithRelations[]> {
   const defaultItemsPerPage = 5;
   const isPaginationEnabled = page > 0;
   const itemsPerPage = isPaginationEnabled ? defaultItemsPerPage : undefined;
   const itemsOffset = isPaginationEnabled ? (page - 1) * defaultItemsPerPage : undefined;
+  const worldId = filters.worldId > 0 ? filters.worldId : undefined;
+  const authorId = filters.authorId > 0 ? filters.authorId : undefined;
   const result = await prisma.collection
     .findMany({
       where: {
-        worldId: filters.worldId,
-        authorId: filters.authorId,
+        worldId: worldId,
+        authorId: authorId,
       },
       include: {
         animations: true,

@@ -1,14 +1,28 @@
 import { handleReadCollections } from "../../../routes/api-handlers";
-import { CollectionWithRelations } from "../../../src/Types";
+import { CollectionWithRelations, ReadCollectionsRequestPayload } from "../../../src/Types";
 import { postRequest } from "../requests.js";
 
 class CollectionLoader {
+  #authorId: number = 0;
   #containerElement: HTMLDivElement;
   #endOfData: boolean = false;
-  #fetching: boolean = false;
+  #isFetching: boolean = false;
   #nextPage: number = 1;
+  #worldId: number = 0;
   constructor(containerElement: HTMLDivElement) {
     this.#containerElement = containerElement;
+  }
+  set authorId(authorId: number) {
+    if (typeof authorId !== "number" || isNaN(authorId) || authorId < 0) throw new Error("Invalid authorId value");
+    this.#authorId = authorId;
+    this.clearResults();
+    this.loadPage();
+  }
+  set worldId(worldId: number) {
+    if (typeof worldId !== "number" || isNaN(worldId) || worldId < 0) throw new Error("Invalid worldId value");
+    this.#worldId = worldId;
+    this.clearResults();
+    this.loadPage();
   }
   #append(collection: CollectionWithRelations) {
     const createdAt = new Date(collection.createdAt).toLocaleDateString();
@@ -21,20 +35,30 @@ class CollectionLoader {
     this.#containerElement.appendChild(newNode);
   }
   async #fetch() {
-    if (this.#fetching || this.#endOfData) return;
-    this.#fetching = true;
+    if (this.#isFetching || this.#endOfData) return;
+    this.#isFetching = true;
     const url = `/api/collections`;
-    const collections: Awaited<ReturnType<typeof handleReadCollections>> = await postRequest(url, { page: this.#nextPage });
+    const payload: ReadCollectionsRequestPayload = {
+      page: this.#nextPage,
+      authorId: this.#authorId,
+      worldId: this.#worldId,
+    };
+    const collections: Awaited<ReturnType<typeof handleReadCollections>> = await postRequest(url, payload);
+    this.#isFetching = false;
+    this.#nextPage++;
     if (!collections || collections.length === 0) return (this.#endOfData = true);
     for (const collection of collections) {
       this.#append(collection);
     }
-    this.#nextPage++;
-    this.#fetching = false;
   }
-  loadPage = () => {
+  loadPage() {
     this.#fetch();
-  };
+  }
+  clearResults() {
+    this.#containerElement.innerHTML = "";
+    this.#nextPage = 1;
+    this.#endOfData = false;
+  }
 }
 
 export default CollectionLoader;

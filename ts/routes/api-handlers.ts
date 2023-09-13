@@ -32,10 +32,17 @@ import {
   isValidUserRank,
   isValidCreateWorldRequestPayload,
   isValidFrameDelay,
+  isValidReadCollectionsRequestPayload,
 } from "../public/scripts/validators.js";
 import { World } from "@prisma/client";
 import { Request } from "express";
-import { CollectionWithRelations, CreateMapRequestPayload, CreateWorldRequestPayload, ParsedTurnData } from "../src/Types.js";
+import {
+  CollectionWithRelations,
+  CreateMapRequestPayload,
+  CreateWorldRequestPayload,
+  ParsedTurnData,
+  ReadCollectionsRequestPayload,
+} from "../src/Types.js";
 import saveAnimationGif from "../src/save-animation-gif.js";
 import turnDataDownloaderDaemon from "../src/turn-data-downloader-daemon.js";
 import { areDataFilesAvailable } from "../src/world-data-state.js";
@@ -68,9 +75,9 @@ export const handleReadTurnData = async function (req: Request): Promise<ParsedT
 };
 
 export const handleReadCollections = async function (req: Request): Promise<CollectionWithRelations[]> {
-  const page = req.body.page as number;
-  if (typeof page !== "number" || page < 0) return [];
-  const collections = await readCollections(page, {});
+  const payload = req.body as ReadCollectionsRequestPayload;
+  if (!isValidReadCollectionsRequestPayload(payload)) return [];
+  const collections = await readCollections(payload.page, { worldId: payload.worldId, authorId: payload.authorId });
   return collections;
 };
 

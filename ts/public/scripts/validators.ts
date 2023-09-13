@@ -1,5 +1,5 @@
 import { GROUP_NAME_FORBIDDEN_CHARACTERS, VALID_USER_RANKS } from "./constants.js";
-import { Caption, CreateMapRequestPayload, CreateWorldRequestPayload, Settings } from "../../src/Types";
+import { Caption, CreateMapRequestPayload, CreateWorldRequestPayload, ReadCollectionsRequestPayload, Settings } from "../../src/Types";
 
 export enum CreateMapRequestValidationCode {
   Ok,
@@ -57,6 +57,14 @@ export const isValidCreateWorldRequestPayload = function (payload: CreateWorldRe
   if (typeof payload.num !== "string" || payload.num.length === 0) return false;
   if (typeof payload.domain !== "string" || payload.domain.length === 0) return false;
   if (typeof payload.timestamp !== "number" || payload.timestamp <= 0) return false;
+  return true;
+};
+
+export const isValidReadCollectionsRequestPayload = function (payload: ReadCollectionsRequestPayload): boolean {
+  if (typeof payload !== "object") return false;
+  if (typeof payload.page !== "number" || payload.page < 0) return false;
+  if (typeof payload.authorId !== "number" || payload.authorId < 0) return false;
+  if (typeof payload.worldId !== "number" || payload.worldId < 0) return false;
   return true;
 };
 

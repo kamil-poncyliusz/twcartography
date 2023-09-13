@@ -40,7 +40,7 @@ router.get("/new/:settings?", async (req, res) => {
   };
   if (req.session.user && req.session.user.rank >= 2) {
     const authorId = req.session.user.id;
-    const collections = await readCollections(0, { authorId: authorId });
+    const collections = await readCollections(0, { authorId: authorId, worldId: 0 });
     locals.collections = collections;
   }
   res.render("new", locals);

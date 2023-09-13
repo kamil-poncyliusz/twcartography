@@ -97,3 +97,8 @@ export interface CreateWorldRequestPayload {
   server: string;
   timestamp: number;
 }
+export interface ReadCollectionsRequestPayload {
+  page: number;
+  authorId: number;
+  worldId: number;
+}

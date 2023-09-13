@@ -13,5 +13,12 @@ html(lang="pl-PL")
     script(src="/scripts/collections.js", type="module", defer)
   body
     include navbar.pug
+    section#filters
+      fieldset
+        label(for="world-filter") Świat:
+        select#world-filter(name="world-filter", autocomplete="off")
+          option(value="0", selected) dowolny
+          each world in worlds
+            option(value=world.id)= world.server + world.num
     main
       #collection-list
