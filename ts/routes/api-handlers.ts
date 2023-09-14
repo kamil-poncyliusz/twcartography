@@ -1,22 +1,3 @@
-import {
-  createMap,
-  readTurnData,
-  createWorld,
-  readWorld,
-  createTurnData,
-  updateUserRank,
-  deleteWorld,
-  deleteMap,
-  createCollection,
-  deleteCollection,
-  updateCollection,
-  readCollection,
-  readMap,
-  updateMap,
-  createAnimation,
-  deleteAnimation,
-  readAnimation,
-} from "../src/queries/index.js";
 import MapGenerator from "../public/scripts/class/MapGenerator.js";
 import { encodeSettings } from "../public/scripts/settings-codec.js";
 import saveMapPng from "../src/save-map-png.js";
@@ -34,29 +15,26 @@ import {
   isValidFrameDelay,
   isValidReadCollectionsRequestPayload,
 } from "../public/scripts/validators.js";
-import { World } from "@prisma/client";
 import { Request } from "express";
-import {
-  CollectionWithRelations,
-  CreateMapRequestPayload,
-  CreateWorldRequestPayload,
-  ParsedTurnData,
-  ReadCollectionsRequestPayload,
-} from "../src/Types.js";
 import saveAnimationGif from "../src/save-animation-gif.js";
 import turnDataDownloaderDaemon from "../src/turn-data-downloader-daemon.js";
 import { areDataFilesAvailable } from "../src/world-data-state.js";
 import { createWorldDirectory, deleteWorldDirectory } from "../src/temp-directory-handlers.js";
-import { readCollections } from "../src/queries/collection.js";
-
-export interface CreateMapResponse {
-  success: boolean;
-  newCollection?: {
-    id: number;
-    title: string;
-    worldId: number;
-  };
-}
+import { createAnimation, deleteAnimation, readAnimation } from "../src/queries/animation.js";
+import { createCollection, deleteCollection, readCollection, readCollections, updateCollection } from "../src/queries/collection.js";
+import { createMap, deleteMap, readMap, updateMap } from "../src/queries/map.js";
+import { createTurnData, readTurnData } from "../src/queries/turn-data.js";
+import { updateUserRank } from "../src/queries/user.js";
+import { createWorld, deleteWorld, readWorld } from "../src/queries/world.js";
+import { World } from "@prisma/client";
+import {
+  CollectionWithRelations,
+  CreateMapRequestPayload,
+  CreateMapResponse,
+  CreateWorldRequestPayload,
+  ParsedTurnData,
+  ReadCollectionsRequestPayload,
+} from "../src/Types.js";
 
 export const handleReadWorld = async function (req: Request): Promise<World | null> {
   const id = parseInt(req.params.id);

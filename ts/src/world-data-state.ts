@@ -1,7 +1,8 @@
 import fs from "fs/promises";
-import { WorldDataState, TurnDataState } from "./Types.js";
-import { createTurnData, readWorldsWithWorldData } from "./queries/index.js";
 import parseTurnData from "./parse-turn-data.js";
+import { createTurnData } from "./queries/turn-data.js";
+import { readWorldsWithWorldData } from "./queries/world.js";
+import { WorldDataState, TurnDataState } from "./Types.js";
 
 const files = ["village", "player", "ally", "conquer", "kill_all_tribe", "kill_att_tribe", "kill_def_tribe"];
 

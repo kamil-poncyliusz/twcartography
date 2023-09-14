@@ -1,11 +1,12 @@
 import fs from "fs/promises";
 import scheduler from "node-schedule";
 import { DownloaderHelper } from "node-downloader-helper";
-import { createTurnData, readWorlds } from "./queries/index.js";
 import parseTurnData from "./parse-turn-data.js";
 import daysFromStart from "./days-from-start.js";
-import { World } from "@prisma/client";
 import { isValidTurn } from "../public/scripts/validators.js";
+import { World } from "@prisma/client";
+import { readWorlds } from "./queries/world.js";
+import { createTurnData } from "./queries/turn-data.js";
 
 const downloadWorldDataFile = function (url: string, path: string, file: string) {
   const fileName = file === "conquer" ? `${file}.txt` : `${file}.txt.gz`;

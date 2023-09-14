@@ -1,7 +1,8 @@
-import bcrypt from "bcryptjs";
 import { Request } from "express";
-import { createUser, readCollection, readCollections, readUserByLogin } from "../src/queries/index.js";
+import bcrypt from "bcryptjs";
 import { isValidId, isValidLogin, isValidPassword } from "../public/scripts/validators.js";
+import { readCollection } from "../src/queries/collection.js";
+import { createUser, readUserByLogin } from "../src/queries/user.js";
 
 export const handleRegistration = async function (req: Request): Promise<string> {
   const login = req.body.login;

@@ -102,3 +102,11 @@ export interface ReadCollectionsRequestPayload {
   authorId: number;
   worldId: number;
 }
+export interface CreateMapResponse {
+  success: boolean;
+  newCollection?: {
+    id: number;
+    title: string;
+    worldId: number;
+  };
+}

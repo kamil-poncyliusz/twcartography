@@ -1,8 +1,10 @@
 import express from "express";
-import { readCollections, readUser, readWorlds } from "../src/queries/index.js";
 import { handleAuthentication, handleLogout, handleReadCollection, handleRegistration } from "./router-handlers.js";
-import { Collection } from "@prisma/client";
 import { isValidId } from "../public/scripts/validators.js";
+import { readCollections } from "../src/queries/collection.js";
+import { readUser } from "../src/queries/user.js";
+import { readWorlds } from "../src/queries/world.js";
+import { Collection } from "@prisma/client";
 
 const router = express.Router();
 

@@ -1,7 +1,7 @@
 import fs from "fs/promises";
-import { CreateWorldRequestPayload } from "./Types";
 import { isValidCreateWorldRequestPayload } from "../public/scripts/validators.js";
-import { createWorld, readWorlds } from "./queries/index.js";
+import { createWorld, readWorlds } from "./queries/world.js";
+import { CreateWorldRequestPayload } from "./Types";
 
 const worldDirectoriesPath = "temp";
 

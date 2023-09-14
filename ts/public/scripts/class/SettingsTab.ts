@@ -1,10 +1,10 @@
 import GeneratorController from "./GeneratorController.js";
 import { decodeSettings, encodeSettings } from "../settings-codec.js";
-import { CreateMapResponse, handleCreateMap } from "../../../routes/api-handlers.js";
+import { handleCreateMap } from "../../../routes/api-handlers.js";
 import { postRequest } from "../requests.js";
 import { CreateMapRequestValidationCode, isValidCreateMapRequestPayload, isValidId, settingsLimits } from "../validators.js";
-import { CreateMapRequestPayload, Settings } from "../../../src/Types.js";
 import { selectInputValue } from "../utils.js";
+import { CreateMapRequestPayload, CreateMapResponse, Settings } from "../../../src/Types.js";
 
 const inputs: { [key: string]: HTMLInputElement } = {
   autoRefresh: document.getElementById("auto-refresh") as HTMLInputElement,
@@ -24,7 +24,8 @@ const mapDescriptionInput = document.getElementById("map-description") as HTMLIn
 const mapTitleInput = document.getElementById("map-title") as HTMLInputElement | null;
 const worldSelect = document.getElementById("world-select") as HTMLSelectElement | null;
 
-const addNewCollectionOption = function (newCollection: { id: number; title: string; worldId: number }) {
+const addNewCollectionOption = function (newCollection: CreateMapResponse["newCollection"]) {
+  if (!newCollection) return;
   const newOptionElement = document.createElement("option");
   newOptionElement.value = String(newCollection.id);
   newOptionElement.innerHTML = newCollection.title;
