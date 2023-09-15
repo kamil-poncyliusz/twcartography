@@ -1,6 +1,6 @@
 import { handleReadCollections } from "../../../routes/api-handlers";
-import { CollectionWithRelations, ReadCollectionsRequestPayload } from "../../../src/Types";
 import { postRequest } from "../requests.js";
+import { CollectionWithRelations, ReadCollectionsRequestPayload } from "../../../src/types";
 
 class CollectionLoader {
   #authorId: number = 0;

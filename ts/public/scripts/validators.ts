@@ -1,26 +1,18 @@
 import { GROUP_NAME_FORBIDDEN_CHARACTERS, VALID_USER_RANKS } from "./constants.js";
-import { Caption, CreateMapRequestPayload, CreateWorldRequestPayload, ReadCollectionsRequestPayload, Settings } from "../../src/Types";
-
-export enum CreateMapRequestValidationCode {
-  Ok,
-  InvalidSettings,
-  InvalidTitle,
-  InvalidDescription,
-  InvalidCollection,
-}
+import { Caption, Settings } from "../../src/types.js";
 
 const LOGIN_MIN_LENGTH = 2;
 const LOGIN_MAX_LENGTH = 15;
 const PASSWORD_MIN_LENGTH = 8;
 const PASSWORD_MAX_LENGTH = 30;
-const TURN_MAX = 365;
 const TURN_MIN = 0;
+const TURN_MAX = 365;
 const TITLE_MIN_LENGTH = 1;
 const TITLE_MAX_LENGTH = 20;
 const MAP_DESCRIPTION_MAX_LENGTH = 200;
 const COLLECTION_DESCRIPTION_MAX_LENGTH = 500;
-const GROUP_NAME_MAX_LENGTH = 8;
 const GROUP_NAME_MIN_LENGTH = 1;
+const GROUP_NAME_MAX_LENGTH = 8;
 const FRAME_DELAY_MAX_MILISECONDS = 60000;
 
 const settingsMinValues: { [key: string]: number } = {
@@ -42,31 +34,6 @@ export const settingsLimits = {
 const CAPTION_TEXT_MAX_LENGTH = 20;
 const CAPTION_MAX_FONT_SIZE = 100;
 const CAPTION_MAX_COORDINATE = 5000;
-
-export const isValidCreateMapRequestPayload = function (payload: CreateMapRequestPayload): CreateMapRequestValidationCode {
-  if (!isValidTitle(payload.title)) return CreateMapRequestValidationCode.InvalidTitle;
-  if (!isValidMapDescription(payload.description)) return CreateMapRequestValidationCode.InvalidDescription;
-  if (typeof payload.collection !== "number" || !(payload.collection >= 0)) return CreateMapRequestValidationCode.InvalidCollection;
-  if (!isValidSettings(payload.settings)) return CreateMapRequestValidationCode.InvalidSettings;
-  return CreateMapRequestValidationCode.Ok;
-};
-
-export const isValidCreateWorldRequestPayload = function (payload: CreateWorldRequestPayload) {
-  if (typeof payload !== "object") return false;
-  if (typeof payload.server !== "string" || payload.server.length === 0) return false;
-  if (typeof payload.num !== "string" || payload.num.length === 0) return false;
-  if (typeof payload.domain !== "string" || payload.domain.length === 0) return false;
-  if (typeof payload.timestamp !== "number" || payload.timestamp <= 0) return false;
-  return true;
-};
-
-export const isValidReadCollectionsRequestPayload = function (payload: ReadCollectionsRequestPayload): boolean {
-  if (typeof payload !== "object") return false;
-  if (typeof payload.page !== "number" || payload.page < 0) return false;
-  if (typeof payload.authorId !== "number" || payload.authorId < 0) return false;
-  if (typeof payload.worldId !== "number" || payload.worldId < 0) return false;
-  return true;
-};
 
 export const isValidId = function (id: number): boolean {
   if (typeof id !== "number" || !Number.isInteger(id) || isNaN(id) || id < 1) return false;

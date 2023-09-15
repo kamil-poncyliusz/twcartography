@@ -1,6 +1,6 @@
 import { parseHexColor, calcExpansionArray } from "../utils.js";
-import { Settings, ParsedColor, ParsedTurnData, Village, MarkGroup } from "../../../src/Types.js";
 import { TRIBAL_WARS_MAP_SIZE } from "../constants.js";
+import { Settings, ParsedColor, ParsedTurnData, Village, MarkGroup } from "../../../src/types.js";
 
 const canvasModule = typeof process === "object" ? await import("canvas") : null;
 
@@ -51,7 +51,7 @@ class Legend {
     }
   }
   add(groupName: string, x: number, y: number) {
-    if (this.#groups[groupName] === undefined) return;
+    if (this.#groups[groupName] === undefined) return console.log(`Legend error: ${groupName} group not found`);
     if (y < 500) {
       if (x < 500) this.#groups[groupName].corners[NORTH_WEST]++;
       else this.#groups[groupName].corners[NORTH_EAST]++;
@@ -218,7 +218,7 @@ class MapGenerator {
   #drawBorders() {
     const margin = 2;
     const pixels = this.#scaledPixels;
-    if (pixels.length === 0 || pixels.length < margin * 3) return;
+    if (pixels.length === 0 || pixels.length < margin * 3) return console.log("MapGenerator error: cannot draw borders, map is too small");
     const borderPixels: ScaledPixel[] = [];
     for (let x = margin; x < pixels.length - margin; x++) {
       for (let y = margin; y < pixels.length - margin; y++) {
@@ -372,7 +372,7 @@ class MapGenerator {
   #smoothBorders() {
     const distance = 2;
     const pixels = this.#scaledPixels;
-    if (pixels.length === 0 || pixels.length < distance * 3) return;
+    if (pixels.length === 0 || pixels.length < distance * 3) return console.log("MapGenerator error: cannot smooth borders, map is too small");
     const corrections: {
       pixel: ScaledPixel;
       newColor: ParsedColor;
@@ -421,7 +421,7 @@ class MapGenerator {
   #writeCaptions() {
     const captions = this.#settings.captions;
     const imageData = this.imageData;
-    if (!imageData) return;
+    if (!imageData) return console.log("MapGenerator: imageData is undefined");
     const width = imageData.width;
     const height = imageData.height;
     if (canvasModule !== null) {
@@ -429,7 +429,7 @@ class MapGenerator {
       canvas.width = width;
       canvas.height = height;
       const ctx = canvas.getContext("2d");
-      if (ctx === null) return;
+      if (ctx === null) return console.log("MapGenerator: canvas context in null");
       ctx.putImageData(imageData, 0, 0);
       ctx.textAlign = "left";
       ctx.textBaseline = "top";
@@ -445,7 +445,7 @@ class MapGenerator {
       canvas.width = width;
       canvas.height = height;
       const ctx = canvas.getContext("2d");
-      if (ctx === null) return;
+      if (ctx === null) return console.log("MapGenerator: canvas context in null");
       ctx.putImageData(imageData, 0, 0);
       ctx.textAlign = "left";
       ctx.textBaseline = "top";
@@ -461,7 +461,7 @@ class MapGenerator {
   #writeLegend() {
     const legend = this.#legend.getLegend();
     const imageData = this.imageData;
-    if (!imageData) return;
+    if (!imageData) return console.log("MapGenerator: imageData is undefined");
     const width = imageData.width;
     const height = imageData.height;
     if (canvasModule !== null) {
@@ -469,7 +469,7 @@ class MapGenerator {
       canvas.width = width;
       canvas.height = height;
       const ctx = canvas.getContext("2d");
-      if (ctx === null) return;
+      if (ctx === null) return console.log("MapGenerator: canvas context in null");
       ctx.putImageData(imageData, 0, 0);
       const fontSize = Math.floor((width / 100) * LEGEND_FONT_SIZE);
       ctx.font = `${fontSize}px ${CANVAS_FONT_FAMILY}`;
@@ -506,7 +506,7 @@ class MapGenerator {
       canvas.width = width;
       canvas.height = height;
       const ctx = canvas.getContext("2d");
-      if (ctx === null) return;
+      if (ctx === null) return console.log("MapGenerator: canvas context in null");
       ctx.putImageData(imageData, 0, 0);
       const fontSize = Math.floor((width / 100) * LEGEND_FONT_SIZE);
       ctx.font = `${fontSize}px ${CANVAS_FONT_FAMILY}`;

@@ -1,5 +1,5 @@
 import { Base64 } from "./base64.js";
-import { Caption, MarkGroup, Settings } from "../../src/Types.js";
+import { Caption, MarkGroup, Settings } from "../../src/types.js";
 
 const minorSeparator = ",";
 const majorSeparator = ";";

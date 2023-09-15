@@ -1,9 +1,9 @@
-import GeneratorController from "./class/GeneratorController.js";
 import "./navbar.js";
+import GeneratorController from "./class/generator-controller.js";
 
-const showSettingsButton = document.getElementById("settings-button");
-const showMarksButton = document.getElementById("marks-button");
-const showCaptionsButton = document.getElementById("captions-button");
+const showSettingsButton = document.getElementById("settings-button") as HTMLButtonElement;
+const showMarksButton = document.getElementById("marks-button") as HTMLButtonElement;
+const showCaptionsButton = document.getElementById("captions-button") as HTMLButtonElement;
 
 const showTab = function (tabClassName: string) {
   const allWindows = Array.from(document.querySelectorAll("#controls-wrapper > div"));

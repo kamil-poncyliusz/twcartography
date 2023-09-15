@@ -1,7 +1,7 @@
-import { Caption } from "../../../src/Types.js";
-import GeneratorController from "./GeneratorController.js";
+import GeneratorController from "./generator-controller.js";
+import { Caption } from "../../../src/types.js";
 
-const captionsTableBody = document.querySelector("#captions table tbody") as HTMLTableSectionElement | null;
+const captionsTableBody = document.querySelector("#captions table tbody") as HTMLTableSectionElement;
 
 const generateCaptionRowInnerHTML = function (caption: Caption): string {
   let innerHTML = `<td><input type='text' class='caption-text' value="${caption.text}"></td>`;
@@ -29,13 +29,13 @@ class CaptionsTab {
     this.render();
   }
   addCaption = (e: Event) => {
-    if (!captionsTableBody) return;
     const newCaptionColorInput = captionsTableBody.querySelector("#captions .new-caption-color") as HTMLInputElement | null;
     const newCaptionFontSizeInput = captionsTableBody.querySelector("#captions .new-caption-font-size") as HTMLInputElement | null;
     const newCaptionTextInput = captionsTableBody.querySelector("#captions .new-caption-text") as HTMLInputElement | null;
     const newCaptionXInput = captionsTableBody.querySelector("#captions .new-caption-x") as HTMLInputElement | null;
     const newCaptionYInput = captionsTableBody.querySelector("#captions .new-caption-y") as HTMLInputElement | null;
-    if (!newCaptionColorInput || !newCaptionFontSizeInput || !newCaptionTextInput || !newCaptionXInput || !newCaptionYInput) return;
+    if (!newCaptionColorInput || !newCaptionFontSizeInput || !newCaptionTextInput || !newCaptionXInput || !newCaptionYInput)
+      throw new Error("New caption form is missing an input element");
     const caption: Caption = {
       color: newCaptionColorInput.value,
       fontSize: parseInt(newCaptionFontSizeInput.value),
@@ -92,7 +92,6 @@ class CaptionsTab {
     this.#generator.deleteCaption(captionIndex);
   };
   render() {
-    if (!captionsTableBody) return;
     const captions = this.#generator.captions;
     captionsTableBody.innerHTML = "";
     for (let i = 0; i < captions.length; i++) {

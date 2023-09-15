@@ -1,4 +1,4 @@
-import { ParsedColor } from "../../src/Types";
+import { ParsedColor } from "../../src/types";
 
 const MIN_SATURATION = 45;
 const MAX_SATURATION = 90;

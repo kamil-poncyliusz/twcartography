@@ -1,5 +1,5 @@
-import CollectionLoader from "./class/CollectionLoader.js";
 import "./navbar.js";
+import CollectionLoader from "./class/collection-loader.js";
 import { isValidId } from "./validators.js";
 
 const collectionContainer = document.getElementById("collection-list") as HTMLDivElement;

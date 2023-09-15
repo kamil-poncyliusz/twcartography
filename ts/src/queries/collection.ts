@@ -1,6 +1,6 @@
-import { Collection, PrismaClient } from "@prisma/client";
-import { CollectionWithRelations } from "../Types";
 import { isValidId } from "../../public/scripts/validators.js";
+import { Collection, PrismaClient } from "@prisma/client";
+import { CollectionWithRelations } from "../types";
 
 const prisma = new PrismaClient();
 

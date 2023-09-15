@@ -1,10 +1,11 @@
-import GeneratorController from "./GeneratorController.js";
+import GeneratorController from "./generator-controller.js";
 import { decodeSettings, encodeSettings } from "../settings-codec.js";
 import { handleCreateMap } from "../../../routes/api-handlers.js";
 import { postRequest } from "../requests.js";
-import { CreateMapRequestValidationCode, isValidCreateMapRequestPayload, isValidId, settingsLimits } from "../validators.js";
+import { isValidId, settingsLimits } from "../validators.js";
 import { selectInputValue } from "../utils.js";
-import { CreateMapRequestPayload, CreateMapResponse, Settings } from "../../../src/Types.js";
+import { CreateMapRequestValidationCode, isValidCreateMapRequestPayload } from "../requests-validators.js";
+import { CreateMapRequestPayload, CreateMapResponse, Settings } from "../../../src/types.js";
 
 const inputs: { [key: string]: HTMLInputElement } = {
   autoRefresh: document.getElementById("auto-refresh") as HTMLInputElement,
@@ -16,16 +17,17 @@ const inputs: { [key: string]: HTMLInputElement } = {
   trim: document.getElementById("trim") as HTMLInputElement,
   turn: document.getElementById("turn-input") as HTMLInputElement,
 };
+const encodedSettingsInput = document.getElementById("encoded-settings") as HTMLInputElement;
+const worldSelect = document.getElementById("world-select") as HTMLSelectElement;
+
 const collectionSelect = document.getElementById("collection") as HTMLSelectElement | null;
-const encodedSettingsInput = document.getElementById("encoded-settings") as HTMLInputElement | null;
 const generateButton = document.getElementById("generate") as HTMLButtonElement | null;
 const publishMapButton = document.getElementById("publish-button") as HTMLButtonElement | null;
 const mapDescriptionInput = document.getElementById("map-description") as HTMLInputElement | null;
 const mapTitleInput = document.getElementById("map-title") as HTMLInputElement | null;
-const worldSelect = document.getElementById("world-select") as HTMLSelectElement | null;
 
 const addNewCollectionOption = function (newCollection: CreateMapResponse["newCollection"]) {
-  if (!newCollection) return;
+  if (!newCollection) return console.log("Cannot add new option, new collection is null");
   const newOptionElement = document.createElement("option");
   newOptionElement.value = String(newCollection.id);
   newOptionElement.innerHTML = newCollection.title;
@@ -35,7 +37,7 @@ const addNewCollectionOption = function (newCollection: CreateMapResponse["newCo
 };
 
 const sendAndHandleCreateMapRequest = async function (payload: CreateMapRequestPayload) {
-  if (!mapTitleInput || !mapDescriptionInput || !collectionSelect || !publishMapButton) return;
+  if (!publishMapButton) throw new Error("Publish map button is null");
   publishMapButton.disabled = true;
   publishMapButton.innerHTML = "oczekiwanie";
   const createMapResponse: Awaited<ReturnType<typeof handleCreateMap>> = await postRequest("/api/map/create", payload);
@@ -63,13 +65,13 @@ class SettingsTab {
     inputs.topSpotSize.addEventListener("change", this.changeTopSpotSize);
     inputs.trim.addEventListener("input", this.changeTrim);
     inputs.turn.addEventListener("change", this.changeTurn);
-    worldSelect?.addEventListener("change", this.changeWorld);
-    encodedSettingsInput?.addEventListener("click", selectInputValue);
-    encodedSettingsInput?.addEventListener("input", this.changeEncodedSettings);
-    encodedSettingsInput?.dispatchEvent(new Event("input"));
+    worldSelect.addEventListener("change", this.changeWorld);
+    encodedSettingsInput.addEventListener("click", selectInputValue);
+    encodedSettingsInput.addEventListener("input", this.changeEncodedSettings);
+    encodedSettingsInput.dispatchEvent(new Event("input"));
     publishMapButton?.addEventListener("click", this.publishMap);
     window.addEventListener("beforeunload", (event) => {
-      const isWorldSelected = Boolean(worldSelect?.value);
+      const isWorldSelected = Boolean(worldSelect.value);
       if (isWorldSelected) event.preventDefault();
     });
   }
@@ -106,7 +108,7 @@ class SettingsTab {
     const decodedSettings = decodeSettings(value);
     if (!decodedSettings || !(await this.#generator.applySettings(decodedSettings))) return input.classList.add("is-invalid");
     const worldIdString = String(this.#generator.world);
-    if (worldSelect) worldSelect.value = worldIdString;
+    worldSelect.value = worldIdString;
     input.classList.remove("is-invalid");
   };
   changeOutputWidth = (e: Event) => {
@@ -153,7 +155,7 @@ class SettingsTab {
   };
   publishMap = async (e: Event) => {
     const settings = this.#generator.settings;
-    if (!mapTitleInput || !mapDescriptionInput || !collectionSelect) return;
+    if (!mapTitleInput || !mapDescriptionInput || !collectionSelect) throw new Error("Publish map form is missing an element");
     const title = mapTitleInput.value;
     const description = mapDescriptionInput.value;
     const collection = parseInt(collectionSelect.value);
@@ -190,7 +192,6 @@ class SettingsTab {
     }
   };
   update() {
-    if (!worldSelect) return;
     const settings = this.#generator.settings;
     const encodedSettings = encodeSettings(settings);
     for (const key in inputs) {
@@ -202,10 +203,8 @@ class SettingsTab {
       else input.value = String(value);
       input.classList.remove("is-invalid");
     }
-    if (encodedSettingsInput) {
-      encodedSettingsInput.value = encodedSettings;
-      encodedSettingsInput.classList.remove("is-invalid");
-    }
+    encodedSettingsInput.value = encodedSettings;
+    encodedSettingsInput.classList.remove("is-invalid");
     inputs.autoRefresh.checked = this.#generator.autoRefresh;
     if (this.#generator.world === 0) {
       this.disabled = true;

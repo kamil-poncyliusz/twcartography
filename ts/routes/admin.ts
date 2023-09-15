@@ -1,7 +1,7 @@
 import express from "express";
-import { readWorlds } from "../src/queries/world.js";
-import { readUsers } from "../src/queries/user.js";
 import { getWorldDataStates } from "../src/world-data-state.js";
+import { readUsers } from "../src/queries/user.js";
+import { readWorlds } from "../src/queries/world.js";
 
 const admin = express.Router();
 

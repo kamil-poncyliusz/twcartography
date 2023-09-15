@@ -1,6 +1,6 @@
-import { CreatedAnimation, PrismaClient } from "@prisma/client";
 import { isValidId } from "../../public/scripts/validators.js";
-import { CreatedAnimationWithRelations } from "../Types.js";
+import { CreatedAnimation, PrismaClient } from "@prisma/client";
+import { CreatedAnimationWithRelations } from "../types.js";
 
 const prisma = new PrismaClient();
 

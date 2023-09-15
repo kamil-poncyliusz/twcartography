@@ -1,5 +1,5 @@
-import { handleDeleteCollection } from "../../routes/api-handlers.js";
 import "./navbar.js";
+import { handleDeleteCollection } from "../../routes/api-handlers.js";
 import { postRequest } from "./requests.js";
 import { selectInputValue } from "./utils.js";
 import { isValidCollectionDescription, isValidFrameDelay, isValidId, isValidMapDescription, isValidTitle } from "./validators.js";
@@ -120,13 +120,13 @@ const handleTileClick = function (e: Event) {
   if (tile?.tagName === "IMG") tile = tile.closest("div[data-id]") as HTMLDivElement | null;
   if (!tile) throw new Error("Clicked element is not a valid tile");
   const animationCreatorMode = animationCreatorModeCheckbox !== null && animationCreatorModeCheckbox.checked;
-  const isTileMap = tile.classList.contains("map-tile");
+  const isTileAMap = tile.classList.contains("map-tile");
   if (!animationCreatorMode) {
     currentlyDisplayedMap = tile;
     displayMap();
     return;
   }
-  if (!isTileMap) return;
+  if (!isTileAMap) return;
   if (tile.dataset.checked !== "checked") tile.dataset.checked = "checked";
   else tile.dataset.checked = "";
 };

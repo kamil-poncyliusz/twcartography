@@ -2,11 +2,10 @@ import fs from "fs/promises";
 import scheduler from "node-schedule";
 import { DownloaderHelper } from "node-downloader-helper";
 import parseTurnData from "./parse-turn-data.js";
-import daysFromStart from "./days-from-start.js";
 import { isValidTurn } from "../public/scripts/validators.js";
-import { World } from "@prisma/client";
-import { readWorlds } from "./queries/world.js";
 import { createTurnData } from "./queries/turn-data.js";
+import { readWorlds } from "./queries/world.js";
+import { World } from "@prisma/client";
 
 const downloadWorldDataFile = function (url: string, path: string, file: string) {
   const fileName = file === "conquer" ? `${file}.txt` : `${file}.txt.gz`;
@@ -65,13 +64,16 @@ const turnDataDownloaderDaemon = {
   },
   startDownloading: function (world: World) {
     if (process.env.RUN_DOWNLOADER_DAEMON !== "true") return;
-    const serverStart = new Date(world.startTimestamp * 1000);
-    const rule = `${serverStart.getMinutes()} ${serverStart.getHours()} * * *`;
+    const serverStartTimestamp = new Date(world.startTimestamp * 1000);
+    const serverStartSeconds = serverStartTimestamp.getSeconds();
+    const serverStartMinutes = serverStartTimestamp.getMinutes();
+    const serverStartHours = serverStartTimestamp.getHours();
+    const rule = `${serverStartSeconds} ${serverStartMinutes} ${serverStartHours} * * *`;
     const jobName = world.id.toString();
     this.scheduler.scheduleJob(jobName, rule, async function () {
-      const turn = daysFromStart(serverStart);
+      const turn = Math.round(Date.now() - serverStartTimestamp.getTime() / 1000 / 60 / 60 / 24);
       const worldDirectoryName = world.startTimestamp.toString(36);
-      if (!isValidTurn(turn)) return;
+      if (!isValidTurn(turn)) return console.log(`Downloader daemon: ${turn} is not a valid turn`);
       const success = await downloadWorldData(world, turn);
       if (success) {
         console.log(`Downloading turn ${turn} of ${world.server}${world.num} completed`);

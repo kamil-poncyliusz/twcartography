@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 import zlib from "zlib";
-import { ParsedTurnData } from "./Types";
+import { ParsedTurnData } from "./types";
 
 const parseFile = async function (worldDirectoryName: string, turn: number, fileName: string): Promise<string[]> {
   const directoryPath = `temp/${worldDirectoryName}/${turn}`;

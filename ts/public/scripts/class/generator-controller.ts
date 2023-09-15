@@ -1,5 +1,3 @@
-import MapGenerator from "./MapGenerator.js";
-import { MarkGroup, Settings, ParsedTurnData, Tribe, Caption } from "../../../src/Types.js";
 import { handleReadTurnData, handleReadWorld } from "../../../routes/api-handlers.js";
 import { getRequest } from "../requests.js";
 import {
@@ -16,11 +14,13 @@ import {
   isValidTopSpotSize,
   isValidTurn,
 } from "../validators.js";
-import MarkGroupsTab from "./MarkGroupsTab.js";
-import SuggestionsTab from "./SuggestionsTab.js";
-import SettingsTab from "./SettingsTab.js";
-import CanvasFrame from "./CanvasFrame.js";
-import CaptionsTab from "./CaptionsTab.js";
+import MapGenerator from "./map-generator.js";
+import MarkGroupsTab from "./mark-groups-tab.js";
+import SuggestionsTab from "./suggestions-tab.js";
+import SettingsTab from "./settings-tab.js";
+import CanvasFrame from "./canvas-frame.js";
+import CaptionsTab from "./captions-tab.js";
+import { MarkGroup, Settings, ParsedTurnData, Tribe, Caption } from "../../../src/types.js";
 
 const DEFAULT_AUTO_REFRESH = true;
 const DEFAULT_BACKGROUND_COLOR = "#202020";

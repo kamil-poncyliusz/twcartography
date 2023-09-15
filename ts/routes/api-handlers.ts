@@ -1,21 +1,22 @@
-import MapGenerator from "../public/scripts/class/MapGenerator.js";
+import MapGenerator from "../public/scripts/class/map-generator.js";
 import { encodeSettings } from "../public/scripts/settings-codec.js";
 import saveMapPng from "../src/save-map-png.js";
 import parseTurnData from "../src/parse-turn-data.js";
 import {
-  CreateMapRequestValidationCode,
   isValidCollectionDescription,
-  isValidCreateMapRequestPayload,
   isValidId,
   isValidMapDescription,
   isValidTitle,
   isValidTurn,
   isValidUserRank,
-  isValidCreateWorldRequestPayload,
   isValidFrameDelay,
-  isValidReadCollectionsRequestPayload,
 } from "../public/scripts/validators.js";
-import { Request } from "express";
+import {
+  CreateMapRequestValidationCode,
+  isValidCreateMapRequestPayload,
+  isValidCreateWorldRequestPayload,
+  isValidReadCollectionsRequestPayload,
+} from "../public/scripts/requests-validators.js";
 import saveAnimationGif from "../src/save-animation-gif.js";
 import turnDataDownloaderDaemon from "../src/turn-data-downloader-daemon.js";
 import { areDataFilesAvailable } from "../src/world-data-state.js";
@@ -26,6 +27,7 @@ import { createMap, deleteMap, readMap, updateMap } from "../src/queries/map.js"
 import { createTurnData, readTurnData } from "../src/queries/turn-data.js";
 import { updateUserRank } from "../src/queries/user.js";
 import { createWorld, deleteWorld, readWorld } from "../src/queries/world.js";
+import { Request } from "express";
 import { World } from "@prisma/client";
 import {
   CollectionWithRelations,
@@ -34,7 +36,7 @@ import {
   CreateWorldRequestPayload,
   ParsedTurnData,
   ReadCollectionsRequestPayload,
-} from "../src/Types.js";
+} from "../src/types.js";
 
 export const handleReadWorld = async function (req: Request): Promise<World | null> {
   const id = parseInt(req.params.id);

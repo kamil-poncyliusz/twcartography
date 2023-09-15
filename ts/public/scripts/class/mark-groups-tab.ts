@@ -1,8 +1,8 @@
-import { MarkGroup, Tribe } from "../../../src/Types.js";
-import GeneratorController from "./GeneratorController.js";
+import GeneratorController from "./generator-controller.js";
 import { randomizeGroupColor } from "../utils.js";
+import { MarkGroup, Tribe } from "../../../src/types.js";
 
-const markGroupsTableBody = document.querySelector("#mark-groups table tbody") as HTMLTableSectionElement | null;
+const markGroupsTableBody = document.querySelector("#mark-groups table tbody") as HTMLTableSectionElement;
 
 const getMarkGroupIndex = function (element: Element): number {
   const row = element.closest("tr");
@@ -73,7 +73,6 @@ class MarkGroupsTab {
   render() {
     const markGroups = this.#generator.markGroups;
     const tribes = this.#generator.tribes;
-    if (!markGroupsTableBody) return;
     markGroupsTableBody.innerHTML = "";
     for (let index = 0; index < markGroups.length; index++) {
       const group = markGroups[index];

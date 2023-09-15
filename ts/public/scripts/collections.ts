@@ -1,5 +1,5 @@
-import CollectionLoader from "./class/CollectionLoader.js";
 import "./navbar.js";
+import CollectionLoader from "./class/collection-loader.js";
 
 const collectionContainer = document.getElementById("collection-list") as HTMLDivElement;
 const worldFilterSelect = document.getElementById("world-filter") as HTMLSelectElement;

@@ -1,6 +1,6 @@
-import { CreatedMap, PrismaClient } from "@prisma/client";
 import { isValidId } from "../../public/scripts/validators.js";
-import { CreatedMapWithRelations } from "../Types.js";
+import { PrismaClient } from "@prisma/client";
+import { CreatedMapWithRelations } from "../types.js";
 
 const prisma = new PrismaClient();
 

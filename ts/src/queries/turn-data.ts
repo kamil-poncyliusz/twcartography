@@ -1,5 +1,5 @@
 import { PrismaClient, Prisma } from "@prisma/client";
-import { ParsedTurnData } from "../Types";
+import { ParsedTurnData } from "../types";
 
 const prisma = new PrismaClient();
 

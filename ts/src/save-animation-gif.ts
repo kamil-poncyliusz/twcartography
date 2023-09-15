@@ -2,9 +2,10 @@ import fs from "fs/promises";
 import { createCanvas, loadImage } from "canvas";
 import gifencoder from "gifencoder";
 
+const animationsDirectory = "public/images/animations";
+const mapsDirectory = "public/images/maps";
+
 const saveCollectionGif = async function (animationId: number, frames: number[], frameDelay: number): Promise<boolean> {
-  const animationsDirectory = "public/images/animations";
-  const mapsDirectory = "public/images/maps";
   try {
     const lastFrame = await loadImage(`${mapsDirectory}/${frames[frames.length - 1]}.png`);
     const width = lastFrame.width;

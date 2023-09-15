@@ -12,7 +12,7 @@ import { adminAuthorization } from "./src/authorization.js";
 import { upsertAdminAccount } from "./src/queries/user.js";
 import { createNewWorldsFromFiles } from "./src/temp-directory-handlers.js";
 import turnDataDownloaderDaemon from "./src/turn-data-downloader-daemon.js";
-import { UserSessionData } from "./src/Types.js";
+import { UserSessionData } from "./src/types.js";
 import { parseAvailableTurnData } from "./src/world-data-state.js";
 
 declare module "express-session" {

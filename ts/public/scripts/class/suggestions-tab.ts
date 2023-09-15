@@ -1,9 +1,9 @@
-import GeneratorController from "./GeneratorController.js";
+import GeneratorController from "./generator-controller.js";
 import { randomizeGroupColor } from "../utils.js";
 import { GROUP_NAME_FORBIDDEN_CHARACTERS } from "../constants.js";
 
-const suggestionsTableBody = document.querySelector("#mark-suggestions tbody") as HTMLTableSectionElement | null;
-const suggestionsSearchInput = document.querySelector("#mark-suggestions thead input") as HTMLInputElement | null;
+const suggestionsTableBody = document.querySelector("#mark-suggestions tbody") as HTMLTableSectionElement;
+const suggestionsSearchInput = document.querySelector("#mark-suggestions thead input") as HTMLInputElement;
 
 const removeForbiddenCharactersFromGroupName = function (groupName: string): string {
   let result = groupName;
@@ -18,7 +18,7 @@ class SuggestionsTab {
   #generator: GeneratorController;
   constructor(generatorController: GeneratorController) {
     this.#generator = generatorController;
-    suggestionsSearchInput?.addEventListener("input", (e: Event) => {
+    suggestionsSearchInput.addEventListener("input", (e: Event) => {
       this.render();
     });
   }
@@ -28,10 +28,8 @@ class SuggestionsTab {
     const suggestionTagCell = row.querySelector(".suggestion-tag") as HTMLTableCellElement;
     const suggestionTribeTag = suggestionTagCell.textContent ?? "";
     let selectedGroupIndex = parseInt(target.value);
-    if (!(selectedGroupIndex >= -1 && selectedGroupIndex < this.#generator.markGroups.length)) {
-      target.classList.add("is-invalid");
-      return;
-    }
+    if (!(selectedGroupIndex >= -1 && selectedGroupIndex < this.#generator.markGroups.length)) return target.classList.add("is-invalid");
+
     if (selectedGroupIndex === -1) {
       const groupName = removeForbiddenCharactersFromGroupName(suggestionTribeTag);
       const groupColor = randomizeGroupColor();
@@ -43,8 +41,7 @@ class SuggestionsTab {
     if (!isMarkAdded) return console.log("Failed to add a new mark");
   };
   render() {
-    if (!suggestionsTableBody) return;
-    const tag = suggestionsSearchInput ? suggestionsSearchInput.value : "";
+    const tag = suggestionsSearchInput.value;
     const suggestions = this.#generator.getSuggestions(tag, 30);
     suggestionsTableBody.innerHTML = "";
     let groupOptions = "<option selected disabled hidden>Dodaj</option>";
