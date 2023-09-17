@@ -1,4 +1,5 @@
-import { handleReadTurnData, handleReadWorld } from "../../../routes/api-handlers.js";
+import { handleReadTurnData } from "../../../routes/api/turn-data-handlers.js";
+import { handleReadWorld } from "../../../routes/api/world-handlers.js";
 import { getRequest } from "../requests.js";
 import {
   isValidCaption,
@@ -237,7 +238,7 @@ class GeneratorController {
   async changeWorld(world: number): Promise<boolean> {
     if (!isValidId(world)) return false;
     if (world === this.world) return true;
-    const endpoint = `/api/world/${world}`;
+    const endpoint = `/api/world/read/${world}`;
     const worldInfo: Awaited<ReturnType<typeof handleReadWorld>> = await getRequest(endpoint);
     this.data = {};
     this.turn = -1;
@@ -282,7 +283,7 @@ class GeneratorController {
     if (this.world === 0) return false;
     if (!isValidTurn(turn)) return false;
     if (typeof this.data[turn] === "object") return true;
-    const endpoint = `/api/turn-data/${this.world}/${turn}`;
+    const endpoint = `/api/turn-data/read/${this.world}/${turn}`;
     const turnData: Awaited<ReturnType<typeof handleReadTurnData>> = await getRequest(endpoint);
     if (!turnData) return false;
     this.data[turn] = turnData;

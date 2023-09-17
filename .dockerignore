@@ -11,6 +11,8 @@ public/scripts/
 public/scripts/admin/*.js
 public/scripts/class/*.js
 routes/*.js
+routes/admin/*.js
+routes/api/*.js
 src/**/*.js
 /test-results/
 /playwright-report/

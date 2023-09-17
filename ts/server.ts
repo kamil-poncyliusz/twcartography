@@ -6,8 +6,8 @@ import helmet from "helmet";
 import session from "express-session";
 import { fileURLToPath } from "url";
 import router from "./routes/router.js";
-import api from "./routes/api.js";
-import admin from "./routes/admin.js";
+import apiRouter from "./routes/api/api-router.js";
+import adminRouter from "./routes/admin/admin-router.js";
 import { adminAuthorization } from "./src/authorization.js";
 import { upsertAdminAccount } from "./src/queries/user.js";
 import { createNewWorldsFromFiles } from "./src/temp-directory-handlers.js";
@@ -60,9 +60,9 @@ await createNewWorldsFromFiles();
 await parseAvailableTurnData();
 
 app.use("/", router);
-app.use("/api", api);
+app.use("/api", apiRouter);
 app.use("/admin", adminAuthorization);
-app.use("/admin", admin);
+app.use("/admin", adminRouter);
 app.all("*", (req, res) => {
   return res.status(404).render("not-found");
 });

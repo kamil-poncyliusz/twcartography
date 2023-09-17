@@ -1,5 +1,5 @@
 import express from "express";
-import { handleAuthentication, handleLogout, handleReadCollection, handleRegistration } from "./router-handlers.js";
+import { handleAuthentication, handleLogout, handleReadCollection, handleRegistration } from "./handlers.js";
 import { isValidId } from "../public/scripts/validators.js";
 import { readCollections } from "../src/queries/collection.js";
 import { readUser } from "../src/queries/user.js";

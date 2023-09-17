@@ -1,6 +1,6 @@
 import GeneratorController from "./generator-controller.js";
 import { decodeSettings, encodeSettings } from "../settings-codec.js";
-import { handleCreateMap } from "../../../routes/api-handlers.js";
+import { handleCreateMap } from "../../../routes/api/map-handlers.js";
 import { postRequest } from "../requests.js";
 import { isValidId, settingsLimits } from "../validators.js";
 import { selectInputValue } from "../utils.js";

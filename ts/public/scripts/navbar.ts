@@ -1,4 +1,4 @@
-import { handleAuthentication, handleLogout, handleRegistration } from "../../routes/router-handlers.js";
+import { handleAuthentication, handleLogout, handleRegistration } from "../../routes/handlers.js";
 import { postRequest } from "./requests.js";
 import { isValidLogin, isValidPassword } from "./validators.js";
 

@@ -1,4 +1,4 @@
-import { handleReadCollections } from "../../../routes/api-handlers";
+import { handleReadCollections } from "../../../routes/api/collection-handlers.js";
 import { postRequest } from "../requests.js";
 import { CollectionWithRelations, ReadCollectionsRequestPayload } from "../../../src/types";
 
@@ -38,7 +38,7 @@ class CollectionLoader {
   async #fetch() {
     if (this.#isFetching || this.#endOfData) return;
     this.#isFetching = true;
-    const url = `/api/collections`;
+    const url = `/api/collection/read-many`;
     const payload: ReadCollectionsRequestPayload = {
       page: this.#nextPage,
       authorId: this.#authorId,

@@ -1,4 +1,4 @@
-import { handleCreateWorld, handleDeleteWorld } from "../../../routes/api-handlers.js";
+import { handleCreateWorld, handleDeleteWorld } from "../../../routes/api/world-handlers.js";
 import { postRequest } from "../requests.js";
 import { isValidCreateWorldRequestPayload } from "../requests-validators.js";
 import { isValidId } from "../validators.js";

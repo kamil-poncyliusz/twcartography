@@ -230,7 +230,6 @@ a.block-element {
   position: relative;
   float: left;
   margin-left: 1rem;
-  margin-top: 1rem;
 }
 .is-invalid {
   border-color: var(--danger);

@@ -1,5 +1,5 @@
 import "./navbar.js";
-import { handleDeleteCollection } from "../../routes/api-handlers.js";
+import { handleDeleteCollection } from "../../routes/api/collection-handlers.js";
 import { postRequest } from "./requests.js";
 import { selectInputValue } from "./utils.js";
 import { isValidCollectionDescription, isValidFrameDelay, isValidId, isValidMapDescription, isValidTitle } from "./validators.js";

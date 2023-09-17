@@ -1,4 +1,4 @@
-import { handleUpdateUserRank } from "../../../routes/api-handlers.js";
+import { handleUpdateUserRank } from "../../../routes/api/user-handlers.js";
 import { postRequest } from "../requests.js";
 import { isValidId, isValidUserRank } from "../validators.js";
 
