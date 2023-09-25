@@ -1,6 +1,6 @@
 import { isValidId } from "../../public/scripts/validators.js";
-import { PrismaClient } from "@prisma/client";
-import { CreatedMapWithRelations } from "../types.js";
+import { Prisma, PrismaClient } from "@prisma/client";
+import { CreatedMapWithRelations, Settings } from "../types.js";
 
 const prisma = new PrismaClient();
 
@@ -22,14 +22,14 @@ export const readMap = async function (id: number): Promise<CreatedMapWithRelati
   return result;
 };
 
-export const createMap = async function (turn: number, title: string, description: string, settings: string, collection: number) {
+export const createMap = async function (turn: number, title: string, description: string, settings: Settings, collection: number) {
   const result = await prisma.createdMap
     .create({
       data: {
         turn: turn,
         title: title,
         description: description,
-        encodedSettings: settings,
+        settings: settings as unknown as Prisma.InputJsonValue,
         collectionId: collection,
       },
     })

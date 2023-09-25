@@ -18,7 +18,7 @@ const mapInfo = document.getElementById("map-info") as HTMLDivElement;
 const mapTitle = document.getElementById("map-title") as HTMLInputElement;
 const mapDescription = document.getElementById("map-description") as HTMLTextAreaElement;
 const deleteMapButton = document.getElementById("delete-map") as HTMLButtonElement | null;
-const encodedSettingsInput = document.getElementById("encoded-settings") as HTMLInputElement;
+const mapSettingsInput = document.getElementById("map-settings") as HTMLInputElement;
 const animationSettings = document.getElementById("animation-settings") as HTMLDivElement | null;
 const animationCreatorModeCheckbox = document.getElementById("animation-creator-mode") as HTMLInputElement | null;
 const checkAllFramesButton = document.getElementById("check-all-frames") as HTMLButtonElement | null;
@@ -91,20 +91,20 @@ const viewPreviousMap = function () {
 const updateMapInfo = function () {
   const title = currentlyDisplayedMap?.dataset.title ?? "";
   const description = currentlyDisplayedMap?.dataset.description ?? "";
-  const encodedSettings = currentlyDisplayedMap?.dataset.encodedSettings ?? "";
+  const mapSettingsString = currentlyDisplayedMap?.dataset.settings ?? "";
   mapTitle.value = title;
   mapDescription.textContent = description;
-  encodedSettingsInput.value = encodedSettings;
+  mapSettingsInput.value = mapSettingsString;
   if (currentlyDisplayedMap) {
     const isAnimation = !currentlyDisplayedMap.classList.contains("map-tile");
     if (isAnimation) {
       mapTitle.classList.add("hidden");
       mapDescription.classList.add("hidden");
-      encodedSettingsInput.classList.add("hidden");
+      mapSettingsInput.classList.add("hidden");
     } else {
       mapTitle.classList.remove("hidden");
       mapDescription.classList.remove("hidden");
-      encodedSettingsInput.classList.remove("hidden");
+      mapSettingsInput.classList.remove("hidden");
       mapDescription.dispatchEvent(new Event("input"));
     }
     mapInfo.classList.remove("hidden");
@@ -286,7 +286,7 @@ mapDescription?.addEventListener("change", editMapDescription);
 mapDescription?.addEventListener("input", textAreaAutoResize);
 deleteCollectionButton?.addEventListener("click", deleteCollection);
 deleteMapButton?.addEventListener("click", deleteMap);
-encodedSettingsInput?.addEventListener("click", selectInputValue);
+mapSettingsInput?.addEventListener("click", selectInputValue);
 if (animationSettings) {
   animationCreatorModeCheckbox?.addEventListener("change", toggleCreateAnimationMode);
   checkAllFramesButton?.addEventListener("click", checkAllFrames);

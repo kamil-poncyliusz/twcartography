@@ -1,5 +1,5 @@
 import GeneratorController from "./generator-controller.js";
-import { decodeSettings, encodeSettings } from "../settings-codec.js";
+import { decodeJsonSettings, encodeJsonSettings } from "../settings-codec.js";
 import { handleCreateMap } from "../../../routes/api/map-handlers.js";
 import { postRequest } from "../requests.js";
 import { isValidId, settingsLimits } from "../validators.js";
@@ -17,7 +17,7 @@ const inputs: { [key: string]: HTMLInputElement } = {
   trim: document.getElementById("trim") as HTMLInputElement,
   turn: document.getElementById("turn-input") as HTMLInputElement,
 };
-const encodedSettingsInput = document.getElementById("encoded-settings") as HTMLInputElement;
+const mapSettingsInput = document.getElementById("map-settings") as HTMLInputElement;
 const worldSelect = document.getElementById("world-select") as HTMLSelectElement;
 
 const collectionSelect = document.getElementById("collection") as HTMLSelectElement | null;
@@ -66,9 +66,9 @@ class SettingsTab {
     inputs.trim.addEventListener("input", this.changeTrim);
     inputs.turn.addEventListener("change", this.changeTurn);
     worldSelect.addEventListener("change", this.changeWorld);
-    encodedSettingsInput.addEventListener("click", selectInputValue);
-    encodedSettingsInput.addEventListener("input", this.changeEncodedSettings);
-    encodedSettingsInput.dispatchEvent(new Event("input"));
+    mapSettingsInput.addEventListener("click", selectInputValue);
+    mapSettingsInput.addEventListener("input", this.changeSettings);
+    mapSettingsInput.dispatchEvent(new Event("input"));
     publishMapButton?.addEventListener("click", this.publishMap);
     window.addEventListener("beforeunload", (event) => {
       const isWorldSelected = Boolean(worldSelect.value);
@@ -101,12 +101,12 @@ class SettingsTab {
     if (isChanged) inputs.borderColor.classList.remove("is-invalid");
     else inputs.borderColor.classList.add("is-invalid");
   };
-  changeEncodedSettings = async (e: Event) => {
+  changeSettings = async (e: Event) => {
     const input = e.target as HTMLInputElement;
-    const value = input.value;
-    if (value === "") return input.classList.remove("is-invalid");
-    const decodedSettings = decodeSettings(value);
-    if (!decodedSettings || !(await this.#generator.applySettings(decodedSettings))) return input.classList.add("is-invalid");
+    const settingsInputValue = input.value;
+    if (settingsInputValue === "") return input.classList.remove("is-invalid");
+    const decodedSettings = decodeJsonSettings(settingsInputValue);
+    if (!(await this.#generator.applySettings(decodedSettings))) return input.classList.add("is-invalid");
     const worldIdString = String(this.#generator.world);
     worldSelect.value = worldIdString;
     input.classList.remove("is-invalid");
@@ -193,7 +193,7 @@ class SettingsTab {
   };
   update() {
     const settings = this.#generator.settings;
-    const encodedSettings = encodeSettings(settings);
+    const encodedSettings = encodeJsonSettings(settings);
     for (const key in inputs) {
       const inputsKey = key as keyof typeof inputs;
       const input = inputs[inputsKey];
@@ -203,8 +203,8 @@ class SettingsTab {
       else input.value = String(value);
       input.classList.remove("is-invalid");
     }
-    encodedSettingsInput.value = encodedSettings;
-    encodedSettingsInput.classList.remove("is-invalid");
+    mapSettingsInput.value = encodedSettings;
+    mapSettingsInput.classList.remove("is-invalid");
     inputs.autoRefresh.checked = this.#generator.autoRefresh;
     if (this.#generator.world === 0) {
       this.disabled = true;

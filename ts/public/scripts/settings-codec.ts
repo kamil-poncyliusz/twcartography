@@ -1,5 +1,17 @@
 import { Base64 } from "./base64.js";
 import { Caption, MarkGroup, Settings } from "../../src/types.js";
+import { defaultSettings } from "./class/generator-controller.js";
+import {
+  isValidCaption,
+  isValidColor,
+  isValidId,
+  isValidMarkGroup,
+  isValidOutputWidth,
+  isValidScale,
+  isValidSettings,
+  isValidTopSpotSize,
+  isValidTurn,
+} from "./validators.js";
 
 const minorSeparator = ",";
 const majorSeparator = ";";
@@ -100,21 +112,36 @@ export const decodeSettings = function (input: string): Settings | false {
 };
 
 export const encodeJsonSettings = function (settings: Settings): string {
-  if (settings.markGroups.length === 0) return "";
-  const stringified = JSON.stringify(settings);
-  const baseEncoded = Base64.encode(stringified);
-  return encodeURIComponent(baseEncoded);
+  return JSON.stringify(settings);
 };
 
-export const decodeJsonSettings = function (input: string): Settings | false {
-  if (typeof input !== "string") return false;
-  const decodedURI = decodeURIComponent(input);
-  let string = "";
+export const decodeJsonSettings = function (stringifiedSettings: string): Settings {
+  const resultSettings = { ...defaultSettings };
+  resultSettings.captions = [];
+  resultSettings.markGroups = [];
+  if (typeof stringifiedSettings !== "string") return resultSettings;
   try {
-    string = Base64.decode(decodedURI);
-  } catch {
-    return false;
+    const parsedSettings: Settings = JSON.parse(stringifiedSettings);
+    if (isValidColor(parsedSettings.backgroundColor)) resultSettings.backgroundColor = parsedSettings.backgroundColor;
+    if (isValidColor(parsedSettings.borderColor)) resultSettings.borderColor = parsedSettings.borderColor;
+    if (isValidOutputWidth(parsedSettings.outputWidth)) resultSettings.outputWidth = parsedSettings.outputWidth;
+    if (isValidScale(parsedSettings.scale)) resultSettings.scale = parsedSettings.scale;
+    if (isValidTopSpotSize(parsedSettings.topSpotSize)) resultSettings.topSpotSize = parsedSettings.topSpotSize;
+    if (typeof parsedSettings.trim === "boolean") resultSettings.trim = parsedSettings.trim;
+    if (isValidTurn(parsedSettings.turn)) resultSettings.turn = parsedSettings.turn;
+    if (isValidId(parsedSettings.world)) resultSettings.world = parsedSettings.world;
+    if (Array.isArray(parsedSettings.markGroups)) {
+      parsedSettings.markGroups.forEach((markGroup) => {
+        if (isValidMarkGroup(markGroup)) resultSettings.markGroups.push(markGroup);
+      });
+    }
+    if (Array.isArray(parsedSettings.captions)) {
+      parsedSettings.captions.forEach((caption) => {
+        if (isValidCaption(caption)) resultSettings.captions.push(caption);
+      });
+    }
+    return resultSettings;
+  } catch (error) {
+    return resultSettings;
   }
-  const settings = JSON.parse(string);
-  return settings;
 };

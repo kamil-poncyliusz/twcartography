@@ -30,7 +30,7 @@ html(lang="pl-PL")
               data-id=map.id,
               data-title=map.title,
               data-description=map.description,
-              data-encoded-settings=map.encodedSettings,
+              data-settings=`${JSON.stringify(map.settings)}`,
               data-checked="checked"
             )
               img(src=`/images/maps/${map.id}.png`, alt="map")
@@ -77,7 +77,7 @@ html(lang="pl-PL")
             else
               textarea#map-description(cols="1", readonly="readonly", autocomplete="off") 
           div
-            input#encoded-settings(type="text", name="settings", value="", placeholder="kod ustawień", readonly="readonly", autocomplete="off")
+            input#map-settings(type="text", name="map-settings", value="", placeholder="kod ustawień", readonly="readonly", autocomplete="off")
         if isAuthor
           #animation-settings
             div

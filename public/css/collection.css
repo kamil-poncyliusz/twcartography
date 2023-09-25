@@ -116,7 +116,7 @@
   border-color: var(--light-accent);
   outline: none;
 }
-#encoded-settings {
+#map-settings {
   width: 100%;
 }
 #animation-settings > div {

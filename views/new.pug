@@ -58,8 +58,8 @@ html(lang="pl-PL")
               input#auto-refresh(type="checkbox", name="auto-refresh", autocomplete="off", disabled)
               button#generate(type="button", disabled) Generuj
           .row
-            div(title="Wklej kod ustawień, żeby odtworzyć ustawienia stworzone przez innego użytkownika")
-              input#encoded-settings(type="text", name="encoded-settings", autocomplete="off", placeholder="kod ustawień", value=encodedSettings)
+            div(title="Wklej kod ustawień, żeby odtworzyć ustawienia")
+              input#map-settings(type="text", name="map-settings", autocomplete="off", placeholder="kod ustawień", value="")
           if hasPublishRights
             .row
               div
@@ -84,7 +84,7 @@ html(lang="pl-PL")
               tr
                 th NAZWA
                 th
-                  input#suggestions-search-input(type="text", name="suggestions-search-input", placeholder="TAG", autocomplete="off")
+                  input#suggestions-search-input(type="text", name="suggestions-search-input", placeholder="szukaj", autocomplete="off")
                 th GR
                 th WI
                 th PUNKTY

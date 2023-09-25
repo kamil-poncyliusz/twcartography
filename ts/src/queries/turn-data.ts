@@ -16,17 +16,16 @@ export const readTurnData = async function (worldId: number, turn: number): Prom
       return null;
     });
   if (result !== null) {
-    const parsedData = result.data as unknown;
-    return parsedData as ParsedTurnData;
+    const parsedData = result.data as unknown as ParsedTurnData;
+    return parsedData;
   }
   return null;
 };
 
 export const createTurnData = async function (worldId: number, turn: number, parsedTurnData: ParsedTurnData): Promise<boolean> {
-  const data = parsedTurnData as unknown;
   const result = await prisma.turnData
     .create({
-      data: { worldId: worldId, turn: turn, data: data as Prisma.InputJsonValue },
+      data: { worldId: worldId, turn: turn, data: parsedTurnData as unknown as Prisma.InputJsonValue },
     })
     .catch((err) => {
       console.error("Prisma error:", err);

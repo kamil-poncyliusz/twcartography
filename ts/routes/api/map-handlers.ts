@@ -19,7 +19,6 @@ export const handleCreateMap = async function (req: Request): Promise<CreateMapR
     collection: req.body.collection,
   };
   const settings = newMapPayload.settings;
-  const encodedSettings = encodeSettings(settings);
   const payloadValidationCode = isValidCreateMapRequestPayload(newMapPayload);
   if (payloadValidationCode !== CreateMapRequestValidationCode.Ok) return { success: false };
   const turnData = await readTurnData(settings.world, settings.turn);
@@ -32,7 +31,7 @@ export const handleCreateMap = async function (req: Request): Promise<CreateMapR
     if (!createdCollection) return { success: false };
     newMapPayload.collection = createdCollection.id;
   }
-  const createdMap = await createMap(settings.turn, newMapPayload.title, newMapPayload.description, encodedSettings, newMapPayload.collection);
+  const createdMap = await createMap(settings.turn, newMapPayload.title, newMapPayload.description, settings, newMapPayload.collection);
   if (!createdMap) return { success: false };
   saveMapPng(createdMap.id, generator.imageData as ImageData);
   if (collectionExists) return { success: true };

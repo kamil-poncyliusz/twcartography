@@ -23,19 +23,26 @@ import CanvasFrame from "./canvas-frame.js";
 import CaptionsTab from "./captions-tab.js";
 import { MarkGroup, Settings, ParsedTurnData, Tribe, Caption } from "../../../src/types.js";
 
+export const defaultSettings: Settings = {
+  backgroundColor: "#202020",
+  borderColor: "#808080",
+  captions: [],
+  markGroups: [],
+  outputWidth: 500,
+  scale: 2,
+  topSpotSize: 8,
+  trim: true,
+  turn: 0,
+  world: 1,
+};
+
 const DEFAULT_AUTO_REFRESH = true;
-const DEFAULT_BACKGROUND_COLOR = "#202020";
-const DEFAULT_BORDER_COLOR = "#808080";
-const DEFAULT_OUTPUT_WIDTH = 500;
-const DEFAULT_SCALE = 2;
-const DEFAULT_TOP_SPOT_SIZE = 8;
-const DEFAULT_TRIM = true;
 const MAX_TRIBE_SUGGESTIONS = 20;
 
 class GeneratorController {
   autoRefresh: boolean = DEFAULT_AUTO_REFRESH;
-  #backgroundColor: string = DEFAULT_BACKGROUND_COLOR;
-  #borderColor: string = DEFAULT_BORDER_COLOR;
+  #backgroundColor: string = defaultSettings.backgroundColor;
+  #borderColor: string = defaultSettings.borderColor;
   #canvasFrame: CanvasFrame;
   captions: Caption[] = [];
   #captionsTab: CaptionsTab;
@@ -43,13 +50,13 @@ class GeneratorController {
   latestTurn: number = -1;
   markGroups: MarkGroup[] = [];
   #markGroupsTab: MarkGroupsTab;
-  #outputWidth: number = DEFAULT_OUTPUT_WIDTH;
-  #scale: number = DEFAULT_SCALE;
+  #outputWidth: number = defaultSettings.outputWidth;
+  #scale: number = defaultSettings.scale;
   #server: string = "";
   #settingsTab: SettingsTab;
   #suggestionsTab: SuggestionsTab;
-  #topSpotSize: number = DEFAULT_TOP_SPOT_SIZE;
-  #trim: boolean = DEFAULT_TRIM;
+  #topSpotSize: number = defaultSettings.topSpotSize;
+  #trim: boolean = defaultSettings.trim;
   turn: number = -1;
   world: number = 0;
   constructor() {
@@ -157,6 +164,7 @@ class GeneratorController {
     if (!isValidColor(newColor)) return false;
     caption.color = newColor;
     this.#canvasFrame.render();
+    this.#settingsTab.update();
     return true;
   }
   changeCaptionFontSize(captionIndex: number, newFontSize: number): boolean {
@@ -165,6 +173,7 @@ class GeneratorController {
     if (!isValidCaptionFontSize(newFontSize)) return false;
     caption.fontSize = newFontSize;
     this.#canvasFrame.render();
+    this.#settingsTab.update();
     return true;
   }
   changeCaptionText(captionIndex: number, newText: string): boolean {
@@ -173,6 +182,7 @@ class GeneratorController {
     if (!isValidCaptionText(newText)) return false;
     caption.text = newText;
     this.#canvasFrame.render();
+    this.#settingsTab.update();
     return true;
   }
   changeCaptionX(captionIndex: number, newX: number): boolean {
@@ -181,6 +191,7 @@ class GeneratorController {
     if (!isValidCaptionCoordinate(newX)) return false;
     caption.x = newX;
     this.#canvasFrame.render();
+    this.#settingsTab.update();
     return true;
   }
   changeCaptionY(captionIndex: number, newY: number): boolean {
@@ -189,6 +200,7 @@ class GeneratorController {
     if (!isValidCaptionCoordinate(newY)) return false;
     caption.y = newY;
     this.#canvasFrame.render();
+    this.#settingsTab.update();
     return true;
   }
   changeMarkGroupColor(markGroupIndex: number, newColor: string): boolean {
@@ -199,6 +211,7 @@ class GeneratorController {
     markGroup.color = newColor;
     this.#canvasFrame.render();
     this.#markGroupsTab.render();
+    this.#settingsTab.update();
     return true;
   }
   changeMarkGroupName(markGroupIndex: number, newName: string): boolean {
@@ -210,6 +223,7 @@ class GeneratorController {
     markGroup.name = newName;
     this.#canvasFrame.render();
     this.#markGroupsTab.render();
+    this.#settingsTab.update();
     this.#suggestionsTab.render();
     return true;
   }
@@ -254,6 +268,7 @@ class GeneratorController {
     this.captions.splice(captionIndex, 1);
     this.#captionsTab.render();
     this.#canvasFrame.render();
+    this.#settingsTab.update();
     return true;
   }
   deleteMark(markGroupIndex: number, tribeTag: string): boolean {

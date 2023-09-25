@@ -1,5 +1,5 @@
 import { GROUP_NAME_FORBIDDEN_CHARACTERS, VALID_USER_RANKS } from "./constants.js";
-import { Caption, Settings } from "../../src/types.js";
+import { Caption, MarkGroup, Settings } from "../../src/types.js";
 
 const LOGIN_MIN_LENGTH = 2;
 const LOGIN_MAX_LENGTH = 15;
@@ -121,14 +121,12 @@ export const isValidSettings = function (settings: Settings): boolean {
   if (!isValidScale(settings.scale)) return false;
   if (!isValidTopSpotSize(settings.topSpotSize)) return false;
   if (typeof settings.trim !== "boolean") return false;
-  const groupNames: string[] = [];
   const tribes: string[] = [];
   for (const group of settings.markGroups) {
-    if (!isValidGroupName(group.name)) return false;
-    if (!isValidColor(group.color)) return false;
-    groupNames.push(group.name);
+    if (!isValidMarkGroup(group)) return false;
     tribes.push(...group.tribes);
   }
+  const groupNames = settings.markGroups.map((markGroup) => markGroup.name);
   const uniqueGroupNames = new Set(groupNames);
   if (groupNames.length > uniqueGroupNames.size) return false;
   const uniqueTribes = new Set(tribes);
@@ -157,5 +155,16 @@ export const isValidCaptionFontSize = function (captionFontSize: number): boolea
 
 export const isValidCaptionCoordinate = function (captionCoordinate: number): boolean {
   if (typeof captionCoordinate !== "number" || captionCoordinate < 0 || captionCoordinate > CAPTION_MAX_COORDINATE) return false;
+  return true;
+};
+
+export const isValidMarkGroup = function (markGroup: MarkGroup): boolean {
+  if (typeof markGroup !== "object") return false;
+  if (Object.keys(markGroup).length !== 3) return false;
+  if (!isValidColor(markGroup.color)) return false;
+  if (!isValidGroupName(markGroup.name)) return false;
+  if (!Array.isArray(markGroup.tribes)) return false;
+  const areTribeIdsValid = markGroup.tribes.every((tribeId) => typeof tribeId === "string" && Number.isInteger(parseInt(tribeId)));
+  if (!areTribeIdsValid) return false;
   return true;
 };
