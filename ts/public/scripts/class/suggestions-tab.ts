@@ -42,7 +42,7 @@ class SuggestionsTab {
   };
   render() {
     const tag = suggestionsSearchInput.value;
-    const suggestions = this.#generator.getSuggestions(tag, 30);
+    const suggestions = this.#generator.getSuggestions(tag);
     suggestionsTableBody.innerHTML = "";
     let groupOptions = "<option selected disabled hidden>Dodaj</option>";
     groupOptions += `<option value="-1"}">Utwórz grupę</option>`;

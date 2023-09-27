@@ -7,7 +7,7 @@ const canvasModule = typeof process === "object" ? await import("canvas") : null
 const LEGEND_FONT_SIZE = 5;
 const CANVAS_FONT_FAMILY = "sans-serif";
 
-const MIN_SPOT_SIZE = 1;
+const MIN_SPOT_SIZE = 2;
 
 interface RawPixel {
   markGroups: { [markGroupIndex: number]: number };

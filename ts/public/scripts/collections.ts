@@ -8,7 +8,7 @@ const collectionLoader = new CollectionLoader(collectionContainer);
 collectionLoader.loadPage();
 
 document.addEventListener("scroll", (e) => {
-  if (document.documentElement.clientHeight + document.documentElement.scrollTop > document.documentElement.scrollHeight * 0.9)
+  if (document.documentElement.clientHeight + document.documentElement.scrollTop > document.documentElement.scrollHeight * 0.8)
     collectionLoader.loadPage();
 });
 worldFilterSelect.addEventListener("change", (e) => {

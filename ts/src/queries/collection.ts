@@ -45,7 +45,12 @@ export const readCollections = async function (page: number, filters: { worldId:
       include: {
         animations: true,
         author: true,
-        maps: true,
+        maps: {
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: 1,
+        },
         world: true,
       },
       orderBy: {
@@ -58,9 +63,6 @@ export const readCollections = async function (page: number, filters: { worldId:
       console.error("Prisma error:", err);
       return [];
     });
-  for (let collection of result) {
-    if (collection.maps.length > 0) collection.maps = collection.maps.slice(-1);
-  }
   return result;
 };
 

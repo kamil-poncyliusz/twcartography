@@ -16,7 +16,7 @@ const generateMarkGroupRowInnerHTML = function (group: MarkGroup, tribes: { [key
   let innerHTML = "";
   for (let tribeId of group.tribes) {
     const tribe = tribes[tribeId];
-    innerHTML += `<button class='mark block-element delete-button' title='${tribe.name}'>${tribe.tag}</button>`;
+    innerHTML += `<button class='mark block delete-button' title='usuń ${tribe.name} z grupy'>${tribe.tag}</button>`;
   }
   const players = group.tribes.reduce((sum, tribeId) => sum + tribes[tribeId].players, 0);
   const villages = group.tribes.reduce((sum, tribeId) => sum + tribes[tribeId].villages.length, 0);
@@ -25,7 +25,7 @@ const generateMarkGroupRowInnerHTML = function (group: MarkGroup, tribes: { [key
   innerHTML += `<td class='group-name'><input type='text' value='${group.name}' placeholder='nazwa'></td>`;
   innerHTML += `<td><input type='color' title='Kliknij prawym aby wylosować kolor' value='${group.color}' style='background-color:${group.color};'></td>`;
   innerHTML += `<td>${group.tribes.length}</td><td>${players}</td><td>${villages}</td><td>${points}</td>`;
-  innerHTML += `<td><button class='delete-group delete-button'>X</button></td>`;
+  innerHTML += `<td><button class='delete-group delete-button' title='usuń grupę'>X</button></td>`;
   return innerHTML;
 };
 

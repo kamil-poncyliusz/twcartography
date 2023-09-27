@@ -27,7 +27,8 @@ export const handleCreateMap = async function (req: Request): Promise<CreateMapR
   const collectionExists = newMapPayload.collection > 0;
   const newCollectionTitle = `Nowa kolekcja ${req.session.user.login}`;
   if (!collectionExists) {
-    const createdCollection = await createCollection(settings.world, authorId, newCollectionTitle, "bez opisu");
+    const newMapDescription = "bez opisu";
+    const createdCollection = await createCollection(settings.world, authorId, newCollectionTitle, newMapDescription);
     if (!createdCollection) return { success: false };
     newMapPayload.collection = createdCollection.id;
   }

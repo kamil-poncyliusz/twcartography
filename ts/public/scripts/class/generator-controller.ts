@@ -37,7 +37,7 @@ export const defaultSettings: Settings = {
 };
 
 const DEFAULT_AUTO_REFRESH = true;
-const MAX_TRIBE_SUGGESTIONS = 20;
+const MAX_TRIBE_SUGGESTIONS = 50;
 
 class GeneratorController {
   autoRefresh: boolean = DEFAULT_AUTO_REFRESH;

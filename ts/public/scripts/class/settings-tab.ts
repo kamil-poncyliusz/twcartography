@@ -70,10 +70,6 @@ class SettingsTab {
     mapSettingsInput.addEventListener("input", this.changeSettings);
     mapSettingsInput.dispatchEvent(new Event("input"));
     publishMapButton?.addEventListener("click", this.publishMap);
-    window.addEventListener("beforeunload", (event) => {
-      const isWorldSelected = Boolean(worldSelect.value);
-      if (isWorldSelected) event.preventDefault();
-    });
   }
   set disabled(value: boolean) {
     for (const key in inputs) {

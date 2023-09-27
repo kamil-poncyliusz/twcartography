@@ -1,8 +1,8 @@
 :root {
   --background: #313131;
   --section: #6c6c6c;
-  --element: #676767;
-  --light-element: #626262;
+  --element: #666666;
+  --light-element: #5c5c5c;
   --accent: #a54d00;
   --light-accent: #c06c3f;
   --font: #242424;
@@ -11,6 +11,9 @@
   --danger: #800000;
   --success: #004000;
   --navbar-height: 2rem;
+}
+html {
+  font-size: 20px;
 }
 @media (max-width: 1920px) {
   html {
@@ -80,12 +83,13 @@ input[type="color"]::-webkit-color-swatch-wrapper {
   padding: 0;
 }
 input[type="text"],
-input[type="password"] {
+input[type="password"],
+input[type="number"] {
   cursor: text;
 }
 input[type="number"] {
-  cursor: text;
   appearance: auto;
+  padding: 0 0.5rem;
 }
 button:disabled,
 select:disabled,
@@ -127,9 +131,10 @@ h2 {
 label {
   height: fit-content;
 }
-main {
-  width: min-content;
-  margin: 0 auto 1rem auto;
+main,
+section {
+  width: fit-content;
+  margin: 1rem auto 1rem auto;
 }
 table {
   border-collapse: separate;
@@ -156,11 +161,11 @@ table tbody tr:nth-child(2n) {
 table tbody tr:nth-child(2n + 1) {
   background-color: var(--light-element);
 }
-.block-element {
+.block {
   display: block;
   width: 100%;
 }
-a.block-element {
+a.block {
   display: flex;
 }
 .delete-button:hover {
@@ -170,12 +175,12 @@ a.block-element {
 #collection-list {
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
   width: 50rem;
 }
 .collection-card {
   background-color: var(--accent);
   padding: 0;
-  margin-bottom: 0.5rem;
   overflow: hidden;
 }
 .collection-card:hover {

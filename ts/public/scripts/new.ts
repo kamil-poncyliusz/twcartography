@@ -29,3 +29,8 @@ showMarksButton?.addEventListener("click", () => {
 showCaptionsButton?.addEventListener("click", () => {
   showTab("captions-tab");
 });
+
+window.addEventListener("beforeunload", (event) => {
+  const isGeneratorUsed = generatorController.world !== 0 && generatorController.turn !== -1;
+  if (isGeneratorUsed) event.preventDefault();
+});
