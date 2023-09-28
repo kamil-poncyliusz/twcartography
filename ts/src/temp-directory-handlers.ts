@@ -2,8 +2,13 @@ import fs from "fs/promises";
 import { createWorld, readWorlds } from "./queries/world.js";
 import { isValidCreateWorldRequestPayload } from "../public/scripts/requests-validators.js";
 import { CreateWorldRequestPayload } from "./types.js";
+import { World } from "@prisma/client";
 
 const worldDirectoriesPath = "temp";
+
+export const getWorldDirectoryName = function (timestamp: number) {
+  return timestamp.toString(36);
+};
 
 const getDirectories = async function (path: string): Promise<string[]> {
   try {
@@ -18,8 +23,8 @@ const getDirectories = async function (path: string): Promise<string[]> {
 };
 
 export const createWorldDirectory = async function (payload: CreateWorldRequestPayload): Promise<boolean> {
-  const worldDirectoryName = payload.timestamp.toString(36);
-  const worldDirectoryPath = `${process.env.ROOT}/temp/${worldDirectoryName}`;
+  const worldDirectoryName = getWorldDirectoryName(payload.timestamp);
+  const worldDirectoryPath = `${process.env.ROOT}/${worldDirectoriesPath}/${worldDirectoryName}`;
   const worldDirectoryInfoFilePath = `${worldDirectoryPath}/info`;
   const fileString = Object.entries(payload)
     .map(([key, value]) => `${key}=${value}`)
@@ -45,7 +50,7 @@ export const createWorldDirectory = async function (payload: CreateWorldRequestP
 };
 
 export const deleteWorldDirectory = async function (worldDirectoryName: string) {
-  const pathToDelete = `temp/${worldDirectoryName}`;
+  const pathToDelete = `${worldDirectoriesPath}/${worldDirectoryName}`;
   try {
     await fs.access(pathToDelete);
     await fs.rm(pathToDelete, { recursive: true, force: true });
@@ -72,7 +77,7 @@ const parseWorldInfoFile = async function (worldDirectoryName: string): Promise<
       console.log("Invalid world info file:", infoFilePath);
       return null;
     }
-    const validWorldDirectoryName = worldInfo.timestamp.toString(36);
+    const validWorldDirectoryName = getWorldDirectoryName(worldInfo.timestamp);
     if (worldDirectoryName !== validWorldDirectoryName) {
       console.log("Ivalid world data directory:", worldDirectoryName);
       return null;
@@ -89,7 +94,8 @@ export const createNewWorldsFromFiles = async function () {
   const worldsFromDatabase = await readWorlds();
   const newWorldDirectories = worldDirectories.filter((worldDirectory) => {
     return worldsFromDatabase.every((world) => {
-      return world.startTimestamp.toString(36) !== worldDirectory;
+      const correctWorldDirectoryName = getWorldDirectoryName(world.startTimestamp);
+      return correctWorldDirectoryName !== worldDirectory;
     });
   });
   for (let worldDirectory of newWorldDirectories) {

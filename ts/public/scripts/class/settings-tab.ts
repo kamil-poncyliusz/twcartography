@@ -103,8 +103,6 @@ class SettingsTab {
     if (settingsInputValue === "") return input.classList.remove("is-invalid");
     const decodedSettings = decodeJsonSettings(settingsInputValue);
     if (!(await this.#generator.applySettings(decodedSettings))) return input.classList.add("is-invalid");
-    const worldIdString = String(this.#generator.world);
-    worldSelect.value = worldIdString;
     input.classList.remove("is-invalid");
   };
   changeOutputWidth = (e: Event) => {
@@ -202,20 +200,22 @@ class SettingsTab {
     mapSettingsInput.value = encodedSettings;
     mapSettingsInput.classList.remove("is-invalid");
     inputs.autoRefresh.checked = this.#generator.autoRefresh;
-    if (this.#generator.world === 0) {
-      this.disabled = true;
-    } else if (this.#generator.turn === -1) {
-      this.disabled = true;
-      inputs.turn.disabled = false;
-      inputs.turn.value = "";
-    } else {
-      this.disabled = false;
-      if (inputs.trim.checked) inputs.outputWidth.disabled = true;
-      if (inputs.autoRefresh.checked && generateButton) generateButton.disabled = true;
-      if (publishMapButton) {
-        publishMapButton.disabled = false;
-        publishMapButton.innerHTML = "Dodaj do kolekcji";
-        publishMapButton.classList.remove("success", "danger");
+    this.disabled = true;
+    if (this.#generator.world > 0) {
+      const worldIdString = String(this.#generator.world);
+      worldSelect.value = worldIdString;
+      if (this.#generator.turn === -1) {
+        inputs.turn.disabled = false;
+        inputs.turn.value = "";
+      } else {
+        this.disabled = false;
+        if (inputs.trim.checked) inputs.outputWidth.disabled = true;
+        if (inputs.autoRefresh.checked && generateButton) generateButton.disabled = true;
+        if (publishMapButton) {
+          publishMapButton.disabled = false;
+          publishMapButton.innerHTML = "Dodaj do kolekcji";
+          publishMapButton.classList.remove("success", "danger");
+        }
       }
     }
     const turnPlaceholder = this.#generator.latestTurn >= 0 ? `0-${this.#generator.latestTurn}` : "-";

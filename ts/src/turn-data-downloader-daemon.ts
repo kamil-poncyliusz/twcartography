@@ -3,6 +3,7 @@ import scheduler from "node-schedule";
 import { DownloaderHelper } from "node-downloader-helper";
 import parseTurnData from "./parse-turn-data.js";
 import { isValidTurn } from "../public/scripts/validators.js";
+import { getWorldDirectoryName } from "./temp-directory-handlers.js";
 import { createTurnData } from "./queries/turn-data.js";
 import { readWorlds } from "./queries/world.js";
 import { World } from "@prisma/client";
@@ -29,7 +30,7 @@ const downloadWorldDataFile = function (url: string, path: string, file: string)
 
 const downloadWorldData = async function (world: World, turn: number) {
   const files = ["village", "player", "ally", "conquer", "kill_all_tribe", "kill_att_tribe", "kill_def_tribe"];
-  const worldDirectoryName = world.startTimestamp.toString(36);
+  const worldDirectoryName = getWorldDirectoryName(world.startTimestamp);
   const turnDirectoryPath = `${process.env.ROOT}/temp/${worldDirectoryName}/${turn}`;
   try {
     await fs.access(turnDirectoryPath);
@@ -72,7 +73,7 @@ const turnDataDownloaderDaemon = {
     const jobName = world.id.toString();
     this.scheduler.scheduleJob(jobName, rule, async function () {
       const turn = Math.round(Date.now() - serverStartTimestamp.getTime() / 1000 / 60 / 60 / 24);
-      const worldDirectoryName = world.startTimestamp.toString(36);
+      const worldDirectoryName = getWorldDirectoryName(world.startTimestamp);
       if (!isValidTurn(turn)) return console.log(`Downloader daemon: ${turn} is not a valid turn`);
       const success = await downloadWorldData(world, turn);
       if (success) {

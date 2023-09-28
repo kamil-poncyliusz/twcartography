@@ -36,10 +36,16 @@ export const readUserByLogin = async function (login: string): Promise<User | nu
 };
 
 export const readUsers = async function (): Promise<User[]> {
-  const result = await prisma.user.findMany({}).catch((err) => {
-    console.error("Prisma error:", err);
-    return [];
-  });
+  const result = await prisma.user
+    .findMany({
+      orderBy: {
+        id: "asc",
+      },
+    })
+    .catch((err) => {
+      console.error("Prisma error:", err);
+      return [];
+    });
   return result;
 };
 
@@ -81,15 +87,13 @@ export const deleteAllUsers = async function (): Promise<boolean> {
   return true;
 };
 
-export const updateUserRank = async function (id: number, rank: number): Promise<boolean> {
+export const updateUser = async function (id: number, updatedFields: { rank?: number; password?: string }): Promise<boolean> {
   const user = await prisma.user
     .update({
       where: {
         id: id,
       },
-      data: {
-        rank: rank,
-      },
+      data: updatedFields,
     })
     .catch((err) => {
       console.error("Prisma error:", err);

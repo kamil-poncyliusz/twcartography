@@ -2,7 +2,7 @@ import { Request } from "express";
 import { isValidId } from "../../public/scripts/validators.js";
 import { createWorld, deleteWorld, readWorld } from "../../src/queries/world.js";
 import { isValidCreateWorldRequestPayload } from "../../public/scripts/requests-validators.js";
-import { createWorldDirectory, deleteWorldDirectory } from "../../src/temp-directory-handlers.js";
+import { createWorldDirectory, deleteWorldDirectory, getWorldDirectoryName } from "../../src/temp-directory-handlers.js";
 import turnDataDownloaderDaemon from "../../src/turn-data-downloader-daemon.js";
 import { World } from "@prisma/client";
 import { CreateWorldRequestPayload } from "../../src/types";
@@ -40,7 +40,7 @@ export const handleDeleteWorld = async function (req: Request): Promise<boolean>
   if (!isValidId(worldId)) return false;
   const deletedWorld = await deleteWorld(worldId);
   if (!deletedWorld) return false;
-  const worldDirectoryName = deletedWorld.startTimestamp.toString(36);
+  const worldDirectoryName = getWorldDirectoryName(deletedWorld.startTimestamp);
   turnDataDownloaderDaemon.stopDownloading(deletedWorld);
   await deleteWorldDirectory(worldDirectoryName);
   return true;

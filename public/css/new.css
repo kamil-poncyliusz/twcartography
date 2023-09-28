@@ -8,7 +8,6 @@ table td > button {
 }
 table td > input[type="text"],
 table td > input[type="number"] {
-  padding: 0 0.5rem;
   min-height: 2.5rem;
   height: 100%;
   display: flex;
@@ -47,7 +46,6 @@ table td > input[type="number"] {
   width: 100%;
   font-size: 1rem;
   height: 3rem;
-  padding: 0 0.5rem;
 }
 #settings input[type="color"] {
   padding: 0;

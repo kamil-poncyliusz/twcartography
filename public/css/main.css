@@ -85,11 +85,11 @@ input[type="color"]::-webkit-color-swatch-wrapper {
 input[type="text"],
 input[type="password"],
 input[type="number"] {
+  padding: 0 0.5rem;
   cursor: text;
 }
 input[type="number"] {
   appearance: auto;
-  padding: 0 0.5rem;
 }
 button:disabled,
 select:disabled,

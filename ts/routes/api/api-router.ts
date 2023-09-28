@@ -3,7 +3,7 @@ import { handleCreateAnimation, handleDeleteAnimation } from "./animation-handle
 import { handleDeleteCollection, handleReadCollections, handleUpdateCollection } from "./collection-handlers.js";
 import { handleCreateMap, handleDeleteMap, handleUpdateMap } from "./map-handlers.js";
 import { handleCreateTurnData, handleReadTurnData } from "./turn-data-handlers.js";
-import { handleUpdateUserRank } from "./user-handlers.js";
+import { handleUpdateUser } from "./user-handlers.js";
 import { handleCreateWorld, handleDeleteWorld, handleReadWorld } from "./world-handlers.js";
 
 const apiRouter = express.Router();
@@ -53,7 +53,7 @@ apiRouter.get("/turn-data/read/:world/:turn", async (req, res) => {
 });
 
 apiRouter.post("/user/update/rank", async (req, res) => {
-  const responseData = await handleUpdateUserRank(req);
+  const responseData = await handleUpdateUser(req);
   return res.json(responseData);
 });
 

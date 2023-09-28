@@ -3,6 +3,7 @@ import parseTurnData from "./parse-turn-data.js";
 import { createTurnData } from "./queries/turn-data.js";
 import { readWorldsWithWorldData } from "./queries/world.js";
 import { WorldDataState, TurnDataState } from "./types.js";
+import { getWorldDirectoryName } from "./temp-directory-handlers.js";
 
 const files = ["village", "player", "ally", "conquer", "kill_all_tribe", "kill_att_tribe", "kill_def_tribe"];
 
@@ -30,9 +31,9 @@ export const getWorldDataStates = async function (): Promise<WorldDataState[]> {
   const worldDataStates: WorldDataState[] = [];
   for (const world of worldsWithWorldData) {
     const numberOfTurns = Math.floor((Date.now() - world.startTimestamp * 1000) / 1000 / 60 / 60 / 24);
-    const worldDirectoryName = world.startTimestamp.toString(36);
+    const worldDirectoryName = getWorldDirectoryName(world.startTimestamp);
     const addedWorldDataState: WorldDataState = {
-      filesDirectoryName: world.startTimestamp.toString(36),
+      filesDirectoryName: worldDirectoryName,
       id: world.id,
       serverName: world.server + world.num,
       turns: [],
