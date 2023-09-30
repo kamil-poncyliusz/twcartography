@@ -16,11 +16,13 @@ const GROUP_NAME_MAX_LENGTH = 8;
 const FRAME_DELAY_MAX_MILISECONDS = 60000;
 
 const settingsMinValues: { [key: string]: number } = {
+  legendFontSize: 1,
   outputWidth: 100,
   scale: 1,
   topSpotSize: 2,
 };
 const settingsMaxValues: { [key: string]: number } = {
+  legendFontSize: 10,
   outputWidth: 1000,
   scale: 5,
   topSpotSize: 15,
@@ -113,10 +115,19 @@ export const isValidTopSpotSize = function (input: number): boolean {
   return true;
 };
 
+export const isValidLegendFontSize = function (input: number): boolean {
+  if (typeof input !== "number" || !Number.isInteger(input) || input < settingsLimits.min.legendFontSize || input > settingsLimits.max.legendFontSize)
+    return false;
+  return true;
+};
+
 export const isValidSettings = function (settings: Settings): boolean {
   if (typeof settings !== "object") return false;
   if (!isValidColor(settings.backgroundColor)) return false;
   if (!isValidColor(settings.borderColor)) return false;
+  if (typeof settings.drawBorders !== "boolean") return false;
+  if (typeof settings.drawLegend !== "boolean") return false;
+  if (!isValidLegendFontSize(settings.legendFontSize)) return false;
   if (!isValidOutputWidth(settings.outputWidth)) return false;
   if (!isValidScale(settings.scale)) return false;
   if (!isValidTopSpotSize(settings.topSpotSize)) return false;

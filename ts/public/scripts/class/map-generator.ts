@@ -4,7 +4,6 @@ import { Settings, ParsedColor, ParsedTurnData, Village, MarkGroup } from "../..
 
 const canvasModule = typeof process === "object" ? await import("canvas") : null;
 
-const LEGEND_FONT_SIZE = 5;
 const CANVAS_FONT_FAMILY = "sans-serif";
 
 const MIN_SPOT_SIZE = 2;
@@ -98,10 +97,10 @@ class MapGenerator {
     this.#widthModifier = this.#calcWidthModifier();
     this.#generateScaledPixels();
     this.#smoothBorders();
-    this.#drawBorders();
+    if (settings.drawBorders) this.#drawBorders();
     this.#generateImageData();
     this.#writeCaptions();
-    this.#writeLegend();
+    if (settings.drawLegend) this.#writeLegend();
   }
   get villagePointThresholds(): number[] {
     const numberOfThresholds = this.#settings.topSpotSize - MIN_SPOT_SIZE + 1;
@@ -329,29 +328,16 @@ class MapGenerator {
       }
       this.#scaledPixels.push(row);
     }
-    if (widthModifier <= 0) {
-      for (let x = 0; x < modifiedWidth; x++) {
-        for (let y = 0; y < modifiedWidth; y++) {
-          const pixel = this.#rawPixels[x - widthModifier][y - widthModifier];
-          const markGroupIndex = getPixelStrongestMarkGroupIndex(pixel.markGroups);
-          if (markGroupIndex === -1) continue;
-          for (let newY = y * scale; newY < y * scale + scale; newY++) {
-            for (let newX = x * scale; newX < x * scale + scale; newX++) {
-              this.#scaledPixels[newX][newY].color = markGroupColors[markGroupIndex];
-            }
-          }
-        }
-      }
-    } else {
-      for (let x = widthModifier; x < width + widthModifier; x++) {
-        for (let y = widthModifier; y < width + widthModifier; y++) {
-          const pixel = this.#rawPixels[x - widthModifier][y - widthModifier];
-          const markGroupIndex = getPixelStrongestMarkGroupIndex(pixel.markGroups);
-          if (markGroupIndex === -1) continue;
-          for (let newY = y * scale; newY < y * scale + scale; newY++) {
-            for (let newX = x * scale; newX < x * scale + scale; newX++) {
-              this.#scaledPixels[newX][newY].color = markGroupColors[markGroupIndex];
-            }
+    const transformationStartIndex = widthModifier <= 0 ? 0 : widthModifier;
+    const transformationEndIndex = widthModifier <= 0 ? modifiedWidth : width + widthModifier;
+    for (let x = transformationStartIndex; x < transformationEndIndex; x++) {
+      for (let y = transformationStartIndex; y < transformationEndIndex; y++) {
+        const pixel = this.#rawPixels[x - widthModifier][y - widthModifier];
+        const markGroupIndex = getPixelStrongestMarkGroupIndex(pixel.markGroups);
+        if (markGroupIndex === -1) continue;
+        for (let newY = y * scale; newY < y * scale + scale; newY++) {
+          for (let newX = x * scale; newX < x * scale + scale; newX++) {
+            this.#scaledPixels[newX][newY].color = markGroupColors[markGroupIndex];
           }
         }
       }
@@ -471,7 +457,7 @@ class MapGenerator {
       const ctx = canvas.getContext("2d");
       if (ctx === null) return console.log("MapGenerator: canvas context in null");
       ctx.putImageData(imageData, 0, 0);
-      const fontSize = Math.floor((width / 100) * LEGEND_FONT_SIZE);
+      const fontSize = Math.floor((width / 100) * this.#settings.legendFontSize);
       ctx.font = `${fontSize}px ${CANVAS_FONT_FAMILY}`;
       for (let cornerIndex = 0; cornerIndex < legend.length; cornerIndex++) {
         let step = 0,
@@ -508,7 +494,7 @@ class MapGenerator {
       const ctx = canvas.getContext("2d");
       if (ctx === null) return console.log("MapGenerator: canvas context in null");
       ctx.putImageData(imageData, 0, 0);
-      const fontSize = Math.floor((width / 100) * LEGEND_FONT_SIZE);
+      const fontSize = Math.floor((width / 100) * this.#settings.legendFontSize);
       ctx.font = `${fontSize}px ${CANVAS_FONT_FAMILY}`;
       for (let cornerIndex = 0; cornerIndex < legend.length; cornerIndex++) {
         let step = 0,

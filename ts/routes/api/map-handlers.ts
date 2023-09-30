@@ -1,6 +1,5 @@
 import { Request } from "express";
 import { CreateMapRequestValidationCode, isValidCreateMapRequestPayload } from "../../public/scripts/requests-validators.js";
-import { encodeSettings } from "../../public/scripts/settings-codec.js";
 import MapGenerator from "../../public/scripts/class/map-generator.js";
 import { createCollection } from "../../src/queries/collection.js";
 import { createMap, deleteMap, readMap, updateMap } from "../../src/queries/map.js";

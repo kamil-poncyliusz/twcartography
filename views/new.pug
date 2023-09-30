@@ -46,9 +46,15 @@ html(lang="pl-PL")
               input#trim(type="checkbox", name="trim", autocomplete="off", disabled) 
               input#output-width(type="number", name="output-width", autocomplete="off", disabled)
           .row
-            label(for="border-color", title="Kolor granic") Kolor granic:
+            label(for="draw-borders", title="Narysuj granice między sąsiadującymi grupami") Rysuj granice:
             div
+              input#draw-borders(type="checkbox", name="draw-borders", autocomplete="off", disabled)
               input#border-color(type="color", name="border-color", autocomplete="off", disabled)
+          .row
+            label(for="draw-legend", title="Rysuj legendę") Pokaż legendę:
+            div
+              input#draw-legend(type="checkbox", name="draw-legend", autocomplete="off", disabled)
+              input#legend-font-size(type="number", name="legend-font-size", autocomplete="off", disabled)
           .row
             label(
               for="auto-refresh",

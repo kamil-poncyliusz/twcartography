@@ -9,6 +9,7 @@ import {
   isValidColor,
   isValidGroupName,
   isValidId,
+  isValidLegendFontSize,
   isValidOutputWidth,
   isValidScale,
   isValidSettings,
@@ -27,6 +28,9 @@ export const defaultSettings: Settings = {
   backgroundColor: "#202020",
   borderColor: "#808080",
   captions: [],
+  drawBorders: true,
+  drawLegend: true,
+  legendFontSize: 5,
   markGroups: [],
   outputWidth: 500,
   scale: 2,
@@ -43,11 +47,14 @@ class GeneratorController {
   autoRefresh: boolean = DEFAULT_AUTO_REFRESH;
   #backgroundColor: string = defaultSettings.backgroundColor;
   #borderColor: string = defaultSettings.borderColor;
+  #drawBorders: boolean = defaultSettings.drawBorders;
+  #drawLegend: boolean = defaultSettings.drawLegend;
   #canvasFrame: CanvasFrame;
   captions: Caption[] = [];
   #captionsTab: CaptionsTab;
   data: { [key: number]: ParsedTurnData } = {};
   latestTurn: number = -1;
+  #legendFontSize: number = defaultSettings.legendFontSize;
   markGroups: MarkGroup[] = [];
   #markGroupsTab: MarkGroupsTab;
   #outputWidth: number = defaultSettings.outputWidth;
@@ -71,6 +78,9 @@ class GeneratorController {
       backgroundColor: this.#backgroundColor,
       borderColor: this.#borderColor,
       captions: this.captions,
+      drawBorders: this.#drawBorders,
+      drawLegend: this.#drawLegend,
+      legendFontSize: this.#legendFontSize,
       markGroups: this.markGroups,
       outputWidth: this.#outputWidth,
       scale: this.#scale,
@@ -127,6 +137,9 @@ class GeneratorController {
     const isWorldChanged = await this.changeWorld(settings.world);
     if (!isWorldChanged) return false;
     this.#backgroundColor = settings.backgroundColor;
+    this.#drawBorders = settings.drawBorders;
+    this.#drawLegend = settings.drawLegend;
+    this.#legendFontSize = settings.legendFontSize;
     this.#outputWidth = settings.outputWidth;
     this.#scale = settings.scale;
     this.#topSpotSize = settings.topSpotSize;
@@ -365,10 +378,34 @@ class GeneratorController {
     this.#settingsTab.update();
     return true;
   }
+  setDrawBorders(value: boolean): boolean {
+    if (this.turn === -1) return false;
+    if (typeof value !== "boolean") return false;
+    this.#drawBorders = value;
+    this.#canvasFrame.render();
+    this.#settingsTab.update();
+    return true;
+  }
+  setDrawLegend(value: boolean): boolean {
+    if (this.turn === -1) return false;
+    if (typeof value !== "boolean") return false;
+    this.#drawLegend = value;
+    this.#canvasFrame.render();
+    this.#settingsTab.update();
+    return true;
+  }
   setOutputWidth(value: number): boolean {
     if (this.turn === -1) return false;
     if (!isValidOutputWidth(value)) return false;
     this.#outputWidth = value;
+    this.#canvasFrame.render();
+    this.#settingsTab.update();
+    return true;
+  }
+  setLegendFontSize(value: number): boolean {
+    if (this.turn === -1) return false;
+    if (!isValidLegendFontSize(value)) return false;
+    this.#legendFontSize = value;
     this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;

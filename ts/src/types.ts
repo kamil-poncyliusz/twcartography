@@ -9,6 +9,9 @@ export interface Settings {
   backgroundColor: string;
   borderColor: string;
   captions: Caption[];
+  drawBorders: boolean;
+  drawLegend: boolean;
+  legendFontSize: number;
   markGroups: MarkGroup[];
   outputWidth: number;
   scale: number;

@@ -11,6 +11,9 @@ const inputs: { [key: string]: HTMLInputElement } = {
   autoRefresh: document.getElementById("auto-refresh") as HTMLInputElement,
   backgroundColor: document.getElementById("background-color") as HTMLInputElement,
   borderColor: document.getElementById("border-color") as HTMLInputElement,
+  drawBorders: document.getElementById("draw-borders") as HTMLInputElement,
+  drawLegend: document.getElementById("draw-legend") as HTMLInputElement,
+  legendFontSize: document.getElementById("legend-font-size") as HTMLInputElement,
   outputWidth: document.getElementById("output-width") as HTMLInputElement,
   scale: document.getElementById("scale") as HTMLInputElement,
   topSpotSize: document.getElementById("top-spot-size") as HTMLInputElement,
@@ -60,6 +63,9 @@ class SettingsTab {
     inputs.autoRefresh.addEventListener("input", this.changeAutoRefresh);
     inputs.backgroundColor.addEventListener("change", this.changeBackgroundColor);
     inputs.borderColor.addEventListener("change", this.changeBorderColor);
+    inputs.drawBorders.addEventListener("change", this.changeDrawBorders);
+    inputs.drawLegend.addEventListener("change", this.changeDrawLegend);
+    inputs.legendFontSize.addEventListener("change", this.changeLegendFontSize);
     inputs.outputWidth.addEventListener("change", this.changeOutputWidth);
     inputs.scale.addEventListener("change", this.changeScale);
     inputs.topSpotSize.addEventListener("change", this.changeTopSpotSize);
@@ -96,6 +102,27 @@ class SettingsTab {
     const isChanged = this.#generator.setBorderColor(colorInput.value);
     if (isChanged) inputs.borderColor.classList.remove("is-invalid");
     else inputs.borderColor.classList.add("is-invalid");
+  };
+  changeDrawBorders = (e: Event) => {
+    const input = e.target as HTMLInputElement;
+    const value = input.checked;
+    const isChanged = this.#generator.setDrawBorders(value);
+    if (isChanged) input.classList.remove("is-invalid");
+    else input.classList.add("is-invalid");
+  };
+  changeDrawLegend = (e: Event) => {
+    const input = e.target as HTMLInputElement;
+    const value = input.checked;
+    const isChanged = this.#generator.setDrawLegend(value);
+    if (isChanged) input.classList.remove("is-invalid");
+    else input.classList.add("is-invalid");
+  };
+  changeLegendFontSize = (e: Event) => {
+    const input = e.target as HTMLInputElement;
+    const value = Number(input.value);
+    const isChanged = this.#generator.setLegendFontSize(value);
+    if (isChanged) input.classList.remove("is-invalid");
+    else input.classList.add("is-invalid");
   };
   changeSettings = async (e: Event) => {
     const input = e.target as HTMLInputElement;
@@ -210,6 +237,8 @@ class SettingsTab {
       } else {
         this.disabled = false;
         if (inputs.trim.checked) inputs.outputWidth.disabled = true;
+        if (!inputs.drawBorders.checked) inputs.borderColor.disabled = true;
+        if (!inputs.drawLegend.checked) inputs.legendFontSize.disabled = true;
         if (inputs.autoRefresh.checked && generateButton) generateButton.disabled = true;
         if (publishMapButton) {
           publishMapButton.disabled = false;
