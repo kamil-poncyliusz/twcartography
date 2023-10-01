@@ -96,7 +96,7 @@ class MapGenerator {
     this.generateRawPixels();
     this.#widthModifier = this.#calcWidthModifier();
     this.#generateScaledPixels();
-    this.#smoothBorders();
+    if (settings.smoothBorders) this.#smoothBorders();
     if (settings.drawBorders) this.#drawBorders();
     this.#generateImageData();
     this.#writeCaptions();
@@ -418,7 +418,7 @@ class MapGenerator {
       if (ctx === null) return console.log("MapGenerator: canvas context in null");
       ctx.putImageData(imageData, 0, 0);
       ctx.textAlign = "left";
-      ctx.textBaseline = "top";
+      ctx.textBaseline = "alphabetic";
       for (let caption of captions) {
         ctx.font = `${caption.fontSize}px ${CANVAS_FONT_FAMILY}`;
         ctx.fillStyle = caption.color;
@@ -434,7 +434,7 @@ class MapGenerator {
       if (ctx === null) return console.log("MapGenerator: canvas context in null");
       ctx.putImageData(imageData, 0, 0);
       ctx.textAlign = "left";
-      ctx.textBaseline = "top";
+      ctx.textBaseline = "alphabetic";
       for (let caption of captions) {
         ctx.font = `${caption.fontSize}px ${CANVAS_FONT_FAMILY}`;
         ctx.fillStyle = caption.color;
@@ -459,6 +459,7 @@ class MapGenerator {
       ctx.putImageData(imageData, 0, 0);
       const fontSize = Math.floor((width / 100) * this.#settings.legendFontSize);
       ctx.font = `${fontSize}px ${CANVAS_FONT_FAMILY}`;
+      ctx.textBaseline = "alphabetic";
       for (let cornerIndex = 0; cornerIndex < legend.length; cornerIndex++) {
         let step = 0,
           startX = 0,
@@ -496,6 +497,7 @@ class MapGenerator {
       ctx.putImageData(imageData, 0, 0);
       const fontSize = Math.floor((width / 100) * this.#settings.legendFontSize);
       ctx.font = `${fontSize}px ${CANVAS_FONT_FAMILY}`;
+      ctx.textBaseline = "alphabetic";
       for (let cornerIndex = 0; cornerIndex < legend.length; cornerIndex++) {
         let step = 0,
           startX = 0,

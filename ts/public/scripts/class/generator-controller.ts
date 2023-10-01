@@ -34,6 +34,7 @@ export const defaultSettings: Settings = {
   markGroups: [],
   outputWidth: 500,
   scale: 2,
+  smoothBorders: true,
   topSpotSize: 8,
   trim: true,
   turn: 0,
@@ -59,8 +60,8 @@ class GeneratorController {
   #markGroupsTab: MarkGroupsTab;
   #outputWidth: number = defaultSettings.outputWidth;
   #scale: number = defaultSettings.scale;
-  #server: string = "";
   #settingsTab: SettingsTab;
+  #smoothBorders: boolean = defaultSettings.smoothBorders;
   #suggestionsTab: SuggestionsTab;
   #topSpotSize: number = defaultSettings.topSpotSize;
   #trim: boolean = defaultSettings.trim;
@@ -84,6 +85,7 @@ class GeneratorController {
       markGroups: this.markGroups,
       outputWidth: this.#outputWidth,
       scale: this.#scale,
+      smoothBorders: this.#smoothBorders,
       topSpotSize: this.#topSpotSize,
       trim: this.#trim,
       turn: this.turn,
@@ -270,7 +272,6 @@ class GeneratorController {
     this.data = {};
     this.turn = -1;
     if (!worldInfo) return false;
-    this.#server = worldInfo.server + worldInfo.num;
     this.world = world;
     this.latestTurn = Math.floor((Date.now() - worldInfo.startTimestamp * 1000) / 1000 / 60 / 60 / 24);
     this.#settingsTab.update();
@@ -414,6 +415,14 @@ class GeneratorController {
     if (this.turn === -1) return false;
     if (!isValidScale(value)) return false;
     this.#scale = value;
+    this.#canvasFrame.render();
+    this.#settingsTab.update();
+    return true;
+  }
+  setSmoothBorders(value: boolean): boolean {
+    if (this.turn === -1) return false;
+    if (typeof value !== "boolean") return false;
+    this.#smoothBorders = value;
     this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;

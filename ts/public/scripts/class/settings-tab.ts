@@ -16,6 +16,7 @@ const inputs: { [key: string]: HTMLInputElement } = {
   legendFontSize: document.getElementById("legend-font-size") as HTMLInputElement,
   outputWidth: document.getElementById("output-width") as HTMLInputElement,
   scale: document.getElementById("scale") as HTMLInputElement,
+  smoothBorders: document.getElementById("smooth-borders") as HTMLInputElement,
   topSpotSize: document.getElementById("top-spot-size") as HTMLInputElement,
   trim: document.getElementById("trim") as HTMLInputElement,
   turn: document.getElementById("turn-input") as HTMLInputElement,
@@ -68,6 +69,7 @@ class SettingsTab {
     inputs.legendFontSize.addEventListener("change", this.changeLegendFontSize);
     inputs.outputWidth.addEventListener("change", this.changeOutputWidth);
     inputs.scale.addEventListener("change", this.changeScale);
+    inputs.smoothBorders.addEventListener("change", this.changeSmoothBorders);
     inputs.topSpotSize.addEventListener("change", this.changeTopSpotSize);
     inputs.trim.addEventListener("input", this.changeTrim);
     inputs.turn.addEventListener("change", this.changeTurn);
@@ -143,6 +145,13 @@ class SettingsTab {
     const input = e.target as HTMLInputElement;
     const value = Number(input.value);
     const isChanged = this.#generator.setScale(value);
+    if (isChanged) input.classList.remove("is-invalid");
+    else input.classList.add("is-invalid");
+  };
+  changeSmoothBorders = (e: Event) => {
+    const input = e.target as HTMLInputElement;
+    const value = input.checked;
+    const isChanged = this.#generator.setSmoothBorders(value);
     if (isChanged) input.classList.remove("is-invalid");
     else input.classList.add("is-invalid");
   };

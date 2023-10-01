@@ -15,6 +15,7 @@ export interface Settings {
   markGroups: MarkGroup[];
   outputWidth: number;
   scale: number;
+  smoothBorders: boolean;
   trim: boolean;
   topSpotSize: number;
   turn: number;

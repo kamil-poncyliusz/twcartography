@@ -130,6 +130,7 @@ export const isValidSettings = function (settings: Settings): boolean {
   if (!isValidLegendFontSize(settings.legendFontSize)) return false;
   if (!isValidOutputWidth(settings.outputWidth)) return false;
   if (!isValidScale(settings.scale)) return false;
+  if (typeof settings.smoothBorders !== "boolean") return false;
   if (!isValidTopSpotSize(settings.topSpotSize)) return false;
   if (typeof settings.trim !== "boolean") return false;
   const tribes: string[] = [];

@@ -129,6 +129,7 @@ export const decodeJsonSettings = function (stringifiedSettings: string): Settin
     if (isValidLegendFontSize(parsedSettings.legendFontSize)) resultSettings.legendFontSize = parsedSettings.legendFontSize;
     if (isValidOutputWidth(parsedSettings.outputWidth)) resultSettings.outputWidth = parsedSettings.outputWidth;
     if (isValidScale(parsedSettings.scale)) resultSettings.scale = parsedSettings.scale;
+    if (typeof parsedSettings.smoothBorders === "boolean") resultSettings.smoothBorders = parsedSettings.smoothBorders;
     if (isValidTopSpotSize(parsedSettings.topSpotSize)) resultSettings.topSpotSize = parsedSettings.topSpotSize;
     if (typeof parsedSettings.trim === "boolean") resultSettings.trim = parsedSettings.trim;
     if (isValidTurn(parsedSettings.turn)) resultSettings.turn = parsedSettings.turn;
