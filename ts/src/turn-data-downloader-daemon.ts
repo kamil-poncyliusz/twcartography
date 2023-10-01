@@ -72,7 +72,7 @@ const turnDataDownloaderDaemon = {
     const rule = `${serverStartSeconds} ${serverStartMinutes} ${serverStartHours} * * *`;
     const jobName = world.id.toString();
     this.scheduler.scheduleJob(jobName, rule, async function () {
-      const turn = Math.round(Date.now() - serverStartTimestamp.getTime() / 1000 / 60 / 60 / 24);
+      const turn = Math.round((Date.now() - serverStartTimestamp.getTime()) / 1000 / 60 / 60 / 24);
       const worldDirectoryName = getWorldDirectoryName(world.startTimestamp);
       if (!isValidTurn(turn)) return console.log(`Downloader daemon: ${turn} is not a valid turn`);
       const success = await downloadWorldData(world, turn);
