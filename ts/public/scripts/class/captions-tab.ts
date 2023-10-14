@@ -105,9 +105,9 @@ class CaptionsTab {
     const newCaptionRow = document.createElement("tr");
     let rowContent = "<td><input type='text' class='new-caption-text'></td>";
     rowContent += "<td><input type='color' class='new-caption-color' value='#FFFFFF'></td>";
-    rowContent += "<td><input type='number' class='new-caption-font-size' value='40'></td>";
+    rowContent += "<td><input type='number' class='new-caption-font-size' value='50'></td>";
     rowContent += "<td><input type='number' class='new-caption-x' value='0'></td>";
-    rowContent += "<td><input type='number' class='new-caption-y' value='0'></td>";
+    rowContent += "<td><input type='number' class='new-caption-y' value='50'></td>";
     rowContent += "<td><button class='add-new-caption'>+</button></td>";
     newCaptionRow.innerHTML = rowContent;
     captionsTableBody.appendChild(newCaptionRow);

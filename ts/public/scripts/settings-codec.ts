@@ -1,5 +1,4 @@
-import { Base64 } from "./base64.js";
-import { Caption, MarkGroup, Settings } from "../../src/types.js";
+import { Settings } from "../../src/types.js";
 import { defaultSettings } from "./class/generator-controller.js";
 import {
   isValidCaption,

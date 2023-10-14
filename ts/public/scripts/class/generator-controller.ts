@@ -55,6 +55,7 @@ class GeneratorController {
   #captionsTab: CaptionsTab;
   data: { [key: number]: ParsedTurnData } = {};
   latestTurn: number = -1;
+  #mapGenerator: MapGenerator | undefined = undefined;
   #legendFontSize: number = defaultSettings.legendFontSize;
   markGroups: MarkGroup[] = [];
   #markGroupsTab: MarkGroupsTab;
@@ -99,6 +100,8 @@ class GeneratorController {
   addCaption(caption: Caption, options?: { skipUpdate?: boolean }): boolean {
     if (!isValidCaption(caption)) return false;
     this.captions.push(caption);
+    if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
+    this.#mapGenerator.isImageDataStageModified = true;
     if (options?.skipUpdate) return true;
     this.#canvasFrame.render();
     this.#captionsTab.render();
@@ -112,6 +115,8 @@ class GeneratorController {
     if (!tribe || !markGroup) return false;
     markGroup.tribes.push(tribe.id);
     this.sortMarkGroups();
+    if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
+    this.#mapGenerator.isPixelsInfluenceStageModified = true;
     if (options?.skipUpdate) return true;
     this.#canvasFrame.render();
     this.#markGroupsTab.render();
@@ -129,6 +134,8 @@ class GeneratorController {
       color: group.color,
     };
     this.markGroups.push(newGroup);
+    if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
+    this.#mapGenerator.isPixelsInfluenceStageModified = true;
     if (options?.skipUpdate) return true;
     this.#markGroupsTab.render();
     this.#settingsTab.update();
@@ -139,6 +146,7 @@ class GeneratorController {
     const isWorldChanged = await this.changeWorld(settings.world);
     if (!isWorldChanged) return false;
     this.#backgroundColor = settings.backgroundColor;
+    this.#borderColor = settings.borderColor;
     this.#drawBorders = settings.drawBorders;
     this.#drawLegend = settings.drawLegend;
     this.#legendFontSize = settings.legendFontSize;
@@ -178,6 +186,8 @@ class GeneratorController {
     if (!caption) return false;
     if (!isValidColor(newColor)) return false;
     caption.color = newColor;
+    if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
+    this.#mapGenerator.isImageDataStageModified = true;
     this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
@@ -187,6 +197,8 @@ class GeneratorController {
     if (!caption) return false;
     if (!isValidCaptionFontSize(newFontSize)) return false;
     caption.fontSize = newFontSize;
+    if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
+    this.#mapGenerator.isImageDataStageModified = true;
     this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
@@ -196,6 +208,8 @@ class GeneratorController {
     if (!caption) return false;
     if (!isValidCaptionText(newText)) return false;
     caption.text = newText;
+    if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
+    this.#mapGenerator.isImageDataStageModified = true;
     this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
@@ -205,6 +219,8 @@ class GeneratorController {
     if (!caption) return false;
     if (!isValidCaptionCoordinate(newX)) return false;
     caption.x = newX;
+    if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
+    this.#mapGenerator.isImageDataStageModified = true;
     this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
@@ -214,6 +230,8 @@ class GeneratorController {
     if (!caption) return false;
     if (!isValidCaptionCoordinate(newY)) return false;
     caption.y = newY;
+    if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
+    this.#mapGenerator.isImageDataStageModified = true;
     this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
@@ -224,6 +242,8 @@ class GeneratorController {
     if (!markGroup) return false;
     if (!isValidColor(newColor)) return false;
     markGroup.color = newColor;
+    if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
+    this.#mapGenerator.isPixelsInfluenceStageModified = true;
     this.#canvasFrame.render();
     this.#markGroupsTab.render();
     this.#settingsTab.update();
@@ -236,6 +256,8 @@ class GeneratorController {
     if (!isValidGroupName(newName)) return false;
     if (this.isGroupNameTaken(newName)) return false;
     markGroup.name = newName;
+    if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
+    this.#mapGenerator.isPixelsInfluenceStageModified = true;
     this.#canvasFrame.render();
     this.#markGroupsTab.render();
     this.#settingsTab.update();
@@ -246,6 +268,7 @@ class GeneratorController {
     const isTurnDataAvailable = await this.fetchTurnData(turn);
     if (!isTurnDataAvailable) {
       this.turn = -1;
+      this.#mapGenerator = undefined;
       return false;
     }
     this.turn = turn;
@@ -257,6 +280,8 @@ class GeneratorController {
         }
       }
     }
+    this.#mapGenerator = new MapGenerator(this.data[this.turn], this.settings);
+    this.#mapGenerator.isPixelsInfluenceStageModified = true;
     if (options?.skipUpdate) return true;
     this.#canvasFrame.render();
     this.#markGroupsTab.render();
@@ -280,6 +305,8 @@ class GeneratorController {
   deleteCaption(captionIndex: number): boolean {
     if (!this.captions[captionIndex]) return false;
     this.captions.splice(captionIndex, 1);
+    if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
+    this.#mapGenerator.isImageDataStageModified = true;
     this.#captionsTab.render();
     this.#canvasFrame.render();
     this.#settingsTab.update();
@@ -293,6 +320,8 @@ class GeneratorController {
     if (tribeIndex === -1) return false;
     markGroup.tribes.splice(tribeIndex, 1);
     this.sortMarkGroups();
+    if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
+    this.#mapGenerator.isPixelsInfluenceStageModified = true;
     this.#canvasFrame.render();
     this.#markGroupsTab.render();
     this.#settingsTab.update();
@@ -302,6 +331,8 @@ class GeneratorController {
   deleteMarkGroup(markGroupIndex: number): boolean {
     if (!this.markGroups[markGroupIndex]) return false;
     this.markGroups.splice(markGroupIndex, 1);
+    if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
+    this.#mapGenerator.isPixelsInfluenceStageModified = true;
     this.#canvasFrame.render();
     this.#markGroupsTab.render();
     this.#settingsTab.update();
@@ -328,12 +359,12 @@ class GeneratorController {
   forceRenderCanvas = () => {
     this.#canvasFrame.render({ force: true });
   };
-  getMapImageData(): ImageData | false {
-    if (!isValidSettings(this.settings)) return false;
-    if (typeof this.data[this.turn] !== "object") return false;
+  getMapImageData(): ImageData | null {
+    if (!isValidSettings(this.settings)) return null;
+    if (typeof this.data[this.turn] !== "object") return null;
     const generator = new MapGenerator(this.data[this.turn], this.settings);
-    if (!generator.imageData) return false;
-    return generator.imageData;
+    const mapImageData = generator.getMap();
+    return mapImageData;
   }
   getSuggestions(tag: string, limit = MAX_TRIBE_SUGGESTIONS): Tribe[] {
     const tribes = this.tribes;
@@ -367,6 +398,8 @@ class GeneratorController {
     if (this.turn === -1) return false;
     if (!isValidColor(color)) return false;
     this.#backgroundColor = color;
+    if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
+    this.#mapGenerator.isRawPixelsStageModified = true;
     this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
@@ -375,6 +408,8 @@ class GeneratorController {
     if (this.turn === -1) return false;
     if (!isValidColor(color)) return false;
     this.#borderColor = color;
+    if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
+    this.#mapGenerator.isRawPixelsStageModified = true;
     this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
@@ -383,6 +418,8 @@ class GeneratorController {
     if (this.turn === -1) return false;
     if (typeof value !== "boolean") return false;
     this.#drawBorders = value;
+    if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
+    this.#mapGenerator.isRawPixelsStageModified = true;
     this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
@@ -391,6 +428,8 @@ class GeneratorController {
     if (this.turn === -1) return false;
     if (typeof value !== "boolean") return false;
     this.#drawLegend = value;
+    if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
+    this.#mapGenerator.isImageDataStageModified = true;
     this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
@@ -399,6 +438,8 @@ class GeneratorController {
     if (this.turn === -1) return false;
     if (!isValidOutputWidth(value)) return false;
     this.#outputWidth = value;
+    if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
+    this.#mapGenerator.isRawPixelsStageModified = true;
     this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
@@ -407,6 +448,8 @@ class GeneratorController {
     if (this.turn === -1) return false;
     if (!isValidLegendFontSize(value)) return false;
     this.#legendFontSize = value;
+    if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
+    this.#mapGenerator.isImageDataStageModified = true;
     this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
@@ -415,6 +458,8 @@ class GeneratorController {
     if (this.turn === -1) return false;
     if (!isValidScale(value)) return false;
     this.#scale = value;
+    if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
+    this.#mapGenerator.isRawPixelsStageModified = true;
     this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
@@ -423,6 +468,8 @@ class GeneratorController {
     if (this.turn === -1) return false;
     if (typeof value !== "boolean") return false;
     this.#smoothBorders = value;
+    if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
+    this.#mapGenerator.isRawPixelsStageModified = true;
     this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
@@ -431,6 +478,8 @@ class GeneratorController {
     if (this.turn === -1) return false;
     if (!isValidTopSpotSize(value)) return false;
     this.#topSpotSize = value;
+    if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
+    this.#mapGenerator.isPixelsInfluenceStageModified = true;
     this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
@@ -439,6 +488,8 @@ class GeneratorController {
     if (this.turn === -1) return false;
     if (typeof value !== "boolean") return false;
     this.#trim = value;
+    if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
+    this.#mapGenerator.isRawPixelsStageModified = true;
     this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;

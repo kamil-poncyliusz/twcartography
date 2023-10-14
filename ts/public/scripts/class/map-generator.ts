@@ -8,13 +8,13 @@ const CANVAS_FONT_FAMILY = "sans-serif";
 
 const MIN_SPOT_SIZE = 2;
 
-interface RawPixel {
+interface PixelInfluence {
   markGroups: { [markGroupIndex: number]: number };
   x: number;
   y: number;
 }
 
-interface ScaledPixel {
+interface RawPixel {
   color: ParsedColor;
   x: number;
   y: number;
@@ -75,13 +75,16 @@ class Legend {
 }
 
 class MapGenerator {
-  #backgroundColor: ParsedColor;
-  #expansionArray: { x: number; y: number }[][];
-  imageData: ImageData | undefined = undefined;
-  #legend: Legend;
+  #backgroundColor: ParsedColor = parseHexColor("#000000");
+  #expansionArray: { x: number; y: number }[][] = [];
+  #imageData: ImageData | undefined = undefined;
+  isPixelsInfluenceStageModified: boolean = true;
+  isRawPixelsStageModified: boolean = true;
+  isImageDataStageModified: boolean = true;
+  #legend: Legend = new Legend([]);
   #offset: number;
-  #rawPixels: RawPixel[][] = [];
-  #scaledPixels: ScaledPixel[][] = [];
+  #pixelsInfluenceMatrix: PixelInfluence[][] | undefined = undefined;
+  #rawPixelsMatrix: RawPixel[][] | undefined = undefined;
   #settings: Settings;
   #turnData: ParsedTurnData;
   #villagePointThresholds: number[] | undefined = undefined;
@@ -89,18 +92,7 @@ class MapGenerator {
   constructor(data: ParsedTurnData, settings: Settings) {
     this.#turnData = data;
     this.#settings = settings;
-    this.#backgroundColor = parseHexColor(settings.backgroundColor);
-    this.#expansionArray = calcExpansionArray(this.#settings.topSpotSize);
     this.#offset = Math.round((TRIBAL_WARS_MAP_SIZE - data.width) / 2);
-    this.#legend = new Legend(this.#settings.markGroups);
-    this.generateRawPixels();
-    this.#widthModifier = this.#calcWidthModifier();
-    this.#generateScaledPixels();
-    if (settings.smoothBorders) this.#smoothBorders();
-    if (settings.drawBorders) this.#drawBorders();
-    this.#generateImageData();
-    this.#writeCaptions();
-    if (settings.drawLegend) this.#writeLegend();
   }
   get villagePointThresholds(): number[] {
     const numberOfThresholds = this.#settings.topSpotSize - MIN_SPOT_SIZE + 1;
@@ -125,13 +117,14 @@ class MapGenerator {
     }
     return this.#villagePointThresholds;
   }
-  #generateImageData() {
-    const scaled = this.#scaledPixels;
-    const scaledWidth = scaled.length;
+  #createImageData() {
+    const pixels = this.#rawPixelsMatrix;
+    if (!pixels) throw new Error("MapGenerator: raw pixels matrix is undefined");
+    const scaledWidth = pixels.length;
     const imageArray = new Uint8ClampedArray(4 * scaledWidth * scaledWidth);
     for (let x = 0; x < scaledWidth; x++) {
       for (let y = 0; y < scaledWidth; y++) {
-        const color = scaled[x][y].color;
+        const color = pixels[x][y].color;
         const index = (y * scaledWidth + x) * 4;
         imageArray[index] = color.r;
         imageArray[index + 1] = color.g;
@@ -139,32 +132,33 @@ class MapGenerator {
         imageArray[index + 3] = 255;
       }
     }
-    if (canvasModule !== null) this.imageData = canvasModule.createImageData(imageArray, scaledWidth, scaledWidth) as ImageData;
-    else this.imageData = new ImageData(imageArray, scaledWidth, scaledWidth);
+    if (canvasModule !== null) this.#imageData = canvasModule.createImageData(imageArray, scaledWidth, scaledWidth) as ImageData;
+    else this.#imageData = new ImageData(imageArray, scaledWidth, scaledWidth);
   }
   #calcWidthModifier(): number {
+    if (!this.#pixelsInfluenceMatrix) throw new Error("MapGenerator: pixels influence matrix in undefined");
     const margin = 10;
     if (!this.#settings.trim) {
       if (this.#settings.outputWidth === 0) return 0;
       return Math.round((this.#settings.outputWidth - this.#turnData.width) / 2);
     }
-    for (let width = 0; width < this.#rawPixels.length / 2; width++) {
+    for (let width = 0; width < this.#pixelsInfluenceMatrix.length / 2; width++) {
       let x = width;
       let y = width;
-      while (x < this.#rawPixels.length - 1 - width) {
-        if (Object.keys(this.#rawPixels[x][y].markGroups).length > 0) return margin - width;
+      while (x < this.#pixelsInfluenceMatrix.length - 1 - width) {
+        if (Object.keys(this.#pixelsInfluenceMatrix[x][y].markGroups).length > 0) return margin - width;
         x++;
       }
-      while (y < this.#rawPixels.length - 1 - width) {
-        if (Object.keys(this.#rawPixels[x][y].markGroups).length > 0) return margin - width;
+      while (y < this.#pixelsInfluenceMatrix.length - 1 - width) {
+        if (Object.keys(this.#pixelsInfluenceMatrix[x][y].markGroups).length > 0) return margin - width;
         y++;
       }
       while (x > width + 1) {
-        if (Object.keys(this.#rawPixels[x][y].markGroups).length > 0) return margin - width;
+        if (Object.keys(this.#pixelsInfluenceMatrix[x][y].markGroups).length > 0) return margin - width;
         x--;
       }
       while (y > width + 1) {
-        if (Object.keys(this.#rawPixels[x][y].markGroups).length > 0) return margin - width;
+        if (Object.keys(this.#pixelsInfluenceMatrix[x][y].markGroups).length > 0) return margin - width;
         y--;
       }
     }
@@ -186,39 +180,12 @@ class MapGenerator {
     }
     return result + MIN_SPOT_SIZE;
   }
-  // #distributeArea(area: RawPixel[]) {
-  //   const pixels = this.#rawPixels;
-  //   const deletedColor = parseHexColor("#123456");
-  //   for (let pixel of area) {
-  //     pixel.color = deletedColor;
-  //   }
-  //   while (area.length > 0) {
-  //     for (let pixel of area) {
-  //       const x = pixel.x,
-  //         y = pixel.y,
-  //         color = pixel.color,
-  //         neighbors = [pixels[x + 1][y], pixels[x - 1][y], pixels[x][y + 1], pixels[x][y - 1]];
-  //       for (const neighbor of neighbors) {
-  //         if (neighbor.color !== color) {
-  //           pixel.newColor = neighbor.color;
-  //           break;
-  //         }
-  //       }
-  //     }
-  //     for (let i = area.length - 1; i >= 0; i--) {
-  //       const pixel = area[i];
-  //       if (pixel.newColor) {
-  //         pixel.color = pixel.newColor;
-  //         area.splice(i, 1);
-  //       }
-  //     }
-  //   }
-  // }
   #drawBorders() {
     const margin = 2;
-    const pixels = this.#scaledPixels;
-    if (pixels.length === 0 || pixels.length < margin * 3) return console.log("MapGenerator error: cannot draw borders, map is too small");
-    const borderPixels: ScaledPixel[] = [];
+    const pixels = this.#rawPixelsMatrix;
+    if (!pixels) throw new Error("MapGenerator: raw pixels matrix is undefined");
+    if (pixels.length === 0 || pixels.length < margin * 3) return;
+    const borderPixels: RawPixel[] = [];
     for (let x = margin; x < pixels.length - margin; x++) {
       for (let y = margin; y < pixels.length - margin; y++) {
         const pixel = pixels[x][y];
@@ -243,50 +210,12 @@ class MapGenerator {
       const group = this.#settings.markGroups[index];
       if (group.tribes.includes(tribeId)) return index;
     }
-    // if (this.#settings.displayUnmarked) {
-    //   return {
-    //     tribes: [],
-    //     name: "Unmarked",
-    //     color: this.#settings.unmarkedColor,
-    //   };
-    // }
     return -1;
   }
-  // #findSmallSpots(): RawPixel[] {
-  //   const pixels = this.#rawPixels;
-  //   const smallSpots: RawPixel[] = [];
-  //   for (let x = 0; x < pixels.length; x++) {
-  //     for (let y = 0; y < pixels.length; y++) {
-  //       const pixel = pixels[x][y];
-  //       if (!pixel.counted) {
-  //         let area = 0;
-  //         const areaPixels: RawPixel[] = [];
-  //         const color = pixel.color;
-  //         const toCheck: RawPixel[] = [];
-  //         toCheck.push(pixel);
-  //         while (toCheck.length > 0) {
-  //           const checkedPixel = toCheck.pop() as RawPixel;
-  //           if (!checkedPixel.counted && checkedPixel.color === color) {
-  //             checkedPixel.counted = true;
-  //             if (area < this.#settings.spotsFilter) areaPixels.push(checkedPixel);
-  //             area++;
-  //             toCheck.push(pixels[checkedPixel.x + 1][checkedPixel.y]);
-  //             toCheck.push(pixels[checkedPixel.x - 1][checkedPixel.y]);
-  //             toCheck.push(pixels[checkedPixel.x][checkedPixel.y + 1]);
-  //             toCheck.push(pixels[checkedPixel.x][checkedPixel.y - 1]);
-  //           }
-  //         }
-  //         if (area < this.#settings.spotsFilter) {
-  //           smallSpots.push(...areaPixels);
-  //         }
-  //       }
-  //     }
-  //   }
-  //   return smallSpots;
-  // }
-  generateRawPixels() {
+  #createPixelInfluenceMatrix() {
+    this.#pixelsInfluenceMatrix = [];
     for (let x = 0; x < this.#turnData.width; x++) {
-      const row: RawPixel[] = [];
+      const row: PixelInfluence[] = [];
       for (let y = 0; y < this.#turnData.width; y++) {
         row.push({
           markGroups: {},
@@ -294,7 +223,7 @@ class MapGenerator {
           y: y,
         });
       }
-      this.#rawPixels.push(row);
+      this.#pixelsInfluenceMatrix.push(row);
     }
     for (const tribeId in this.#turnData.tribes) {
       const tribe = this.#turnData.tribes[tribeId];
@@ -303,12 +232,13 @@ class MapGenerator {
       if (markGroupIndex >= 0) {
         for (const village of tribe.villages) {
           this.#printVillageSpot(village, markGroupIndex);
-          this.#legend.add(markGroup.name, village.x, village.y);
         }
       }
     }
   }
-  #generateScaledPixels() {
+  #createRawPixelsMatrix() {
+    if (!this.#pixelsInfluenceMatrix) throw new Error("MapGenerator: raw pixels matrix is undefined");
+    this.#rawPixelsMatrix = [];
     const width = this.#turnData.width;
     const scale = this.#settings.scale;
     const widthModifier = this.#widthModifier;
@@ -318,7 +248,7 @@ class MapGenerator {
       markGroupColors.push(parseHexColor(markGroup.color));
     }
     for (let i = 0; i < modifiedWidth * scale; i++) {
-      const row: ScaledPixel[] = [];
+      const row: RawPixel[] = [];
       for (let j = 0; j < modifiedWidth * scale; j++) {
         row.push({
           color: this.#backgroundColor,
@@ -326,41 +256,69 @@ class MapGenerator {
           y: j,
         });
       }
-      this.#scaledPixels.push(row);
+      this.#rawPixelsMatrix.push(row);
     }
     const transformationStartIndex = widthModifier <= 0 ? 0 : widthModifier;
     const transformationEndIndex = widthModifier <= 0 ? modifiedWidth : width + widthModifier;
     for (let x = transformationStartIndex; x < transformationEndIndex; x++) {
       for (let y = transformationStartIndex; y < transformationEndIndex; y++) {
-        const pixel = this.#rawPixels[x - widthModifier][y - widthModifier];
+        const pixel = this.#pixelsInfluenceMatrix[x - widthModifier][y - widthModifier];
         const markGroupIndex = getPixelStrongestMarkGroupIndex(pixel.markGroups);
         if (markGroupIndex === -1) continue;
+        const markGroup = this.#settings.markGroups[markGroupIndex];
+        this.#legend.add(markGroup.name, x + this.#offset, y + this.#offset);
         for (let newY = y * scale; newY < y * scale + scale; newY++) {
           for (let newX = x * scale; newX < x * scale + scale; newX++) {
-            this.#scaledPixels[newX][newY].color = markGroupColors[markGroupIndex];
+            this.#rawPixelsMatrix[newX][newY].color = markGroupColors[markGroupIndex];
           }
         }
       }
     }
   }
+  getMap(): ImageData {
+    let updateAllStages = false;
+    if (updateAllStages || this.isPixelsInfluenceStageModified || !this.#pixelsInfluenceMatrix) {
+      this.#expansionArray = calcExpansionArray(this.#settings.topSpotSize);
+      this.#backgroundColor = parseHexColor(this.#settings.backgroundColor);
+      this.#createPixelInfluenceMatrix();
+      updateAllStages = true;
+    }
+    if (updateAllStages || this.isRawPixelsStageModified || !this.#rawPixelsMatrix) {
+      this.#legend = new Legend(this.#settings.markGroups);
+      this.#widthModifier = this.#calcWidthModifier();
+      this.#createRawPixelsMatrix();
+      if (this.#settings.smoothBorders) this.#smoothBorders();
+      if (this.#settings.drawBorders) this.#drawBorders();
+      updateAllStages = true;
+    }
+    if (updateAllStages || this.isImageDataStageModified || !this.#imageData) {
+      this.#createImageData();
+      if (this.#settings.drawLegend) this.#writeLegend();
+      this.#writeCaptions();
+    }
+    if (!this.#imageData) throw new Error("MapGenerator: imageData is undefined");
+    return this.#imageData;
+  }
   #printVillageSpot(village: Village, markGroupIndex: number) {
+    if (!this.#pixelsInfluenceMatrix) throw new Error("MapGenerator: raw pixels matrix is undefined");
     const x = village.x - this.#offset;
     const y = village.y - this.#offset;
     const spotSize = this.#calcSpotSize(village.points);
     for (let d = 0; d <= spotSize; d++) {
       for (let expansion of this.#expansionArray[d]) {
-        const pixel = this.#rawPixels[x + expansion.x][y + expansion.y];
+        const pixel = this.#pixelsInfluenceMatrix[x + expansion.x][y + expansion.y];
         if (pixel.markGroups[markGroupIndex]) pixel.markGroups[markGroupIndex] += spotSize - d;
         else pixel.markGroups[markGroupIndex] = spotSize - d;
       }
     }
   }
   #smoothBorders() {
+    const pixels = this.#rawPixelsMatrix;
+    if (!pixels) throw new Error("MapGenerator: raw pixels matrix is undefined");
     const distance = 2;
-    const pixels = this.#scaledPixels;
-    if (pixels.length === 0 || pixels.length < distance * 3) return console.log("MapGenerator error: cannot smooth borders, map is too small");
+    if (pixels.length === 0 || pixels.length < distance * 3) return console.log("MapGenerator: cannot smooth borders, map is too small");
     const corrections: {
-      pixel: ScaledPixel;
+      pixel: RawPixel;
       newColor: ParsedColor;
     }[] = [];
     for (let x = distance; x < pixels.length - distance; x++) {
@@ -406,7 +364,7 @@ class MapGenerator {
   }
   #writeCaptions() {
     const captions = this.#settings.captions;
-    const imageData = this.imageData;
+    const imageData = this.#imageData;
     if (!imageData) return console.log("MapGenerator: imageData is undefined");
     const width = imageData.width;
     const height = imageData.height;
@@ -425,7 +383,7 @@ class MapGenerator {
         ctx.fillText(caption.text, caption.x, caption.y);
       }
       const resultImageData = ctx.getImageData(0, 0, imageData.width, imageData.height);
-      this.imageData = resultImageData as ImageData;
+      this.#imageData = resultImageData as ImageData;
     } else {
       const canvas = document.createElement("canvas");
       canvas.width = width;
@@ -441,12 +399,12 @@ class MapGenerator {
         ctx.fillText(caption.text, caption.x, caption.y);
       }
       const resultImageData = ctx.getImageData(0, 0, imageData.width, imageData.height);
-      this.imageData = resultImageData;
+      this.#imageData = resultImageData;
     }
   }
   #writeLegend() {
     const legend = this.#legend.getLegend();
-    const imageData = this.imageData;
+    const imageData = this.#imageData;
     if (!imageData) return console.log("MapGenerator: imageData is undefined");
     const width = imageData.width;
     const height = imageData.height;
@@ -487,7 +445,7 @@ class MapGenerator {
         }
       }
       const resultImageData = ctx.getImageData(0, 0, imageData.width, imageData.height);
-      this.imageData = resultImageData as ImageData;
+      this.#imageData = resultImageData as ImageData;
     } else {
       const canvas = document.createElement("canvas");
       canvas.width = width;
@@ -525,7 +483,7 @@ class MapGenerator {
         }
       }
       const resultImageData = ctx.getImageData(0, 0, imageData.width, imageData.height);
-      this.imageData = resultImageData;
+      this.#imageData = resultImageData;
     }
   }
 }

@@ -23,6 +23,7 @@ export const handleCreateMap = async function (req: Request): Promise<CreateMapR
   const turnData = await readTurnData(settings.world, settings.turn);
   if (turnData === null) return { success: false };
   const generator = new MapGenerator(turnData, settings);
+  const mapImageData = generator.getMap();
   const collectionExists = newMapPayload.collection > 0;
   const newCollectionTitle = `Nowa kolekcja ${req.session.user.login}`;
   if (!collectionExists) {
@@ -33,7 +34,7 @@ export const handleCreateMap = async function (req: Request): Promise<CreateMapR
   }
   const createdMap = await createMap(settings.turn, newMapPayload.title, newMapPayload.description, settings, newMapPayload.collection);
   if (!createdMap) return { success: false };
-  saveMapPng(createdMap.id, generator.imageData as ImageData);
+  saveMapPng(createdMap.id, mapImageData as ImageData);
   if (collectionExists) return { success: true };
   else return { success: true, newCollection: { id: newMapPayload.collection, title: newCollectionTitle, worldId: settings.world } };
 };
