@@ -1,6 +1,6 @@
 import GeneratorController from "./generator-controller.js";
 import { randomizeGroupColor } from "../utils.js";
-import { MarkGroup, Tribe } from "../../../src/types.js";
+import { MarkGroup, Tribe } from "../../../src/types";
 
 const markGroupsTableBody = document.querySelector("#mark-groups table tbody") as HTMLTableSectionElement;
 
@@ -71,7 +71,7 @@ class MarkGroupsTab {
     if (!isGroupColorChanged) console.log("Failed to change a group color");
   };
   render() {
-    const markGroups = this.#generator.markGroups;
+    const markGroups = this.#generator.settings.markGroups;
     const tribes = this.#generator.tribes;
     markGroupsTableBody.innerHTML = "";
     for (let index = 0; index < markGroups.length; index++) {

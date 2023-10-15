@@ -237,10 +237,10 @@ class SettingsTab {
     mapSettingsInput.classList.remove("is-invalid");
     inputs.autoRefresh.checked = this.#generator.autoRefresh;
     this.disabled = true;
-    if (this.#generator.world > 0) {
-      const worldIdString = String(this.#generator.world);
+    if (this.#generator.settings.world > 0) {
+      const worldIdString = String(this.#generator.settings.world);
       worldSelect.value = worldIdString;
-      if (this.#generator.turn === -1) {
+      if (this.#generator.settings.turn === -1) {
         inputs.turn.disabled = false;
         inputs.turn.value = "";
       } else {
@@ -274,7 +274,7 @@ class SettingsTab {
         const collectionWorldId = parseInt(option.dataset.worldId ?? "");
         if (collectionId > 0) {
           if (!isValidId(collectionWorldId)) throw new Error("Invalid data-world-id property: ");
-          const isMatchingWorldId = collectionWorldId === this.#generator.world;
+          const isMatchingWorldId = collectionWorldId === this.#generator.settings.world;
           option.disabled = !isMatchingWorldId;
         }
       });

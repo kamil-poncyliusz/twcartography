@@ -28,14 +28,14 @@ class SuggestionsTab {
     const suggestionTagCell = row.querySelector(".suggestion-tag") as HTMLTableCellElement;
     const suggestionTribeTag = suggestionTagCell.textContent ?? "";
     let selectedGroupIndex = parseInt(target.value);
-    if (!(selectedGroupIndex >= -1 && selectedGroupIndex < this.#generator.markGroups.length)) return target.classList.add("is-invalid");
+    if (!(selectedGroupIndex >= -1 && selectedGroupIndex < this.#generator.settings.markGroups.length)) return target.classList.add("is-invalid");
 
     if (selectedGroupIndex === -1) {
       const groupName = removeForbiddenCharactersFromGroupName(suggestionTribeTag);
       const groupColor = randomizeGroupColor();
       const isMarkGroupAdded = this.#generator.addMarkGroup({ name: groupName, color: groupColor, tribes: [] });
       if (!isMarkGroupAdded) return console.log("Failed to create a new group");
-      selectedGroupIndex = this.#generator.markGroups.length - 1;
+      selectedGroupIndex = this.#generator.settings.markGroups.length - 1;
     }
     const isMarkAdded = this.#generator.addMark(selectedGroupIndex, suggestionTribeTag);
     if (!isMarkAdded) return console.log("Failed to add a new mark");
@@ -46,8 +46,8 @@ class SuggestionsTab {
     suggestionsTableBody.innerHTML = "";
     let groupOptions = "<option selected disabled hidden>Dodaj</option>";
     groupOptions += `<option value="-1"}">Utwórz grupę</option>`;
-    for (let markGroupIndex = 0; markGroupIndex < this.#generator.markGroups.length; markGroupIndex++) {
-      const markGroup = this.#generator.markGroups[markGroupIndex];
+    for (let markGroupIndex = 0; markGroupIndex < this.#generator.settings.markGroups.length; markGroupIndex++) {
+      const markGroup = this.#generator.settings.markGroups[markGroupIndex];
       groupOptions += `<option value="${markGroupIndex}">${markGroup.name}</option>`;
     }
     for (let tribe of suggestions) {

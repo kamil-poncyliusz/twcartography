@@ -92,16 +92,8 @@ class CaptionsTab {
     this.#generator.deleteCaption(captionIndex);
   };
   render() {
-    const captions = this.#generator.captions;
+    const captions = this.#generator.settings.captions;
     captionsTableBody.innerHTML = "";
-    for (let i = 0; i < captions.length; i++) {
-      const caption = captions[i];
-      const newRow = document.createElement("tr");
-      newRow.dataset.captionIndex = String(i);
-      const rowContent = generateCaptionRowInnerHTML(caption);
-      newRow.innerHTML = rowContent;
-      captionsTableBody.appendChild(newRow);
-    }
     const newCaptionRow = document.createElement("tr");
     let rowContent = "<td><input type='text' class='new-caption-text'></td>";
     rowContent += "<td><input type='color' class='new-caption-color' value='#FFFFFF'></td>";
@@ -111,8 +103,16 @@ class CaptionsTab {
     rowContent += "<td><button class='add-new-caption'>+</button></td>";
     newCaptionRow.innerHTML = rowContent;
     captionsTableBody.appendChild(newCaptionRow);
-    const addNewCaptionButton = newCaptionRow.querySelector(".add-new-caption") as HTMLButtonElement | null;
-    addNewCaptionButton?.addEventListener("click", this.addCaption);
+    const addNewCaptionButton = newCaptionRow.querySelector(".add-new-caption") as HTMLButtonElement;
+    addNewCaptionButton.addEventListener("click", this.addCaption);
+    for (let i = 0; i < captions.length; i++) {
+      const caption = captions[i];
+      const newRow = document.createElement("tr");
+      newRow.dataset.captionIndex = String(i);
+      const rowContent = generateCaptionRowInnerHTML(caption);
+      newRow.innerHTML = rowContent;
+      captionsTableBody.appendChild(newRow);
+    }
     const deleteCaptionButtons = captionsTableBody.querySelectorAll(".delete-caption");
     deleteCaptionButtons.forEach((deleteCaptionButton) => {
       deleteCaptionButton.addEventListener("click", this.deleteCaption);

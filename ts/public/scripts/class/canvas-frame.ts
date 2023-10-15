@@ -38,15 +38,13 @@ class CanvasFrame {
     canvas.addEventListener("mousemove", this.dragMove);
     canvas.addEventListener("mouseleave", this.dragEnd);
   };
-  render(options?: { force?: boolean }) {
-    if (this.#generator.autoRefresh || options?.force) {
-      const imageData = this.#generator.getMapImageData();
-      if (!imageData) return console.log("Failed to render a map");
-      const ctx = canvasElement.getContext("2d");
-      canvasElement.width = imageData.width;
-      canvasElement.height = imageData.width;
-      if (ctx) ctx.putImageData(imageData, 0, 0);
-    }
+  render() {
+    const imageData = this.#generator.getMapImageData();
+    if (!imageData) return console.log("Failed to render a map");
+    const ctx = canvasElement.getContext("2d");
+    canvasElement.width = imageData.width;
+    canvasElement.height = imageData.width;
+    if (ctx) ctx.putImageData(imageData, 0, 0);
   }
 }
 

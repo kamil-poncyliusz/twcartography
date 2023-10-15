@@ -47,27 +47,30 @@ const MAX_TRIBE_SUGGESTIONS = 50;
 class GeneratorController {
   autoRefresh: boolean = DEFAULT_AUTO_REFRESH;
   #backgroundColor: string = defaultSettings.backgroundColor;
-  #borderColor: string = defaultSettings.borderColor;
-  #drawBorders: boolean = defaultSettings.drawBorders;
-  #drawLegend: boolean = defaultSettings.drawLegend;
   #canvasFrame: CanvasFrame;
-  captions: Caption[] = [];
   #captionsTab: CaptionsTab;
   data: { [key: number]: ParsedTurnData } = {};
   latestTurn: number = -1;
   #mapGenerator: MapGenerator | undefined = undefined;
-  #legendFontSize: number = defaultSettings.legendFontSize;
-  markGroups: MarkGroup[] = [];
   #markGroupsTab: MarkGroupsTab;
-  #outputWidth: number = defaultSettings.outputWidth;
-  #scale: number = defaultSettings.scale;
+  settings: Settings = {
+    backgroundColor: defaultSettings.backgroundColor,
+    borderColor: defaultSettings.borderColor,
+    captions: [],
+    drawBorders: defaultSettings.drawBorders,
+    drawLegend: defaultSettings.drawLegend,
+    legendFontSize: defaultSettings.legendFontSize,
+    markGroups: [],
+    outputWidth: defaultSettings.outputWidth,
+    scale: defaultSettings.scale,
+    smoothBorders: defaultSettings.smoothBorders,
+    trim: defaultSettings.trim,
+    topSpotSize: defaultSettings.topSpotSize,
+    turn: defaultSettings.turn,
+    world: defaultSettings.world,
+  };
   #settingsTab: SettingsTab;
-  #smoothBorders: boolean = defaultSettings.smoothBorders;
   #suggestionsTab: SuggestionsTab;
-  #topSpotSize: number = defaultSettings.topSpotSize;
-  #trim: boolean = defaultSettings.trim;
-  turn: number = -1;
-  world: number = 0;
   constructor() {
     this.#canvasFrame = new CanvasFrame(this);
     this.#captionsTab = new CaptionsTab(this);
@@ -75,42 +78,24 @@ class GeneratorController {
     this.#suggestionsTab = new SuggestionsTab(this);
     this.#settingsTab = new SettingsTab(this);
   }
-  get settings(): Settings {
-    return {
-      backgroundColor: this.#backgroundColor,
-      borderColor: this.#borderColor,
-      captions: this.captions,
-      drawBorders: this.#drawBorders,
-      drawLegend: this.#drawLegend,
-      legendFontSize: this.#legendFontSize,
-      markGroups: this.markGroups,
-      outputWidth: this.#outputWidth,
-      scale: this.#scale,
-      smoothBorders: this.#smoothBorders,
-      topSpotSize: this.#topSpotSize,
-      trim: this.#trim,
-      turn: this.turn,
-      world: this.world,
-    };
-  }
   get tribes(): { [key: string]: Tribe } {
-    if (this.world === 0 || this.turn === -1) return {};
-    return this.data[this.turn].tribes;
+    if (this.settings.world === 0 || this.settings.turn === -1) return {};
+    return this.data[this.settings.turn].tribes;
   }
   addCaption(caption: Caption, options?: { skipUpdate?: boolean }): boolean {
     if (!isValidCaption(caption)) return false;
-    this.captions.push(caption);
+    this.settings.captions.push(caption);
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
     this.#mapGenerator.isImageDataStageModified = true;
     if (options?.skipUpdate) return true;
-    this.#canvasFrame.render();
+    if (this.autoRefresh) this.#canvasFrame.render();
     this.#captionsTab.render();
     this.#settingsTab.update();
     return true;
   }
   addMark(markGroupIndex: number, tribeTag: string, options?: { skipUpdate?: boolean }): boolean {
-    if (this.turn === -1) return false;
-    const markGroup = this.markGroups[markGroupIndex];
+    if (this.settings.turn === -1) return false;
+    const markGroup = this.settings.markGroups[markGroupIndex];
     const tribe = this.findTribe(tribeTag);
     if (!tribe || !markGroup) return false;
     markGroup.tribes.push(tribe.id);
@@ -118,14 +103,14 @@ class GeneratorController {
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
     this.#mapGenerator.isPixelsInfluenceStageModified = true;
     if (options?.skipUpdate) return true;
-    this.#canvasFrame.render();
+    if (this.autoRefresh) this.#canvasFrame.render();
     this.#markGroupsTab.render();
     this.#settingsTab.update();
     this.#suggestionsTab.render();
     return true;
   }
   addMarkGroup(group: MarkGroup, options?: { skipUpdate?: boolean }): boolean {
-    if (this.turn === -1) return false;
+    if (this.settings.turn === -1) return false;
     if (!isValidGroupName(group.name) || !isValidColor(group.color)) return false;
     if (this.isGroupNameTaken(group.name)) return false;
     const newGroup: MarkGroup = {
@@ -133,7 +118,7 @@ class GeneratorController {
       name: group.name,
       color: group.color,
     };
-    this.markGroups.push(newGroup);
+    this.settings.markGroups.push(newGroup);
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
     this.#mapGenerator.isPixelsInfluenceStageModified = true;
     if (options?.skipUpdate) return true;
@@ -145,18 +130,18 @@ class GeneratorController {
     if (!isValidSettings(settings)) return false;
     const isWorldChanged = await this.changeWorld(settings.world);
     if (!isWorldChanged) return false;
-    this.#backgroundColor = settings.backgroundColor;
-    this.#borderColor = settings.borderColor;
-    this.#drawBorders = settings.drawBorders;
-    this.#drawLegend = settings.drawLegend;
-    this.#legendFontSize = settings.legendFontSize;
-    this.#outputWidth = settings.outputWidth;
-    this.#scale = settings.scale;
-    this.#topSpotSize = settings.topSpotSize;
-    this.#trim = settings.trim;
+    this.settings.backgroundColor = settings.backgroundColor;
+    this.settings.borderColor = settings.borderColor;
+    this.settings.drawBorders = settings.drawBorders;
+    this.settings.drawLegend = settings.drawLegend;
+    this.settings.legendFontSize = settings.legendFontSize;
+    this.settings.outputWidth = settings.outputWidth;
+    this.settings.scale = settings.scale;
+    this.settings.topSpotSize = settings.topSpotSize;
+    this.settings.trim = settings.trim;
     const isTurnChanged = await this.changeTurn(settings.turn);
     if (!isTurnChanged) return false;
-    this.markGroups = [];
+    this.settings.markGroups = [];
     for (const group of settings.markGroups) {
       this.addMarkGroup(
         {
@@ -168,13 +153,13 @@ class GeneratorController {
       );
       for (let tribeId of group.tribes) {
         const tribe = this.tribes[tribeId];
-        if (tribe) this.addMark(this.markGroups.length - 1, tribe.tag, { skipUpdate: true });
+        if (tribe) this.addMark(this.settings.markGroups.length - 1, tribe.tag, { skipUpdate: true });
       }
     }
     for (const caption of settings.captions) {
       this.addCaption(caption, { skipUpdate: true });
     }
-    this.#canvasFrame.render();
+    if (this.autoRefresh) this.#canvasFrame.render();
     this.#captionsTab.render();
     this.#markGroupsTab.render();
     this.#settingsTab.update();
@@ -182,83 +167,83 @@ class GeneratorController {
     return true;
   }
   changeCaptionColor(captionIndex: number, newColor: string): boolean {
-    const caption = this.captions[captionIndex];
+    const caption = this.settings.captions[captionIndex];
     if (!caption) return false;
     if (!isValidColor(newColor)) return false;
     caption.color = newColor;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
     this.#mapGenerator.isImageDataStageModified = true;
-    this.#canvasFrame.render();
+    if (this.autoRefresh) this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
   }
   changeCaptionFontSize(captionIndex: number, newFontSize: number): boolean {
-    const caption = this.captions[captionIndex];
+    const caption = this.settings.captions[captionIndex];
     if (!caption) return false;
     if (!isValidCaptionFontSize(newFontSize)) return false;
     caption.fontSize = newFontSize;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
     this.#mapGenerator.isImageDataStageModified = true;
-    this.#canvasFrame.render();
+    if (this.autoRefresh) this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
   }
   changeCaptionText(captionIndex: number, newText: string): boolean {
-    const caption = this.captions[captionIndex];
+    const caption = this.settings.captions[captionIndex];
     if (!caption) return false;
     if (!isValidCaptionText(newText)) return false;
     caption.text = newText;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
     this.#mapGenerator.isImageDataStageModified = true;
-    this.#canvasFrame.render();
+    if (this.autoRefresh) this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
   }
   changeCaptionX(captionIndex: number, newX: number): boolean {
-    const caption = this.captions[captionIndex];
+    const caption = this.settings.captions[captionIndex];
     if (!caption) return false;
     if (!isValidCaptionCoordinate(newX)) return false;
     caption.x = newX;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
     this.#mapGenerator.isImageDataStageModified = true;
-    this.#canvasFrame.render();
+    if (this.autoRefresh) this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
   }
   changeCaptionY(captionIndex: number, newY: number): boolean {
-    const caption = this.captions[captionIndex];
+    const caption = this.settings.captions[captionIndex];
     if (!caption) return false;
     if (!isValidCaptionCoordinate(newY)) return false;
     caption.y = newY;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
     this.#mapGenerator.isImageDataStageModified = true;
-    this.#canvasFrame.render();
+    if (this.autoRefresh) this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
   }
   changeMarkGroupColor(markGroupIndex: number, newColor: string): boolean {
-    if (this.turn === -1) return false;
-    const markGroup = this.markGroups[markGroupIndex];
+    if (this.settings.turn === -1) return false;
+    const markGroup = this.settings.markGroups[markGroupIndex];
     if (!markGroup) return false;
     if (!isValidColor(newColor)) return false;
     markGroup.color = newColor;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
-    this.#mapGenerator.isPixelsInfluenceStageModified = true;
-    this.#canvasFrame.render();
+    this.#mapGenerator.isRawPixelsStageModified = true;
+    if (this.autoRefresh) this.#canvasFrame.render();
     this.#markGroupsTab.render();
     this.#settingsTab.update();
     return true;
   }
   changeMarkGroupName(markGroupIndex: number, newName: string): boolean {
-    if (this.turn === -1) return false;
-    const markGroup = this.markGroups[markGroupIndex];
+    if (this.settings.turn === -1) return false;
+    const markGroup = this.settings.markGroups[markGroupIndex];
     if (!markGroup) return false;
     if (!isValidGroupName(newName)) return false;
     if (this.isGroupNameTaken(newName)) return false;
     markGroup.name = newName;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
     this.#mapGenerator.isPixelsInfluenceStageModified = true;
-    this.#canvasFrame.render();
+    if (this.autoRefresh) this.#canvasFrame.render();
     this.#markGroupsTab.render();
     this.#settingsTab.update();
     this.#suggestionsTab.render();
@@ -267,12 +252,12 @@ class GeneratorController {
   async changeTurn(turn: number, options?: { skipUpdate?: boolean }): Promise<boolean> {
     const isTurnDataAvailable = await this.fetchTurnData(turn);
     if (!isTurnDataAvailable) {
-      this.turn = -1;
+      this.settings.turn = -1;
       this.#mapGenerator = undefined;
       return false;
     }
-    this.turn = turn;
-    for (let group of this.markGroups) {
+    this.settings.turn = turn;
+    for (let group of this.settings.markGroups) {
       for (let tribeIndex = group.tribes.length - 1; tribeIndex >= 0; tribeIndex--) {
         const tribeId = group.tribes[tribeIndex];
         if (!this.tribes[tribeId]) {
@@ -280,10 +265,10 @@ class GeneratorController {
         }
       }
     }
-    this.#mapGenerator = new MapGenerator(this.data[this.turn], this.settings);
+    this.#mapGenerator = new MapGenerator(this.data[this.settings.turn], this.settings);
     this.#mapGenerator.isPixelsInfluenceStageModified = true;
     if (options?.skipUpdate) return true;
-    this.#canvasFrame.render();
+    if (this.autoRefresh) this.#canvasFrame.render();
     this.#markGroupsTab.render();
     this.#settingsTab.update();
     this.#suggestionsTab.render();
@@ -291,30 +276,30 @@ class GeneratorController {
   }
   async changeWorld(world: number): Promise<boolean> {
     if (!isValidId(world)) return false;
-    if (world === this.world) return true;
+    if (world === this.settings.world) return true;
     const endpoint = `/api/world/read/${world}`;
     const worldInfo: Awaited<ReturnType<typeof handleReadWorld>> = await getRequest(endpoint);
     this.data = {};
-    this.turn = -1;
+    this.settings.turn = -1;
     if (!worldInfo) return false;
-    this.world = world;
+    this.settings.world = world;
     this.latestTurn = Math.floor((Date.now() - worldInfo.startTimestamp * 1000) / 1000 / 60 / 60 / 24);
     this.#settingsTab.update();
     return true;
   }
   deleteCaption(captionIndex: number): boolean {
-    if (!this.captions[captionIndex]) return false;
-    this.captions.splice(captionIndex, 1);
+    if (!this.settings.captions[captionIndex]) return false;
+    this.settings.captions.splice(captionIndex, 1);
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
     this.#mapGenerator.isImageDataStageModified = true;
     this.#captionsTab.render();
-    this.#canvasFrame.render();
+    if (this.autoRefresh) this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
   }
   deleteMark(markGroupIndex: number, tribeTag: string): boolean {
-    if (this.turn === -1) return false;
-    const markGroup = this.markGroups[markGroupIndex];
+    if (this.settings.turn === -1) return false;
+    const markGroup = this.settings.markGroups[markGroupIndex];
     if (!markGroup) return false;
     const tribeIndex = markGroup.tribes.findIndex((tribeId) => this.tribes[tribeId].tag === tribeTag);
     if (tribeIndex === -1) return false;
@@ -322,28 +307,28 @@ class GeneratorController {
     this.sortMarkGroups();
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
     this.#mapGenerator.isPixelsInfluenceStageModified = true;
-    this.#canvasFrame.render();
+    if (this.autoRefresh) this.#canvasFrame.render();
     this.#markGroupsTab.render();
     this.#settingsTab.update();
     this.#suggestionsTab.render();
     return true;
   }
   deleteMarkGroup(markGroupIndex: number): boolean {
-    if (!this.markGroups[markGroupIndex]) return false;
-    this.markGroups.splice(markGroupIndex, 1);
+    if (!this.settings.markGroups[markGroupIndex]) return false;
+    this.settings.markGroups.splice(markGroupIndex, 1);
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
     this.#mapGenerator.isPixelsInfluenceStageModified = true;
-    this.#canvasFrame.render();
+    if (this.autoRefresh) this.#canvasFrame.render();
     this.#markGroupsTab.render();
     this.#settingsTab.update();
     this.#suggestionsTab.render();
     return true;
   }
   async fetchTurnData(turn: number): Promise<boolean> {
-    if (this.world === 0) return false;
+    if (this.settings.world === 0) return false;
     if (!isValidTurn(turn)) return false;
     if (typeof this.data[turn] === "object") return true;
-    const endpoint = `/api/turn-data/read/${this.world}/${turn}`;
+    const endpoint = `/api/turn-data/read/${this.settings.world}/${turn}`;
     const turnData: Awaited<ReturnType<typeof handleReadTurnData>> = await getRequest(endpoint);
     if (!turnData) return false;
     this.data[turn] = turnData;
@@ -357,13 +342,13 @@ class GeneratorController {
     return null;
   }
   forceRenderCanvas = () => {
-    this.#canvasFrame.render({ force: true });
+    this.#canvasFrame.render();
   };
   getMapImageData(): ImageData | null {
     if (!isValidSettings(this.settings)) return null;
-    if (typeof this.data[this.turn] !== "object") return null;
-    const generator = new MapGenerator(this.data[this.turn], this.settings);
-    const mapImageData = generator.getMap();
+    if (typeof this.data[this.settings.turn] !== "object") return null;
+    if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
+    const mapImageData = this.#mapGenerator.getMap();
     return mapImageData;
   }
   getSuggestions(tag: string, limit = MAX_TRIBE_SUGGESTIONS): Tribe[] {
@@ -373,7 +358,7 @@ class GeneratorController {
     for (const tribeId in tribes) {
       if (tribes[tribeId].tag.includes(tag) || tag === "") suggestions.push(tribes[tribeId]);
     }
-    for (const group of this.markGroups) {
+    for (const group of this.settings.markGroups) {
       for (const tribeId of group.tribes) {
         for (let i = 0; i < suggestions.length; i++) {
           if (tribeId === suggestions[i].id) suggestions.splice(i, 1);
@@ -389,117 +374,118 @@ class GeneratorController {
     return suggestions;
   }
   isGroupNameTaken(name: string): boolean {
-    for (const group of this.markGroups) {
+    for (const group of this.settings.markGroups) {
       if (group.name === name) return true;
     }
     return false;
   }
   setBackgroundColor(color: string): boolean {
-    if (this.turn === -1) return false;
+    if (this.settings.turn === -1) return false;
     if (!isValidColor(color)) return false;
-    this.#backgroundColor = color;
+    this.settings.backgroundColor = color;
+    console.log("controller: ", this.settings.backgroundColor);
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
     this.#mapGenerator.isRawPixelsStageModified = true;
-    this.#canvasFrame.render();
+    if (this.autoRefresh) this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
   }
   setBorderColor(color: string): boolean {
-    if (this.turn === -1) return false;
+    if (this.settings.turn === -1) return false;
     if (!isValidColor(color)) return false;
-    this.#borderColor = color;
+    this.settings.borderColor = color;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
     this.#mapGenerator.isRawPixelsStageModified = true;
-    this.#canvasFrame.render();
+    if (this.autoRefresh) this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
   }
   setDrawBorders(value: boolean): boolean {
-    if (this.turn === -1) return false;
+    if (this.settings.turn === -1) return false;
     if (typeof value !== "boolean") return false;
-    this.#drawBorders = value;
+    this.settings.drawBorders = value;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
     this.#mapGenerator.isRawPixelsStageModified = true;
-    this.#canvasFrame.render();
+    if (this.autoRefresh) this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
   }
   setDrawLegend(value: boolean): boolean {
-    if (this.turn === -1) return false;
+    if (this.settings.turn === -1) return false;
     if (typeof value !== "boolean") return false;
-    this.#drawLegend = value;
+    this.settings.drawLegend = value;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
     this.#mapGenerator.isImageDataStageModified = true;
-    this.#canvasFrame.render();
+    if (this.autoRefresh) this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
   }
   setOutputWidth(value: number): boolean {
-    if (this.turn === -1) return false;
+    if (this.settings.turn === -1) return false;
     if (!isValidOutputWidth(value)) return false;
-    this.#outputWidth = value;
+    this.settings.outputWidth = value;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
     this.#mapGenerator.isRawPixelsStageModified = true;
-    this.#canvasFrame.render();
+    if (this.autoRefresh) this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
   }
   setLegendFontSize(value: number): boolean {
-    if (this.turn === -1) return false;
+    if (this.settings.turn === -1) return false;
     if (!isValidLegendFontSize(value)) return false;
-    this.#legendFontSize = value;
+    this.settings.legendFontSize = value;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
     this.#mapGenerator.isImageDataStageModified = true;
-    this.#canvasFrame.render();
+    if (this.autoRefresh) this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
   }
   setScale(value: number): boolean {
-    if (this.turn === -1) return false;
+    if (this.settings.turn === -1) return false;
     if (!isValidScale(value)) return false;
-    this.#scale = value;
+    this.settings.scale = value;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
     this.#mapGenerator.isRawPixelsStageModified = true;
-    this.#canvasFrame.render();
+    if (this.autoRefresh) this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
   }
   setSmoothBorders(value: boolean): boolean {
-    if (this.turn === -1) return false;
+    if (this.settings.turn === -1) return false;
     if (typeof value !== "boolean") return false;
-    this.#smoothBorders = value;
+    this.settings.smoothBorders = value;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
     this.#mapGenerator.isRawPixelsStageModified = true;
-    this.#canvasFrame.render();
+    if (this.autoRefresh) this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
   }
   setTopSpotSize(value: number): boolean {
-    if (this.turn === -1) return false;
+    if (this.settings.turn === -1) return false;
     if (!isValidTopSpotSize(value)) return false;
-    this.#topSpotSize = value;
+    this.settings.topSpotSize = value;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
     this.#mapGenerator.isPixelsInfluenceStageModified = true;
-    this.#canvasFrame.render();
+    if (this.autoRefresh) this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
   }
   setTrim(value: boolean): boolean {
-    if (this.turn === -1) return false;
+    if (this.settings.turn === -1) return false;
     if (typeof value !== "boolean") return false;
-    this.#trim = value;
+    this.settings.trim = value;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
     this.#mapGenerator.isRawPixelsStageModified = true;
-    this.#canvasFrame.render();
+    if (this.autoRefresh) this.#canvasFrame.render();
     this.#settingsTab.update();
     return true;
   }
   sortMarkGroups() {
     const sums: { [key: string]: number } = {};
-    for (let group of this.markGroups) {
+    for (let group of this.settings.markGroups) {
       sums[group.name] = group.tribes.reduce((sum, tribeId) => sum + this.tribes[tribeId].points, 0);
     }
-    this.markGroups.sort((a, b) => sums[b.name] - sums[a.name]);
+    this.settings.markGroups.sort((a, b) => sums[b.name] - sums[a.name]);
   }
 }
 
