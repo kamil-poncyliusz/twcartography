@@ -8,7 +8,7 @@ import { fileURLToPath } from "url";
 import router from "./routes/router.js";
 import apiRouter from "./routes/api/api-router.js";
 import adminRouter from "./routes/admin/admin-router.js";
-import { adminAuthorization } from "./src/authorization.js";
+import { minRequiredRank } from "./src/authorization.js";
 import { upsertAdminAccount } from "./src/queries/user.js";
 import { createNewWorldsFromFiles } from "./src/temp-directory-handlers.js";
 import turnDataDownloaderDaemon from "./src/turn-data-downloader-daemon.js";
@@ -61,7 +61,7 @@ await parseAvailableTurnData();
 
 app.use("/", router);
 app.use("/api", apiRouter);
-app.use("/admin", adminAuthorization);
+app.use("/admin", minRequiredRank(10));
 app.use("/admin", adminRouter);
 app.all("*", (req, res) => {
   return res.status(404).render("not-found");

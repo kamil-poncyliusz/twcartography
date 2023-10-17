@@ -34,7 +34,7 @@ export const settingsLimits = {
 };
 
 const CAPTION_TEXT_MAX_LENGTH = 20;
-const CAPTION_MAX_FONT_SIZE = 100;
+const CAPTION_MAX_FONT_SIZE = 200;
 const CAPTION_MAX_COORDINATE = 5000;
 
 export const isValidId = function (id: number): boolean {

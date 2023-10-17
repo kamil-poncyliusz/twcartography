@@ -269,104 +269,7 @@ class MapGenerator {
       borderPixel.color = borderColor;
     }
   }
-  #findMarkGroupIndexOfTribe(tribeId: string): number {
-    for (let index = 0; index < this.#settings.markGroups.length; index++) {
-      const group = this.#settings.markGroups[index];
-      if (group.tribes.includes(tribeId)) return index;
-    }
-    return -1;
-  }
-  getMap(): ImageData {
-    let updateRemainingStages = false;
-    if (updateRemainingStages || this.isPixelsInfluenceStageModified || !this.#pixelsInfluenceMatrix) {
-      this.#expansionArray = calcExpansionArray(this.#settings.topSpotSize);
-      this.#createPixelInfluenceMatrix();
-      updateRemainingStages = true;
-      this.isPixelsInfluenceStageModified = false;
-    }
-    if (updateRemainingStages || this.isRawPixelsStageModified || !this.#rawPixelsMatrix) {
-      this.#legend = new Legend(this.#settings.markGroups);
-      this.#backgroundColor = parseHexColor(this.#settings.backgroundColor);
-      this.#widthModifier = this.#calcWidthModifier();
-      this.#createRawPixelsMatrix();
-      if (this.#settings.smoothBorders) this.#smoothBorders();
-      if (this.#settings.drawBorders) this.#drawBorders();
-      updateRemainingStages = true;
-      this.isRawPixelsStageModified = false;
-    }
-    if (updateRemainingStages || this.isImageDataStageModified || !this.#imageData) {
-      this.#createImageData();
-      if (this.#settings.drawLegend) this.#writeLegend();
-      this.#writeCaptions();
-      this.isImageDataStageModified = false;
-    }
-    if (!this.#imageData) throw new Error("MapGenerator: imageData is undefined");
-    return this.#imageData;
-  }
-  #printVillageSpot(village: Village, markGroupIndex: number) {
-    if (!this.#pixelsInfluenceMatrix) throw new Error("MapGenerator: raw pixels matrix is undefined");
-    const x = village.x - this.#offset;
-    const y = village.y - this.#offset;
-    const spotSize = this.#calcSpotSize(village.points);
-    for (let d = 0; d <= spotSize; d++) {
-      for (let expansion of this.#expansionArray[d]) {
-        const pixel = this.#pixelsInfluenceMatrix[x + expansion.x][y + expansion.y];
-        if (pixel.markGroups[markGroupIndex]) pixel.markGroups[markGroupIndex] += spotSize - d;
-        else pixel.markGroups[markGroupIndex] = spotSize - d;
-      }
-    }
-  }
-  #smoothBorders() {
-    const pixels = this.#rawPixelsMatrix;
-    if (!pixels) throw new Error("MapGenerator: raw pixels matrix is undefined");
-    const distance = 2;
-    if (pixels.length === 0 || pixels.length < distance * 3) return console.log("MapGenerator: cannot smooth borders, map is too small");
-    const corrections: {
-      pixel: RawPixel;
-      newColor: ParsedColor;
-    }[] = [];
-    for (let x = distance; x < pixels.length - distance; x++) {
-      for (let y = distance; y < pixels.length - distance; y++) {
-        const pixel = pixels[x][y];
-        const countedColors: {
-          color: ParsedColor;
-          count: number;
-        }[] = [];
-        countedColors.push({ color: pixel.color, count: 0 });
-        for (let neighborX = x - distance; neighborX <= x + distance; neighborX++) {
-          for (let neighborY = y - distance; neighborY <= y + distance; neighborY++) {
-            const neighbor = pixels[neighborX][neighborY];
-            let incremented = false;
-            let colorIndex = 0;
-            while (!incremented) {
-              if (!countedColors[colorIndex]) {
-                countedColors.push({ color: neighbor.color, count: 1 });
-                incremented = true;
-              } else if (countedColors[colorIndex].color === neighbor.color) {
-                countedColors[colorIndex].count++;
-                incremented = true;
-              } else {
-                colorIndex++;
-              }
-            }
-          }
-        }
-        const threshold = ((distance * 2 + 1) * (distance * 2 + 1)) / 2;
-        if (countedColors[0].count < threshold) {
-          for (let countedColor of countedColors) {
-            if (countedColor.count > countedColors[0].count) {
-              corrections.push({ pixel: pixel, newColor: countedColor.color });
-              break;
-            }
-          }
-        }
-      }
-    }
-    for (let correction of corrections) {
-      correction.pixel.color = correction.newColor;
-    }
-  }
-  #writeCaptions() {
+  #drawCaptions() {
     const captions = this.#settings.captions;
     const imageData = this.#imageData;
     if (!imageData) return console.log("MapGenerator: imageData is undefined");
@@ -406,7 +309,7 @@ class MapGenerator {
       this.#imageData = resultImageData;
     }
   }
-  #writeLegend() {
+  #drawLegend() {
     const legend = this.#legend.getLegend();
     const imageData = this.#imageData;
     if (!imageData) return console.log("MapGenerator: imageData is undefined");
@@ -488,6 +391,94 @@ class MapGenerator {
       }
       const resultImageData = ctx.getImageData(0, 0, imageData.width, imageData.height);
       this.#imageData = resultImageData;
+    }
+  }
+  #findMarkGroupIndexOfTribe(tribeId: string): number {
+    for (let index = 0; index < this.#settings.markGroups.length; index++) {
+      const group = this.#settings.markGroups[index];
+      if (group.tribes.includes(tribeId)) return index;
+    }
+    return -1;
+  }
+  getMap(): ImageData {
+    let updateRemainingStages = false;
+    if (updateRemainingStages || this.isPixelsInfluenceStageModified || !this.#pixelsInfluenceMatrix) {
+      this.#expansionArray = calcExpansionArray(this.#settings.topSpotSize);
+      this.#createPixelInfluenceMatrix();
+      updateRemainingStages = true;
+      this.isPixelsInfluenceStageModified = false;
+    }
+    if (updateRemainingStages || this.isRawPixelsStageModified || !this.#rawPixelsMatrix) {
+      this.#legend = new Legend(this.#settings.markGroups);
+      this.#backgroundColor = parseHexColor(this.#settings.backgroundColor);
+      this.#widthModifier = this.#calcWidthModifier();
+      this.#createRawPixelsMatrix();
+      if (this.#settings.smoothBorders) this.#smoothBorders();
+      if (this.#settings.drawBorders) this.#drawBorders();
+      updateRemainingStages = true;
+      this.isRawPixelsStageModified = false;
+    }
+    if (updateRemainingStages || this.isImageDataStageModified || !this.#imageData) {
+      this.#createImageData();
+      if (this.#settings.drawLegend) this.#drawLegend();
+      this.#drawCaptions();
+      this.isImageDataStageModified = false;
+    }
+    if (!this.#imageData) throw new Error("MapGenerator: imageData is undefined");
+    return this.#imageData;
+  }
+  #printVillageSpot(village: Village, markGroupIndex: number) {
+    if (!this.#pixelsInfluenceMatrix) throw new Error("MapGenerator: raw pixels matrix is undefined");
+    const x = village.x - this.#offset;
+    const y = village.y - this.#offset;
+    const spotSize = this.#calcSpotSize(village.points);
+    for (let d = 0; d <= spotSize; d++) {
+      for (let expansion of this.#expansionArray[d]) {
+        const pixel = this.#pixelsInfluenceMatrix[x + expansion.x][y + expansion.y];
+        if (pixel.markGroups[markGroupIndex]) pixel.markGroups[markGroupIndex] += spotSize - d;
+        else pixel.markGroups[markGroupIndex] = spotSize - d;
+      }
+    }
+  }
+  #smoothBorders() {
+    const pixels = this.#rawPixelsMatrix;
+    if (!pixels) throw new Error("MapGenerator: raw pixels matrix is undefined");
+    const distance = 2;
+    if (pixels.length === 0 || pixels.length < distance * 3) return console.log("MapGenerator: cannot smooth borders, map is too small");
+    const corrections: {
+      pixel: RawPixel;
+      newColor: ParsedColor;
+    }[] = [];
+    for (let x = distance; x < pixels.length - distance; x++) {
+      for (let y = distance; y < pixels.length - distance; y++) {
+        const pixel = pixels[x][y];
+        const countedColors: {
+          color: ParsedColor;
+          count: number;
+        }[] = [];
+        countedColors.push({ color: pixel.color, count: 0 });
+        for (let neighborX = x - distance; neighborX <= x + distance; neighborX++) {
+          for (let neighborY = y - distance; neighborY <= y + distance; neighborY++) {
+            const neighbor = pixels[neighborX][neighborY];
+            const countedColorIndex = countedColors.findIndex((countedColor) => countedColor.color === neighbor.color);
+            if (countedColorIndex === -1) countedColors.push({ color: neighbor.color, count: 1 });
+            else countedColors[countedColorIndex].count++;
+          }
+        }
+        const numberOfFieldsCounted = (distance + 1 + distance) * (distance + 1 + distance);
+        const threshold = numberOfFieldsCounted / 2;
+        if (countedColors[0].count < threshold) {
+          for (let countedColor of countedColors) {
+            if (countedColor.count > countedColors[0].count) {
+              corrections.push({ pixel: pixel, newColor: countedColor.color });
+              break;
+            }
+          }
+        }
+      }
+    }
+    for (let correction of corrections) {
+      correction.pixel.color = correction.newColor;
     }
   }
 }
