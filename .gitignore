@@ -2,9 +2,10 @@ node_modules
 app.code-workspace
 .env
 temp/*/
+!temp/r50800
 public/images/maps
 public/images/animations
-*.txt
+todo.txt
 coverage/*
 server.js
 public/scripts/
