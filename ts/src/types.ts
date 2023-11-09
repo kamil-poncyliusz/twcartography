@@ -95,12 +95,7 @@ export interface CreateMapRequestPayload {
   settings: Settings;
   title: string;
 }
-export interface CreateWorldRequestPayload {
-  domain: string;
-  num: string;
-  server: string;
-  timestamp: number;
-}
+export type CreateWorldRequestPayload = Omit<World, "id">;
 export interface ReadCollectionsRequestPayload {
   page: number;
   authorId: number;

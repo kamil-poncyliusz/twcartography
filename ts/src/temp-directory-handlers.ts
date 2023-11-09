@@ -2,12 +2,18 @@ import fs from "fs/promises";
 import { createWorld, readWorlds } from "./queries/world.js";
 import { isValidCreateWorldRequestPayload } from "../public/scripts/requests-validators.js";
 import { CreateWorldRequestPayload } from "./types.js";
-import { World } from "@prisma/client";
 
 const worldDirectoriesPath = "temp";
 
 export const getWorldDirectoryName = function (timestamp: number) {
   return timestamp.toString(36);
+};
+
+const getWorldInfoFileString = function (payload: CreateWorldRequestPayload): string {
+  const fileString = Object.entries(payload)
+    .map(([key, value]) => `${key}=${value}`)
+    .join("\n");
+  return fileString;
 };
 
 const getDirectories = async function (path: string): Promise<string[]> {
@@ -23,21 +29,19 @@ const getDirectories = async function (path: string): Promise<string[]> {
 };
 
 export const createWorldDirectory = async function (payload: CreateWorldRequestPayload): Promise<boolean> {
-  const worldDirectoryName = getWorldDirectoryName(payload.timestamp);
+  const worldDirectoryName = getWorldDirectoryName(payload.startTimestamp);
   const worldDirectoryPath = `${process.env.ROOT}/${worldDirectoriesPath}/${worldDirectoryName}`;
   const worldDirectoryInfoFilePath = `${worldDirectoryPath}/info`;
-  const fileString = Object.entries(payload)
-    .map(([key, value]) => `${key}=${value}`)
-    .join("\n");
+  const fileString = getWorldInfoFileString(payload);
   try {
     await fs.mkdir(worldDirectoryPath, { recursive: true });
-  } catch (error) {
-    console.log(error);
+  } catch {
+    //
   }
   try {
     await fs.access(worldDirectoryInfoFilePath);
     await fs.unlink(worldDirectoryInfoFilePath);
-  } catch (error) {
+  } catch {
     //
   }
   try {
@@ -70,14 +74,16 @@ const parseWorldInfoFile = async function (worldDirectoryName: string): Promise<
       let [key, value] = row.split("=");
       if (typeof key === "string" && typeof value === "string" && key.length > 0) parsed[key.trim()] = value.trim();
     }
-    if (parsed.timestamp) parsed.timestamp = parseInt(parsed.timestamp);
+    if (parsed.startTimestamp) parsed.startTimestamp = parseInt(parsed.startTimestamp);
+    if (parsed.endTimestamp) parsed.endTimestamp = parseInt(parsed.endTimestamp);
+    else parsed.endTimestamp = 0;
     const worldInfo = parsed as CreateWorldRequestPayload;
     const isWorldInfoValid = isValidCreateWorldRequestPayload(worldInfo);
     if (!isWorldInfoValid) {
       console.log("Invalid world info file:", infoFilePath);
       return null;
     }
-    const validWorldDirectoryName = getWorldDirectoryName(worldInfo.timestamp);
+    const validWorldDirectoryName = getWorldDirectoryName(worldInfo.startTimestamp);
     if (worldDirectoryName !== validWorldDirectoryName) {
       console.log("Ivalid world data directory:", worldDirectoryName);
       return null;
@@ -89,9 +95,14 @@ const parseWorldInfoFile = async function (worldDirectoryName: string): Promise<
   }
 };
 
-export const createNewWorldsFromFiles = async function () {
-  const worldDirectories = await getDirectories(worldDirectoriesPath);
+export const synchronizeTempDirectories = async function () {
   const worldsFromDatabase = await readWorlds();
+  for (let world of worldsFromDatabase) {
+    const { id: number, ...rest } = world;
+    const payload: CreateWorldRequestPayload = rest;
+    createWorldDirectory(payload);
+  }
+  const worldDirectories = await getDirectories(worldDirectoriesPath);
   const newWorldDirectories = worldDirectories.filter((worldDirectory) => {
     return worldsFromDatabase.every((world) => {
       const correctWorldDirectoryName = getWorldDirectoryName(world.startTimestamp);
@@ -101,7 +112,7 @@ export const createNewWorldsFromFiles = async function () {
   for (let worldDirectory of newWorldDirectories) {
     const worldInfo = await parseWorldInfoFile(worldDirectory);
     if (!worldInfo) return;
-    const isWorldCreated = await createWorld(worldInfo.server, worldInfo.num, worldInfo.domain, worldInfo.timestamp);
+    const isWorldCreated = await createWorld(worldInfo);
     if (isWorldCreated) console.log(`Created a new world from ${worldDirectory} directory`);
     else console.log(`Failed to create a world from ${worldDirectory} directory`);
   }

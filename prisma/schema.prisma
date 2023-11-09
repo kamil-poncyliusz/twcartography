@@ -40,6 +40,7 @@ model World {
   num             String
   server          String
   startTimestamp  Int
+  endTimestamp    Int           @default(0)
   collections     Collection[]
   worldData       TurnData[]
 }

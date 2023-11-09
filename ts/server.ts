@@ -10,7 +10,7 @@ import apiRouter from "./routes/api/api-router.js";
 import adminRouter from "./routes/admin/admin-router.js";
 import { minRequiredRank } from "./src/authorization.js";
 import { upsertAdminAccount } from "./src/queries/user.js";
-import { createNewWorldsFromFiles } from "./src/temp-directory-handlers.js";
+import { synchronizeTempDirectories } from "./src/temp-directory-handlers.js";
 import turnDataDownloaderDaemon from "./src/turn-data-downloader-daemon.js";
 import { UserSessionData } from "./src/types.js";
 import { parseAvailableTurnData } from "./src/world-data-state.js";
@@ -55,7 +55,7 @@ await upsertAdminAccount("Admin", process.env.ADMIN_ACCOUNT_PASSWORD ?? "passwor
   if (!success) console.log("Failed to create administrator account");
 });
 
-await createNewWorldsFromFiles();
+await synchronizeTempDirectories();
 
 await parseAvailableTurnData();
 

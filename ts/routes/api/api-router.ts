@@ -4,7 +4,7 @@ import { handleDeleteCollection, handleReadCollections, handleUpdateCollection }
 import { handleCreateMap, handleDeleteMap, handleUpdateMap } from "./map-handlers.js";
 import { handleCreateTurnData, handleReadTurnData } from "./turn-data-handlers.js";
 import { handleUpdateUser } from "./user-handlers.js";
-import { handleCreateWorld, handleDeleteWorld, handleReadWorld } from "./world-handlers.js";
+import { handleCreateWorld, handleDeleteWorld, handleReadWorld, handleUpdateWorld } from "./world-handlers.js";
 
 const apiRouter = express.Router();
 
@@ -67,6 +67,10 @@ apiRouter.get("/world/read/:id", async (req, res) => {
 });
 apiRouter.post("/world/delete", async (req, res) => {
   const responseData = await handleDeleteWorld(req);
+  return res.json(responseData);
+});
+apiRouter.post("/world/update", async (req, res) => {
+  const responseData = await handleUpdateWorld(req);
   return res.json(responseData);
 });
 

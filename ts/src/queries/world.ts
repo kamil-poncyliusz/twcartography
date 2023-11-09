@@ -1,5 +1,5 @@
 import { PrismaClient, World } from "@prisma/client";
-import { WorldWithWorldData } from "../types";
+import { CreateWorldRequestPayload, WorldWithWorldData } from "../types";
 
 const prisma = new PrismaClient();
 
@@ -44,14 +44,15 @@ export const readWorldsWithWorldData = async function (): Promise<WorldWithWorld
   return result;
 };
 
-export const createWorld = async function (server: string, num: string, domain: string, startTimestamp: number): Promise<World | null> {
+export const createWorld = async function (createWorldRequestPayload: CreateWorldRequestPayload): Promise<World | null> {
   const createdWorld = await prisma.world
     .create({
       data: {
-        server: server,
-        num: num,
-        domain: domain,
-        startTimestamp: startTimestamp,
+        server: createWorldRequestPayload.server,
+        num: createWorldRequestPayload.num,
+        domain: createWorldRequestPayload.domain,
+        startTimestamp: createWorldRequestPayload.startTimestamp,
+        endTimestamp: createWorldRequestPayload.endTimestamp,
       },
     })
     .catch((err) => {
@@ -73,4 +74,20 @@ export const deleteWorld = async function (id: number): Promise<World | null> {
       return null;
     });
   return deletedWorld;
+};
+
+export const updateWorld = async function (id: number, updatedFields: { endTimestamp: number }): Promise<boolean> {
+  const result = await prisma.world
+    .update({
+      where: {
+        id: id,
+      },
+      data: updatedFields,
+    })
+    .catch((err) => {
+      console.error("Prisma error:", err);
+      return false;
+    });
+  if (result) return true;
+  else return false;
 };

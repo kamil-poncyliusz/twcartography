@@ -18,8 +18,10 @@ html(lang="pl-PL")
             th ID
             th serwer
             th numer
-            th timestamp
             th domena
+            th czas startu
+            th czas zakończenia
+            th
             th 
         tbody
           each world in worlds
@@ -27,8 +29,11 @@ html(lang="pl-PL")
               td= world.id
               td= world.server
               td= world.num
-              td= world.startTimestamp
               td= world.domain
+              td= world.startTimestamp
+              td= world.endTimestamp
+              td
+                button.close-world-button(type="button", data-world-id=world.id) Zamknij
               td
                 button.delete-world-button(type="button", data-world-id=world.id) Usuń
           tr
@@ -38,8 +43,11 @@ html(lang="pl-PL")
             td
               input#num(type="text", name="num", autocomplete="off", placeholder="num")
             td
+              input#domain(type="text", name="domain", autocomplete="off", placeholder="domain")
+            td
               input#start-timestamp(type="number", name="start-timestamp", autocomplete="off", placeholder="timestamp")
             td
-              input#domain(type="text", name="domain", autocomplete="off", placeholder="domain")
+              input#end-timestamp(type="number", name="end-timestamp", autocomplete="off", placeholder="timestamp", value="0")
+            td
             td
               input(type="submit", value="Dodaj")

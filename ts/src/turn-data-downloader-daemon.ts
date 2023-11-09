@@ -65,6 +65,7 @@ const turnDataDownloaderDaemon = {
   },
   startDownloading: function (world: World) {
     if (process.env.RUN_DOWNLOADER_DAEMON !== "true") return;
+    if (world.endTimestamp > 0) return;
     const serverStartTimestamp = new Date(world.startTimestamp * 1000);
     const serverStartSeconds = serverStartTimestamp.getSeconds();
     const serverStartMinutes = serverStartTimestamp.getMinutes();

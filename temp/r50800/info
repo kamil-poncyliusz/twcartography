@@ -1,4 +1,5 @@
-server=test
-num=1
 domain=tribalwars.net
-timestamp=1640995200
+num=1
+server=test
+startTimestamp=1640995200
+endTimestamp=0

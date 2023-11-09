@@ -22,7 +22,8 @@ export const isValidCreateWorldRequestPayload = function (payload: CreateWorldRe
   if (typeof payload.server !== "string" || payload.server.length === 0) return false;
   if (typeof payload.num !== "string" || payload.num.length === 0) return false;
   if (typeof payload.domain !== "string" || payload.domain.length === 0) return false;
-  if (typeof payload.timestamp !== "number" || payload.timestamp <= 0) return false;
+  if (typeof payload.startTimestamp !== "number" || payload.startTimestamp <= 0) return false;
+  if (typeof payload.endTimestamp !== "number" || payload.endTimestamp < 0) return false;
   return true;
 };
 

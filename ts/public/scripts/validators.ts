@@ -6,7 +6,7 @@ const LOGIN_MAX_LENGTH = 15;
 const PASSWORD_MIN_LENGTH = 8;
 const PASSWORD_MAX_LENGTH = 30;
 const TURN_MIN = 0;
-const TURN_MAX = 365;
+export const TURN_MAX = 730;
 const TITLE_MIN_LENGTH = 1;
 const TITLE_MAX_LENGTH = 20;
 const MAP_DESCRIPTION_MAX_LENGTH = 200;
@@ -79,6 +79,11 @@ export const isValidUserRank = function (rank: number): boolean {
 
 export const isValidTurn = function (input: number): boolean {
   if (typeof input !== "number" || isNaN(input) || !Number.isInteger(input) || input < TURN_MIN || input > TURN_MAX) return false;
+  return true;
+};
+
+export const isValidTimestamp = function (input: number): boolean {
+  if (typeof input !== "number" || isNaN(input) || !Number.isInteger(input) || input < 0) return false;
   return true;
 };
 
