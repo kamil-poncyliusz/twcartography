@@ -72,8 +72,9 @@ const parseTurnData = async function (worldDirectoryName: string, turn: number):
     if (parseInt(playerId) > 0) {
       const tribeId = playerTribeIds[playerId];
       const tribe = parsedData.tribes[tribeId];
-      if (tribe === undefined) console.log("Parser:", tribeId, "village data tribe undefined");
-      else {
+      if (tribe === undefined) {
+        // console.log("Parser:", tribeId, "village data tribe undefined");
+      } else {
         tribe.villages.push({
           tribeId: tribeId,
           x: parseInt(x),
@@ -96,7 +97,7 @@ const parseTurnData = async function (worldDirectoryName: string, turn: number):
   for (let i = 0; i < killAllData.length; i++) {
     const [rank, id, score] = killAllData[i].split(",");
     if (parsedData.tribes[id] === undefined) {
-      console.log("Parser:", id, "kill_all tribe undefined");
+      // console.log("Parser:", id, "kill_all tribe undefined");
     } else {
       parsedData.tribes[id].killAll = parseInt(score);
     }
@@ -105,7 +106,7 @@ const parseTurnData = async function (worldDirectoryName: string, turn: number):
   for (let i = 0; i < killAttData.length; i++) {
     const [rank, id, score] = killAttData[i].split(",");
     if (parsedData.tribes[id] === undefined) {
-      console.log("Parser:", id, "kill_att tribe undefined");
+      // console.log("Parser:", id, "kill_att tribe undefined");
     } else {
       parsedData.tribes[id].killAtt = parseInt(score);
     }
@@ -114,7 +115,7 @@ const parseTurnData = async function (worldDirectoryName: string, turn: number):
   for (let i = 0; i < killDefData.length; i++) {
     const [rank, id, score] = killDefData[i].split(",");
     if (parsedData.tribes[id] === undefined) {
-      console.log("Parser:", id, "kill_def tribe undefined");
+      // console.log("Parser:", id, "kill_def tribe undefined");
     } else {
       parsedData.tribes[id].killDef = parseInt(score);
     }

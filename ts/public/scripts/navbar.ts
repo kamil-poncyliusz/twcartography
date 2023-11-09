@@ -32,7 +32,6 @@ const loginRequest = async function (e: Event) {
     password: password,
   };
   const success: Awaited<ReturnType<typeof handleAuthentication>> = await postRequest("/auth", payload);
-  console.log(success);
   if (!success) viewMessage("Nie udało się zalogować");
   else window.location.reload();
 };

@@ -1,5 +1,5 @@
 import GeneratorController from "./generator-controller.js";
-import { randomizeGroupColor } from "../utils.js";
+import { randomizeGroupColor } from "../generator-controller-helpers.js";
 import { MarkGroup, Tribe } from "../../../src/types";
 
 const markGroupsTableBody = document.querySelector("#mark-groups table tbody") as HTMLTableSectionElement;

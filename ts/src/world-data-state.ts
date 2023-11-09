@@ -4,6 +4,7 @@ import { createTurnData } from "./queries/turn-data.js";
 import { readWorldsWithWorldData } from "./queries/world.js";
 import { WorldDataState, TurnDataState } from "./types.js";
 import { getWorldDirectoryName } from "./temp-directory-handlers.js";
+import { getLatestTurn } from "../public/scripts/generator-controller-helpers.js";
 
 const files = ["village", "player", "ally", "conquer", "kill_all_tribe", "kill_att_tribe", "kill_def_tribe"];
 
@@ -11,13 +12,20 @@ export const areDataFilesAvailable = async function (worldDirectoryName: string,
   const dataFilesPath = `temp/${worldDirectoryName}/${turn}`;
   for (const file of files) {
     const dataFilePath = `${dataFilesPath}/${file}.txt.gz`;
-    const alternativeDataFilePath = `${dataFilesPath}/${file}.txt`;
-    try {
-      await fs.access(dataFilePath);
-    } catch {
-      if (file !== "conquer") return false;
+    if (file === "conquer") {
+      const conquerDataTextFilePath = `${dataFilesPath}/${file}.txt`;
       try {
-        await fs.access(alternativeDataFilePath);
+        await fs.access(conquerDataTextFilePath);
+      } catch {
+        try {
+          await fs.access(dataFilePath);
+        } catch {
+          return false;
+        }
+      }
+    } else {
+      try {
+        await fs.access(dataFilePath);
       } catch {
         return false;
       }
@@ -30,7 +38,7 @@ export const getWorldDataStates = async function (): Promise<WorldDataState[]> {
   const worldsWithWorldData = await readWorldsWithWorldData();
   const worldDataStates: WorldDataState[] = [];
   for (const world of worldsWithWorldData) {
-    const numberOfTurns = Math.floor((Date.now() - world.startTimestamp * 1000) / 1000 / 60 / 60 / 24);
+    const latestTurn = getLatestTurn(world);
     const worldDirectoryName = getWorldDirectoryName(world.startTimestamp);
     const addedWorldDataState: WorldDataState = {
       filesDirectoryName: worldDirectoryName,
@@ -38,7 +46,7 @@ export const getWorldDataStates = async function (): Promise<WorldDataState[]> {
       serverName: world.server + world.num,
       turns: [],
     };
-    for (let turn = 0; turn <= numberOfTurns; turn++) {
+    for (let turn = 0; turn <= latestTurn; turn++) {
       const areFilesAvailable = await areDataFilesAvailable(worldDirectoryName, turn);
       const turnDataState: TurnDataState = {
         hasDataFiles: areFilesAvailable,

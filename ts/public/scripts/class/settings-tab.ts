@@ -3,7 +3,7 @@ import { decodeJsonSettings, encodeJsonSettings } from "../settings-codec.js";
 import { handleCreateMap } from "../../../routes/api/map-handlers.js";
 import { postRequest } from "../requests.js";
 import { isValidId, settingsLimits } from "../validators.js";
-import { selectInputValue } from "../utils.js";
+import { selectInputValue } from "../generator-controller-helpers.js";
 import { CreateMapRequestValidationCode, isValidCreateMapRequestPayload } from "../requests-validators.js";
 import { CreateMapRequestPayload, CreateMapResponse, Settings } from "../../../src/types.js";
 
@@ -256,7 +256,11 @@ class SettingsTab {
         }
       }
     }
-    const turnPlaceholder = this.#generator.latestTurn >= 0 ? `0-${this.#generator.latestTurn}` : "-";
+    const getTurnInputPlaceholder = function (latestTurn: number): string {
+      if (latestTurn < 0) return "-";
+      return `0-${latestTurn}`;
+    };
+    const turnPlaceholder = getTurnInputPlaceholder(this.#generator.latestTurn);
     inputs.turn.setAttribute("placeholder", turnPlaceholder);
     for (let setting in settingsLimits.min) {
       inputs[setting].setAttribute("placeholder", String(settingsLimits.min[setting]) + "-");

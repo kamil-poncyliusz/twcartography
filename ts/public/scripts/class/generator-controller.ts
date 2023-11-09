@@ -23,6 +23,11 @@ import SettingsTab from "./settings-tab.js";
 import CanvasFrame from "./canvas-frame.js";
 import CaptionsTab from "./captions-tab.js";
 import { MarkGroup, Settings, ParsedTurnData, Tribe, Caption } from "../../../src/types.js";
+import { World } from "@prisma/client";
+import { getLatestTurn } from "../generator-controller-helpers.js";
+
+const DEFAULT_AUTO_REFRESH = true;
+const MAX_TRIBE_SUGGESTIONS = 50;
 
 export const defaultSettings: Settings = {
   backgroundColor: "#202020",
@@ -41,12 +46,8 @@ export const defaultSettings: Settings = {
   world: 1,
 };
 
-const DEFAULT_AUTO_REFRESH = true;
-const MAX_TRIBE_SUGGESTIONS = 50;
-
 class GeneratorController {
   autoRefresh: boolean = DEFAULT_AUTO_REFRESH;
-  #backgroundColor: string = defaultSettings.backgroundColor;
   #canvasFrame: CanvasFrame;
   #captionsTab: CaptionsTab;
   data: { [key: number]: ParsedTurnData } = {};
@@ -274,16 +275,16 @@ class GeneratorController {
     this.#suggestionsTab.render();
     return true;
   }
-  async changeWorld(world: number): Promise<boolean> {
-    if (!isValidId(world)) return false;
-    if (world === this.settings.world) return true;
-    const endpoint = `/api/world/read/${world}`;
-    const worldInfo: Awaited<ReturnType<typeof handleReadWorld>> = await getRequest(endpoint);
+  async changeWorld(worldId: number): Promise<boolean> {
+    if (!isValidId(worldId)) return false;
+    if (worldId === this.settings.world) return true;
+    const endpoint = `/api/world/read/${worldId}`;
+    const world: Awaited<ReturnType<typeof handleReadWorld>> = await getRequest(endpoint);
     this.data = {};
     this.settings.turn = -1;
-    if (!worldInfo) return false;
-    this.settings.world = world;
-    this.latestTurn = Math.floor((Date.now() - worldInfo.startTimestamp * 1000) / 1000 / 60 / 60 / 24);
+    if (!world) return false;
+    this.settings.world = worldId;
+    this.latestTurn = getLatestTurn(world);
     this.#settingsTab.update();
     return true;
   }

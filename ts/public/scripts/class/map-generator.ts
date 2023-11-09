@@ -435,6 +435,7 @@ class MapGenerator {
     for (let d = 0; d <= spotSize; d++) {
       for (let expansion of this.#expansionArray[d]) {
         const pixel = this.#pixelsInfluenceMatrix[x + expansion.x][y + expansion.y];
+        if (!pixel) continue;
         if (pixel.markGroups[markGroupIndex]) pixel.markGroups[markGroupIndex] += spotSize - d;
         else pixel.markGroups[markGroupIndex] = spotSize - d;
       }

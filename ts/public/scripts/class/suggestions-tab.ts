@@ -1,5 +1,5 @@
 import GeneratorController from "./generator-controller.js";
-import { randomizeGroupColor } from "../utils.js";
+import { randomizeGroupColor } from "../generator-controller-helpers.js";
 import { GROUP_NAME_FORBIDDEN_CHARACTERS } from "../constants.js";
 
 const suggestionsTableBody = document.querySelector("#mark-suggestions tbody") as HTMLTableSectionElement;

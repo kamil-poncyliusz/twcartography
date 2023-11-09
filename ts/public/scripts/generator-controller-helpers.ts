@@ -1,4 +1,4 @@
-import { ParsedColor } from "../../src/types";
+import { World } from "@prisma/client";
 
 const MIN_SATURATION = 45;
 const MAX_SATURATION = 90;
@@ -108,4 +108,11 @@ export const randomizeGroupColor = function (): string {
 export const selectInputValue = function (e: Event) {
   const input = e.target as HTMLInputElement;
   input.select();
+};
+
+export const getLatestTurn = function (world: World) {
+  const isWorldOpen = world.endTimestamp === 0;
+  const endTimestamp = isWorldOpen ? Math.round(Date.now() / 1000) : world.endTimestamp;
+  const latestTurn = Math.floor((endTimestamp - world.startTimestamp) / 60 / 60 / 24);
+  return latestTurn;
 };
