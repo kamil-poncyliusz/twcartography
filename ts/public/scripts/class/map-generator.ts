@@ -50,13 +50,13 @@ class Legend {
       };
     }
   }
-  add(groupName: string, x: number, y: number) {
+  add(groupName: string, x: number, y: number, middleIndex: number) {
     if (this.#groups[groupName] === undefined) return console.log(`Legend error: ${groupName} group not found`);
-    if (y < 500) {
-      if (x < 500) this.#groups[groupName].corners[NORTH_WEST]++;
+    if (y < middleIndex) {
+      if (x < middleIndex) this.#groups[groupName].corners[NORTH_WEST]++;
       else this.#groups[groupName].corners[NORTH_EAST]++;
     } else {
-      if (x < 500) this.#groups[groupName].corners[SOUTH_WEST]++;
+      if (x < middleIndex) this.#groups[groupName].corners[SOUTH_WEST]++;
       else this.#groups[groupName].corners[SOUTH_EAST]++;
     }
   }
@@ -229,13 +229,14 @@ class MapGenerator {
     }
     const transformationStartIndex = widthModifier <= 0 ? 0 : widthModifier;
     const transformationEndIndex = widthModifier <= 0 ? modifiedWidth : width + widthModifier;
+    const middleIndex = Math.round((transformationStartIndex + transformationEndIndex) / 2);
     for (let x = transformationStartIndex; x < transformationEndIndex; x++) {
       for (let y = transformationStartIndex; y < transformationEndIndex; y++) {
         const pixel = this.#pixelsInfluenceMatrix[x - widthModifier][y - widthModifier];
         const markGroupIndex = getPixelStrongestMarkGroupIndex(pixel.markGroups);
         if (markGroupIndex === -1) continue;
         const markGroup = this.#settings.markGroups[markGroupIndex];
-        this.#legend.add(markGroup.name, x + this.#offset, y + this.#offset);
+        this.#legend.add(markGroup.name, x, y, middleIndex);
         for (let newY = y * scale; newY < y * scale + scale; newY++) {
           for (let newX = x * scale; newX < x * scale + scale; newX++) {
             this.#rawPixelsMatrix[newX][newY].color = markGroupColors[markGroupIndex];

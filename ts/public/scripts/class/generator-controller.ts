@@ -23,7 +23,6 @@ import SettingsTab from "./settings-tab.js";
 import CanvasFrame from "./canvas-frame.js";
 import CaptionsTab from "./captions-tab.js";
 import { MarkGroup, Settings, ParsedTurnData, Tribe, Caption } from "../../../src/types.js";
-import { World } from "@prisma/client";
 import { getLatestTurn } from "../generator-controller-helpers.js";
 
 const DEFAULT_AUTO_REFRESH = true;
@@ -68,7 +67,7 @@ class GeneratorController {
     trim: defaultSettings.trim,
     topSpotSize: defaultSettings.topSpotSize,
     turn: defaultSettings.turn,
-    world: defaultSettings.world,
+    world: 0,
   };
   #settingsTab: SettingsTab;
   #suggestionsTab: SuggestionsTab;
