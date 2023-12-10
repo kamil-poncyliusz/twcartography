@@ -23,7 +23,7 @@
 
 ## About the project
 
-Twmap is a web application for creating png/gif maps based on Tribal Wars real game data.
+Twmap is a web application for creating png/gif maps based on actual Tribal Wars game data.
 
 ### Built with
 
@@ -59,31 +59,51 @@ TBD
 
 1. Clone the repo:
 
-```sh
+```bash
 git clone https://github.com/kamil-poncyliusz/twmap.git
 ```
 
 2. Move to the project directory:
 
-```sh
+```bash
 cd twmap
 ```
 
-3. (Optional) Edit .env.dist file and change "SESSION_SECRET" and "ADMIN_ACCOUNT_PASSWORD" environment variables
+3. Create .env file based on default.env:
 
-4. Application runs on port 8080 by default. If you want to change it, edit docker-compose.yml and change line 12 to include your port:
+Windows:
 
-```yml
-- "YOUR_PORT:8080"
+```powershell
+copy default.env .env
 ```
 
-6. Build and run the project:
+Linux/MacOS:
 
-```sh
-docker compose up -d
+```bash
+cp default.env .env
 ```
 
-6. Open a browser and go to localhost:8080
+4. (Optional) Edit ".env" file and change environment variables.
+
+5. Build and run the project (choose a version):
+
+Production environment:
+
+```bash
+npm run production
+```
+
+Development environment:
+
+```bash
+npm run dev
+```
+
+6. Run the browser and open the application at localhost:port (localhost:8080 by default)
+
+```
+localhost:8080
+```
 
 ## Usage
 
@@ -103,6 +123,10 @@ User needs an account to save maps on the server in the form of collections. Col
 5. Tweak some settings under "Settings" tab to customize the map.
 
 6. Done! Save the map using context menu and use it however You want.
+
+Tips:
+
+- Right-click on a mark group color to change it to a random color.
 
 ### Publishing generated map
 
@@ -129,6 +153,12 @@ User needs an account to save maps on the server in the form of collections. Col
 4. Uncheck the maps you don't want in the animation.
 
 5. Choose frame interval and submit animation with "Create animation" button.
+
+Tips:
+
+- During every frame creation use "Output size" setting to make sure that all frames (created maps) have the same size.
+
+- To choose a right output size, start from the last frame where the world is most expanded.
 
 ### Using settings codes
 

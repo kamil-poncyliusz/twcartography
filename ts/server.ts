@@ -9,10 +9,8 @@ import apiRouter from "./routes/api/api-router.js";
 import adminRouter from "./routes/admin/admin-router.js";
 import { minRequiredRank } from "./src/authorization.js";
 import { upsertAdminAccount } from "./src/queries/user.js";
-import { synchronizeTempDirectories } from "./src/temp-directory-handlers.js";
 import turnDataDownloaderDaemon from "./src/turn-data-downloader-daemon.js";
 import { UserSessionData } from "./src/types.js";
-import { parseAvailableTurnData } from "./src/world-data-state.js";
 
 declare module "express-session" {
   interface SessionData {
@@ -51,10 +49,7 @@ app.use(
 
 const isAdminAccountCreated = await upsertAdminAccount("Admin", process.env.ADMIN_ACCOUNT_PASSWORD ?? "password");
 if (!isAdminAccountCreated) console.log("Failed to create administrator account");
-
-await synchronizeTempDirectories();
-
-await parseAvailableTurnData();
+await turnDataDownloaderDaemon.init();
 
 app.use("/", router);
 app.use("/api", apiRouter);
@@ -63,8 +58,6 @@ app.use("/admin", adminRouter);
 app.all("*", (req, res) => {
   return res.status(404).render("not-found");
 });
-
-turnDataDownloaderDaemon.init();
 
 app.listen(PORT, () => {
   console.log("[server] Server started");

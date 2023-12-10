@@ -1,0 +1,6 @@
+{
+  "watch": ["."],
+  "ext": "ts,json,pug,env",
+  "exec": "npm run build && node server.js",
+  "delay": 2
+}

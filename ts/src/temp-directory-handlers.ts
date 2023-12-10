@@ -1,9 +1,6 @@
 import fs from "fs/promises";
-import { createWorld, readWorlds } from "./queries/world.js";
 import { isValidCreateWorldRequestPayload } from "../public/scripts/requests-validators.js";
 import { CreateWorldRequestPayload } from "./types.js";
-
-const worldDirectoriesPath = "temp";
 
 export const getWorldDirectoryName = function (timestamp: number) {
   return timestamp.toString(36);
@@ -16,7 +13,7 @@ const getWorldInfoFileString = function (payload: CreateWorldRequestPayload): st
   return fileString;
 };
 
-const getDirectories = async function (path: string): Promise<string[]> {
+export const getDirectories = async function (path: string): Promise<string[]> {
   try {
     const entities = await fs.readdir(path, { withFileTypes: true });
     const directories = entities.filter((entity) => entity.isDirectory());
@@ -30,7 +27,7 @@ const getDirectories = async function (path: string): Promise<string[]> {
 
 export const createWorldDirectory = async function (payload: CreateWorldRequestPayload): Promise<boolean> {
   const worldDirectoryName = getWorldDirectoryName(payload.startTimestamp);
-  const worldDirectoryPath = `${process.env.ROOT}/${worldDirectoriesPath}/${worldDirectoryName}`;
+  const worldDirectoryPath = `${process.env.ROOT}/temp/${worldDirectoryName}`;
   const worldDirectoryInfoFilePath = `${worldDirectoryPath}/info`;
   const fileString = getWorldInfoFileString(payload);
   try {
@@ -54,7 +51,7 @@ export const createWorldDirectory = async function (payload: CreateWorldRequestP
 };
 
 export const deleteWorldDirectory = async function (worldDirectoryName: string) {
-  const pathToDelete = `${worldDirectoriesPath}/${worldDirectoryName}`;
+  const pathToDelete = `temp/${worldDirectoryName}`;
   try {
     await fs.access(pathToDelete);
     await fs.rm(pathToDelete, { recursive: true, force: true });
@@ -63,8 +60,8 @@ export const deleteWorldDirectory = async function (worldDirectoryName: string) 
   }
 };
 
-const parseWorldInfoFile = async function (worldDirectoryName: string): Promise<CreateWorldRequestPayload | null> {
-  const infoFilePath = `${worldDirectoriesPath}/${worldDirectoryName}/info`;
+export const parseWorldInfoFile = async function (worldDirectoryName: string): Promise<CreateWorldRequestPayload | null> {
+  const infoFilePath = `temp/${worldDirectoryName}/info`;
   try {
     await fs.access(infoFilePath);
     const fileContents = await fs.readFile(infoFilePath);
@@ -95,25 +92,29 @@ const parseWorldInfoFile = async function (worldDirectoryName: string): Promise<
   }
 };
 
-export const synchronizeTempDirectories = async function () {
-  const worldsFromDatabase = await readWorlds();
-  for (let world of worldsFromDatabase) {
-    const { id: number, ...rest } = world;
-    const payload: CreateWorldRequestPayload = rest;
-    createWorldDirectory(payload);
+export const areDataFilesAvailable = async function (worldDirectoryName: string, turn: number): Promise<boolean> {
+  const files = ["village", "player", "ally", "conquer", "kill_all_tribe", "kill_att_tribe", "kill_def_tribe"];
+  const dataFilesPath = `temp/${worldDirectoryName}/${turn}`;
+  for (const file of files) {
+    const dataFilePath = `${dataFilesPath}/${file}.txt.gz`;
+    if (file === "conquer") {
+      const conquerDataTextFilePath = `${dataFilesPath}/${file}.txt`;
+      try {
+        await fs.access(conquerDataTextFilePath);
+      } catch {
+        try {
+          await fs.access(dataFilePath);
+        } catch {
+          return false;
+        }
+      }
+    } else {
+      try {
+        await fs.access(dataFilePath);
+      } catch {
+        return false;
+      }
+    }
   }
-  const worldDirectories = await getDirectories(worldDirectoriesPath);
-  const newWorldDirectories = worldDirectories.filter((worldDirectory) => {
-    return worldsFromDatabase.every((world) => {
-      const correctWorldDirectoryName = getWorldDirectoryName(world.startTimestamp);
-      return correctWorldDirectoryName !== worldDirectory;
-    });
-  });
-  for (let worldDirectory of newWorldDirectories) {
-    const worldInfo = await parseWorldInfoFile(worldDirectory);
-    if (!worldInfo) return;
-    const isWorldCreated = await createWorld(worldInfo);
-    if (isWorldCreated) console.log(`Created a new world from ${worldDirectory} directory`);
-    else console.log(`Failed to create a world from ${worldDirectory} directory`);
-  }
+  return true;
 };

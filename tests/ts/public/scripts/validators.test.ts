@@ -2,13 +2,12 @@ import {
   isValidCollectionDescription,
   isValidColor,
   isValidGroupName,
-  isValidID,
+  isValidId,
   isValidLogin,
   isValidMapDescription,
   isValidOutputWidth,
   isValidPassword,
   isValidScale,
-  isValidSpotsFilter,
   isValidTitle,
   isValidTurn,
   settingsLimits,
@@ -18,11 +17,6 @@ const exampleString = function (length: number) {
   return "a".repeat(length);
 };
 
-// describe("isValid", () => {
-//   test("Should check if given  is valid", () => {
-//     expect(isValid()).toBe(false);
-//   });
-// });
 describe("isValidCollectionDescription", () => {
   test("Should check if given collection description is valid", () => {
     expect(isValidCollectionDescription("")).toBe(true);
@@ -50,14 +44,14 @@ describe("isValidGroupName", () => {
     expect(isValidGroupName(exampleString(9))).toBe(false);
   });
 });
-describe("isValidID", () => {
+describe("isValidId", () => {
   test("Should check if given id is valid", () => {
-    expect(isValidID(-123)).toBe(false);
-    expect(isValidID(0)).toBe(false);
-    expect(isValidID(1)).toBe(true);
-    expect(isValidID(1.23)).toBe(false);
-    expect(isValidID(123)).toBe(true);
-    expect(isValidID(NaN)).toBe(false);
+    expect(isValidId(-123)).toBe(false);
+    expect(isValidId(0)).toBe(false);
+    expect(isValidId(1)).toBe(true);
+    expect(isValidId(1.23)).toBe(false);
+    expect(isValidId(123)).toBe(true);
+    expect(isValidId(NaN)).toBe(false);
   });
 });
 describe("isValidLogin", () => {
@@ -102,15 +96,6 @@ describe("isValidScale", () => {
     expect(isValidScale(settingsLimits.min.scale + 0.5)).toBe(false);
     expect(isValidScale(settingsLimits.max.scale)).toBe(true);
     expect(isValidScale(settingsLimits.max.scale + 1)).toBe(false);
-  });
-});
-describe("isValidSpotsFilter", () => {
-  test("Should check if given output spots filter is valid", () => {
-    expect(isValidSpotsFilter(settingsLimits.min.spotsFilter - 1)).toBe(false);
-    expect(isValidSpotsFilter(settingsLimits.min.spotsFilter)).toBe(true);
-    expect(isValidSpotsFilter(settingsLimits.min.spotsFilter + 0.5)).toBe(false);
-    expect(isValidSpotsFilter(settingsLimits.max.spotsFilter)).toBe(true);
-    expect(isValidSpotsFilter(settingsLimits.max.spotsFilter + 1)).toBe(false);
   });
 });
 describe("isValidTitle", () => {

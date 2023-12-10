@@ -7,6 +7,7 @@ import { getWorldDirectoryName } from "./temp-directory-handlers.js";
 import { createTurnData } from "./queries/turn-data.js";
 import { readWorlds } from "./queries/world.js";
 import { World } from "@prisma/client";
+import { parseAvailableTurnData, synchronizeTempDirectories } from "./world-data-state.js";
 
 const downloadWorldDataFile = function (url: string, path: string, file: string) {
   const fileName = file === "conquer" ? `${file}.txt` : `${file}.txt.gz`;
@@ -58,6 +59,8 @@ const downloadWorldData = async function (world: World, turn: number) {
 const turnDataDownloaderDaemon = {
   scheduler: scheduler,
   init: async function () {
+    await synchronizeTempDirectories();
+    await parseAvailableTurnData();
     const worlds = await readWorlds();
     for (let world of worlds) {
       this.startDownloading({ ...world });

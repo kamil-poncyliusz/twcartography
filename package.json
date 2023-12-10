@@ -6,10 +6,9 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "watch": "tsc --watch",
     "production": "docker compose -f docker-compose-production.yml up -d",
     "dev": "docker compose up",
-    "nodemon": "nodemon server.js",
+    "nodemon": "nodemon",
     "test": "jest",
     "coverage": "jest --coverage"
   },

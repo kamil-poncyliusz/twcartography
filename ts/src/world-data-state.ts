@@ -1,38 +1,9 @@
-import fs from "fs/promises";
 import parseTurnData from "./parse-turn-data.js";
 import { createTurnData } from "./queries/turn-data.js";
-import { readWorldsWithWorldData } from "./queries/world.js";
-import { WorldDataState, TurnDataState } from "./types.js";
-import { getWorldDirectoryName } from "./temp-directory-handlers.js";
+import { createWorld, readWorlds, readWorldsWithWorldData } from "./queries/world.js";
+import { WorldDataState, TurnDataState, CreateWorldRequestPayload } from "./types.js";
+import { areDataFilesAvailable, createWorldDirectory, getDirectories, getWorldDirectoryName, parseWorldInfoFile } from "./temp-directory-handlers.js";
 import { getLatestTurn } from "../public/scripts/generator-controller-helpers.js";
-
-const files = ["village", "player", "ally", "conquer", "kill_all_tribe", "kill_att_tribe", "kill_def_tribe"];
-
-export const areDataFilesAvailable = async function (worldDirectoryName: string, turn: number): Promise<boolean> {
-  const dataFilesPath = `temp/${worldDirectoryName}/${turn}`;
-  for (const file of files) {
-    const dataFilePath = `${dataFilesPath}/${file}.txt.gz`;
-    if (file === "conquer") {
-      const conquerDataTextFilePath = `${dataFilesPath}/${file}.txt`;
-      try {
-        await fs.access(conquerDataTextFilePath);
-      } catch {
-        try {
-          await fs.access(dataFilePath);
-        } catch {
-          return false;
-        }
-      }
-    } else {
-      try {
-        await fs.access(dataFilePath);
-      } catch {
-        return false;
-      }
-    }
-  }
-  return true;
-};
 
 export const getWorldDataStates = async function (): Promise<WorldDataState[]> {
   const worldsWithWorldData = await readWorldsWithWorldData();
@@ -76,5 +47,28 @@ export const parseAvailableTurnData = async function () {
         else console.log(`Failed to create turn data for ${turn} turn of ${world.serverName} world located in ${worldDirectoryName} directory`);
       }
     }
+  }
+};
+
+export const synchronizeTempDirectories = async function () {
+  const worldsFromDatabase = await readWorlds();
+  for (let world of worldsFromDatabase) {
+    const { id: number, ...rest } = world;
+    const payload: CreateWorldRequestPayload = rest;
+    createWorldDirectory(payload);
+  }
+  const worldDirectories = await getDirectories("temp");
+  const newWorldDirectories = worldDirectories.filter((worldDirectory) => {
+    return worldsFromDatabase.every((world) => {
+      const correctWorldDirectoryName = getWorldDirectoryName(world.startTimestamp);
+      return correctWorldDirectoryName !== worldDirectory;
+    });
+  });
+  for (let worldDirectory of newWorldDirectories) {
+    const worldInfo = await parseWorldInfoFile(worldDirectory);
+    if (!worldInfo) return;
+    const isWorldCreated = await createWorld(worldInfo);
+    if (isWorldCreated) console.log(`Created a new world from ${worldDirectory} directory`);
+    else console.log(`Failed to create a world from ${worldDirectory} directory`);
   }
 };
