@@ -1,9 +1,12 @@
 import GeneratorController from "./generator-controller.js";
 import { randomizeGroupColor } from "../generator-controller-helpers.js";
 import { GROUP_NAME_FORBIDDEN_CHARACTERS } from "../constants.js";
+import { getPreferredTranslation } from "../languages.js";
 
 const suggestionsTableBody = document.querySelector("#mark-suggestions tbody") as HTMLTableSectionElement;
 const suggestionsSearchInput = document.querySelector("#mark-suggestions thead input") as HTMLInputElement;
+const acceptedLanguages = [...navigator.languages];
+const translation = getPreferredTranslation(acceptedLanguages);
 
 const removeForbiddenCharactersFromGroupName = function (groupName: string): string {
   let result = groupName;
@@ -44,8 +47,8 @@ class SuggestionsTab {
     const tag = suggestionsSearchInput.value;
     const suggestions = this.#generator.getSuggestions(tag);
     suggestionsTableBody.innerHTML = "";
-    let groupOptions = "<option selected disabled hidden>Dodaj</option>";
-    groupOptions += `<option value="-1"}">Utwórz grupę</option>`;
+    let groupOptions = `<option selected disabled hidden>${translation.add}</option>`;
+    groupOptions += `<option value="-1"}">${translation.createNewGroup}</option>`;
     for (let markGroupIndex = 0; markGroupIndex < this.#generator.settings.markGroups.length; markGroupIndex++) {
       const markGroup = this.#generator.settings.markGroups[markGroupIndex];
       groupOptions += `<option value="${markGroupIndex}">${markGroup.name}</option>`;

@@ -16,11 +16,11 @@ html(lang="pl-PL")
         thead
           tr
             th ID
-            th serwer
-            th numer
-            th domena
-            th czas startu
-            th czas zakończenia
+            th= translation.server
+            th= translation.number
+            th= translation.domain
+            th= translation.startTime
+            th= translation.endTime
             th
             th 
         tbody
@@ -33,21 +33,21 @@ html(lang="pl-PL")
               td= world.startTimestamp
               td= world.endTimestamp
               td
-                button.close-world-button(type="button", data-world-id=world.id) Zamknij
+                button.close-world-button(type="button", data-world-id=world.id)= translation.closeDown
               td
-                button.delete-world-button(type="button", data-world-id=world.id) Usuń
+                button.delete-world-button(type="button", data-world-id=world.id)= translation.delete
           tr
             td -
             td
-              input#server(type="text", name="server", autocomplete="off", placeholder="server")
+              input#server(type="text", name="server", autocomplete="off", placeholder=translation.server.toLowerCase())
             td
-              input#num(type="text", name="num", autocomplete="off", placeholder="num")
+              input#num(type="text", name="num", autocomplete="off", placeholder=translation.number.toLowerCase())
             td
-              input#domain(type="text", name="domain", autocomplete="off", placeholder="domain")
+              input#domain(type="text", name="domain", autocomplete="off", placeholder=translation.domain.toLowerCase())
             td
               input#start-timestamp(type="number", name="start-timestamp", autocomplete="off", placeholder="timestamp")
             td
               input#end-timestamp(type="number", name="end-timestamp", autocomplete="off", placeholder="timestamp", value="0")
             td
             td
-              input(type="submit", value="Dodaj")
+              input(type="submit", value=translation.add)

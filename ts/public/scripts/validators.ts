@@ -52,8 +52,8 @@ export const isValidCollectionDescription = function (description: string): bool
   return true;
 };
 
-export const isValidFrameDelay = function (frameDelay: number): boolean {
-  if (typeof frameDelay !== "number" || isNaN(frameDelay) || frameDelay < 1 || frameDelay > FRAME_DELAY_MAX_MILISECONDS) return false;
+export const isValidFrameInterval = function (frameInterval: number): boolean {
+  if (typeof frameInterval !== "number" || isNaN(frameInterval) || frameInterval < 1 || frameInterval > FRAME_DELAY_MAX_MILISECONDS) return false;
   return true;
 };
 

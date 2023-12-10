@@ -2,7 +2,7 @@ import "./navbar.js";
 import { handleDeleteCollection } from "../../routes/api/collection-handlers.js";
 import { postRequest } from "./requests.js";
 import { selectInputValue } from "./generator-controller-helpers.js";
-import { isValidCollectionDescription, isValidFrameDelay, isValidId, isValidMapDescription, isValidTitle } from "./validators.js";
+import { isValidCollectionDescription, isValidFrameInterval, isValidId, isValidMapDescription, isValidTitle } from "./validators.js";
 
 const mapTiles = document.querySelectorAll("#tiles .map-tile") as NodeListOf<HTMLDivElement>;
 const animationTiles = document.querySelectorAll("#tiles .animation-tile") as NodeListOf<HTMLDivElement>;
@@ -23,7 +23,7 @@ const animationSettings = document.getElementById("animation-settings") as HTMLD
 const animationCreatorModeCheckbox = document.getElementById("animation-creator-mode") as HTMLInputElement | null;
 const checkAllFramesButton = document.getElementById("check-all-frames") as HTMLButtonElement | null;
 const uncheckAllFramesButton = document.getElementById("uncheck-all-frames") as HTMLButtonElement | null;
-const frameDelayInput = document.getElementById("frame-delay") as HTMLInputElement | null;
+const frameIntervalInput = document.getElementById("frame-interval") as HTMLInputElement | null;
 const createAnimationButton = document.getElementById("create-animation") as HTMLButtonElement | null;
 
 let currentlyDisplayedMap: HTMLDivElement | null = null;
@@ -214,19 +214,19 @@ const editMapDescription = async function (e: Event) {
 };
 
 const toggleCreateAnimationMode = function (e: Event) {
-  if (!checkAllFramesButton || !uncheckAllFramesButton || !frameDelayInput || !createAnimationButton)
+  if (!checkAllFramesButton || !uncheckAllFramesButton || !frameIntervalInput || !createAnimationButton)
     throw new Error("Animation creator interface element is null");
   const target = e.target as HTMLInputElement;
   const animationCreatorMode = target.checked;
   if (animationCreatorMode) {
     checkAllFramesButton.disabled = false;
     uncheckAllFramesButton.disabled = false;
-    frameDelayInput.disabled = false;
+    frameIntervalInput.disabled = false;
     createAnimationButton.disabled = false;
   } else {
     checkAllFramesButton.disabled = true;
     uncheckAllFramesButton.disabled = true;
-    frameDelayInput.disabled = true;
+    frameIntervalInput.disabled = true;
     createAnimationButton.disabled = true;
     checkAllFrames();
   }
@@ -247,10 +247,10 @@ const uncheckAllFrames = function () {
 };
 
 const createAnimation = async function () {
-  if (!frameDelayInput) throw new Error("Animation creator interface element is missing");
-  const frameDelay = parseInt(frameDelayInput.value ?? "");
-  if (!isValidFrameDelay(frameDelay)) return frameDelayInput.classList.add("is-invalid");
-  else frameDelayInput.classList.remove("is-invalid");
+  if (!frameIntervalInput) throw new Error("Animation creator interface element is missing");
+  const frameInterval = parseInt(frameIntervalInput.value ?? "");
+  if (!isValidFrameInterval(frameInterval)) return frameIntervalInput.classList.add("is-invalid");
+  else frameIntervalInput.classList.remove("is-invalid");
   const frames: number[] = [];
   mapTiles.forEach((element) => {
     const mapTile = element;
@@ -262,7 +262,7 @@ const createAnimation = async function () {
   const payload = {
     collectionId: collectionId,
     frames: frames,
-    frameDelay: frameDelay,
+    frameInterval: frameInterval,
   };
   const isAnimationCreated = await postRequest("/api/animation/create", payload);
   if (isAnimationCreated) window.location.reload();

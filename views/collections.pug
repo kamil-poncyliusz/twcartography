@@ -15,9 +15,9 @@ html(lang="pl-PL")
     include navbar.pug
     section#filters
       fieldset
-        label(for="world-filter") Świat:
+        label(for="world-filter") #{ translation.world }:
         select#world-filter(name="world-filter", autocomplete="off")
-          option(value="0", selected) dowolny
+          option(value="0", selected)= translation.any.toLowerCase()
           each world in worlds
             option(value=world.id)= world.server + world.num
     main

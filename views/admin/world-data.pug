@@ -19,12 +19,20 @@ html(lang="pl-PL")
             each turn, index in world.turns
               if turn.isParsed
                 if turn.hasDataFiles
-                  td.available(title=`Tura ${index}, dane w bazie, pliki dostępne`)= index
+                  td.available(
+                    title=`${translation.turn} ${index}, ${translation.parsedDataAvailable.toLowerCase()}, ${translation.filesAvailable.toLowerCase()}`
+                  )= index
                 else
-                  td.data-only(title=`Tura ${index}, dane w bazie, pliki niedostępne`)= index
+                  td.data-only(
+                    title=`${translation.turn} ${index}, ${translation.parsedDataAvailable.toLowerCase()}, ${translation.filesUnavailable.toLowerCase()}`
+                  )= index
               else
                 if turn.hasDataFiles
-                  td.files-only(title=`Tura ${index}, brak danych w bazie, pliki dostępne`)
+                  td.files-only(
+                    title=`${translation.turn} ${index}, ${translation.parsedDataUnavailable.toLowerCase()}, ${translation.filesAvailable.toLowerCase()}`
+                  )
                     button.create-turn-data(data-world=world.id, data-turn=index)= index
                 else
-                  td.unavailable(title=`Tura ${index}, brak danych w bazie, pliki niedostępne`)= index
+                  td.unavailable(
+                    title=`${translation.turn} ${index}, ${translation.parsedDataUnavailable.toLowerCase()}, ${translation.filesUnavailable.toLowerCase()}`
+                  )= index

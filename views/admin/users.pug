@@ -15,9 +15,9 @@ html(lang="pl-PL")
       thead
         tr
           th ID
-          th login
-          th ranga
-          th 
+          th= translation.login
+          th= translation.rank
+          th= translation.changeRank
       tbody
         each user in users
           tr
@@ -25,7 +25,7 @@ html(lang="pl-PL")
             td= user.login
             td= user.rank
             td
-              select.change-rank(name="change-rank", data-user-id=user.id, autocomplete="off") zmień prawa
-                option(value="", selected, disabled, hidden) wybierz
+              select.change-rank(name="change-rank", data-user-id=user.id, autocomplete="off")
+                option(value="", selected, disabled, hidden)= translation.choose.toLowerCase()
                 each rank in ranks
                   option(value=rank)= rank

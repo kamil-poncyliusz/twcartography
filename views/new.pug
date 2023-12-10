@@ -18,87 +18,95 @@ html(lang="pl-PL")
       #settings.settings-tab.utility-window
         div
           .row
-            label(for="world-select", title="Świat, z którego będą pobierane dane") Świat:
+            label(for="world-select", title=translation.worldTooltip)= `${translation.world}:`
             div
               select#world-select(name="world", autofocus, autocomplete="off")
-                option(value="", selected, disabled, hidden) wybierz
+                option(value="", selected, disabled, hidden)= translation.choose.toLowerCase()
                 each world in worlds
                   option(value=world.id) #{ world.server+world.num }
           .row
-            label(for="turn-input", title="liczba dni od początku świata, dzień '0' to godzina po starcie") Dzień gry:
+            label(for="turn-input", title=translation.turnTooltip)= `${translation.turn}:`
             div
               input#turn-input(type="number", name="turn-input", min="0", max="365", placeholder="-", autocomplete="off", disabled)
           .row
-            label(for="background-color", title="kolor tła wyjściowej mapy") Kolor tła:
+            label(for="background-color", title=translation.backgroundColorTooltip)= `${translation.backgroundColor}:`
             div
               input#background-color(type="color", name="background-color", autocomplete="off", disabled)
           .row
-            label(for="scale", title="powiększenie mapy, świat o wielkości 400x400 pól w skali 3 będzie miał rozmiar 1200x1200px") Skala:
+            label(for="scale", title=translation.scaleTooltip)= `${translation.scale}:`
             div
               input#scale(type="number", name="scale", autocomplete="off", disabled)
           .row
-            label(for="top-spot-size", title="promień plamki najlepiej punktowanych wiosek") Rozmiar plamki:
+            label(for="top-spot-size", title=translation.stopSizeTooltip)= `${translation.spotSize}:`
             div
               input#top-spot-size(type="number", name="top-spot-size", autocomplete="off", disabled) 
           .row
-            label(for="trim", title="puste brzegi mapy zostaną przycięte automatycznie - odznacz żeby ustawić rozmiar samodzielnie") Przytnij mapę:
+            label(for="trim", title=translation.trimTooltip)= `${translation.trim}:`
             div
               input#trim(type="checkbox", name="trim", autocomplete="off", disabled) 
               input#output-width(type="number", name="output-width", autocomplete="off", disabled)
           .row
-            label(for="smooth-borders", title="granice między sąsiadującymi grupami zostaną wygładzone") Wygładź granice:
+            label(for="smooth-borders", title=translation.smoothBordersTooltip)= `${translation.smoothBorders}:`
             div
               input#smooth-borders(type="checkbox", name="smooth-borders", autocomplete="off", disabled)
           .row
-            label(for="draw-borders", title="granice między sąsiadującymi grupami zostaną narysowane wybranym kolorem") Rysuj granice:
+            label(for="draw-borders", title=translation.drawBordersTooltip)= `${translation.drawBorders}:`
             div
               input#draw-borders(type="checkbox", name="draw-borders", autocomplete="off", disabled)
               input#border-color(type="color", name="border-color", autocomplete="off", disabled)
           .row
-            label(for="draw-legend", title="nazwy grup zostaną wyświetlone na rogach mapy, możesz zmienić rozmiar czcionki") Pokaż legendę:
+            label(for="draw-legend", title=translation.drawLegendTooltip)= `${translation.drawLegend}:`
             div
               input#draw-legend(type="checkbox", name="draw-legend", autocomplete="off", disabled)
               input#legend-font-size(type="number", name="legend-font-size", autocomplete="off", disabled)
           .row
-            label(
-              for="auto-refresh",
-              title="gdy włączone, mapa będzie się automatycznie odświerzać po każdej zmianie ustawień - wyłącz, gdy odświeżanie mapy zajmuje dużo czasu"
-            ) Auto-odświerzanie:
+            label(for="auto-refresh", title=translation.autoRefreshTooltip)= `${translation.autoRefresh}:`
             div
               input#auto-refresh(type="checkbox", name="auto-refresh", autocomplete="off", disabled)
-              button#generate(type="button", disabled) Generuj
+              button#generate(type="button", disabled)= translation.generate
           .row
-            div(title="wklej kod ustawień, żeby odtworzyć ustawienia")
-              input#map-settings(type="text", name="map-settings", autocomplete="off", placeholder="kod ustawień", value="")
+            div(title=translation.mapSettingsTooltip)
+              input#map-settings(type="text", name="map-settings", autocomplete="off", placeholder=translation.mapSettings.toLowerCase(), value="")
           if hasPublishRights
             .row
               div
-                input#map-title(type="text", name="map-title", placeholder="tytuł", autocomplete="off", disabled)
+                input#map-title(type="text", name="map-title", placeholder=translation.title.toLowerCase(), autocomplete="off", disabled)
             .row
               div
-                input#map-description(type="text", name="map-description", placeholder="opis", autocomplete="off", disabled)
+                input#map-description(
+                  type="text",
+                  name="map-description",
+                  placeholder=translation.description.toLowerCase(),
+                  autocomplete="off",
+                  disabled
+                )
             .row
               div
                 select#collection(name="collection", autocomplete="off")
-                  option(value="", selected, disabled, hidden) wybierz kolekcję
-                  option(value="0")= "<Utwórz nową>"
+                  option(value="", selected, disabled, hidden)= translation.chooseCollection.toLowerCase()
+                  option(value="0")= `<${translation.createNewCollection}>`
                   each collection in collections
                     option(value=collection.id, data-world-id=collection.worldId) #{ collection.title }
             .row
               div
-                button#publish-button(disabled) Dodaj do kolekcji
+                button#publish-button(disabled)= translation.addToCollection
       #mark-suggestions.marks-tab.utility-window.hidden
         div
           table
             thead
               tr
-                th NAZWA
+                th= translation.name
                 th
-                  input#suggestions-search-input(type="text", name="suggestions-search-input", placeholder="szukaj", autocomplete="off")
-                th GR
-                th WI
-                th PUNKTY
-                th DODAJ
+                  input#suggestions-search-input(
+                    type="text",
+                    name="suggestions-search-input",
+                    placeholder=translation.search.toLowerCase(),
+                    autocomplete="off"
+                  )
+                th= translation.tribes
+                th= translation.villages
+                th= translation.points
+                th= translation.add
             tbody
               tr
                 td -
@@ -112,13 +120,13 @@ html(lang="pl-PL")
           table
             thead
               tr
-                th(title="Lista plemion wchodzących w skład grupy") PLEMIONA
-                th(title="Nazwa grupy") NAZWA
-                th(title="Kolor grupy") KOLOR
-                th(title="Liczba plemion") PLEMIONA
-                th(title="Liczba graczy") GRACZE
-                th(title="Liczba wiosek") WIOSKI
-                th(title="Suma punktów grupy") PUNKTY
+                th
+                th= translation.name
+                th= translation.color
+                th= translation.tribes
+                th= translation.players
+                th= translation.villages
+                th= translation.points
                 th
             tbody
               tr
@@ -135,9 +143,9 @@ html(lang="pl-PL")
           table
             thead
               tr
-                th TEKST
-                th KOLOR
-                th ROZMIAR
+                th= translation.text
+                th= translation.color
+                th= translation.size
                 th X
                 th Y
                 th 

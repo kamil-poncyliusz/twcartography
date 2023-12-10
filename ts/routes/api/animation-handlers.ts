@@ -1,4 +1,4 @@
-import { isValidId, isValidFrameDelay } from "../../public/scripts/validators.js";
+import { isValidId, isValidFrameInterval } from "../../public/scripts/validators.js";
 import saveAnimationGif from "../../src/save-animation-gif.js";
 import { createAnimation, deleteAnimation, readAnimation } from "../../src/queries/animation.js";
 import { Request } from "express";
@@ -9,8 +9,8 @@ export const handleCreateAnimation = async function (req: Request): Promise<bool
   const authorId = req.session.user.id;
   const collectionId = req.body.collectionId as number;
   const frames = req.body.frames as number[];
-  const frameDelay = req.body.frameDelay as number;
-  if (!isValidId(collectionId) || !isValidFrameDelay(frameDelay) || !Array.isArray(frames)) return false;
+  const frameInterval = req.body.frameInterval as number;
+  if (!isValidId(collectionId) || !isValidFrameInterval(frameInterval) || !Array.isArray(frames)) return false;
   const collection = await readCollection(collectionId);
   if (!collection || authorId !== collection.authorId) return false;
   const collectionMapsIds = collection.maps.map((map) => map.id);
@@ -20,7 +20,7 @@ export const handleCreateAnimation = async function (req: Request): Promise<bool
   }
   const animationRecord = await createAnimation(collectionId);
   if (animationRecord === null) return false;
-  const isGifSaved = await saveAnimationGif(animationRecord.id, frames, frameDelay);
+  const isGifSaved = await saveAnimationGif(animationRecord.id, frames, frameInterval);
   return true;
 };
 

@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { isValidId, isValidLogin, isValidPassword } from "../public/scripts/validators.js";
 import { readCollection } from "../src/queries/collection.js";
 import { createUser, readUserByLogin } from "../src/queries/user.js";
+import { getPreferredTranslation } from "../public/scripts/languages.js";
 
 export const handleRegistration = async function (req: Request): Promise<string> {
   const login = req.body.login;
@@ -57,10 +58,13 @@ export const handleReadCollection = async function (req: Request) {
   if (!isValidId(collectionId)) return false;
   const collection = await readCollection(collectionId);
   if (collection === null) return false;
+  const acceptsLanguages = req.acceptsLanguages();
+  const translation = getPreferredTranslation(acceptsLanguages);
   const locals = {
     page: "collection",
     user: req.session.user,
     collection: collection,
+    translation: translation,
   };
   return locals;
 };

@@ -7,6 +7,7 @@ import { readTurnData } from "../../src/queries/turn-data.js";
 import saveMapPng from "../../src/save-map-png.js";
 import { isValidId, isValidMapDescription, isValidTitle } from "../../public/scripts/validators.js";
 import { CreateMapRequestPayload, CreateMapResponse } from "../../src/types";
+import { getPreferredTranslation } from "../../public/scripts/languages.js";
 
 export const handleCreateMap = async function (req: Request): Promise<CreateMapResponse> {
   if (!req.session.user || req.session.user.rank < 2) return { success: false };
@@ -17,6 +18,8 @@ export const handleCreateMap = async function (req: Request): Promise<CreateMapR
     description: req.body.description,
     collection: req.body.collection,
   };
+  const acceptedLanguages = req.acceptsLanguages();
+  const translation = getPreferredTranslation(acceptedLanguages);
   const settings = newMapPayload.settings;
   const payloadValidationCode = isValidCreateMapRequestPayload(newMapPayload);
   if (payloadValidationCode !== CreateMapRequestValidationCode.Ok) return { success: false };
@@ -25,9 +28,9 @@ export const handleCreateMap = async function (req: Request): Promise<CreateMapR
   const generator = new MapGenerator(turnData, settings);
   const mapImageData = generator.getMap();
   const collectionExists = newMapPayload.collection > 0;
-  const newCollectionTitle = `Nowa kolekcja ${req.session.user.login}`;
+  const newCollectionTitle = `${translation.newCollection} ${req.session.user.login}`;
   if (!collectionExists) {
-    const newMapDescription = "bez opisu";
+    const newMapDescription = translation.noDescription;
     const createdCollection = await createCollection(settings.world, authorId, newCollectionTitle, newMapDescription);
     if (!createdCollection) return { success: false };
     newMapPayload.collection = createdCollection.id;

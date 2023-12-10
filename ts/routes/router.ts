@@ -5,13 +5,17 @@ import { readCollections } from "../src/queries/collection.js";
 import { readUser } from "../src/queries/user.js";
 import { readWorlds } from "../src/queries/world.js";
 import { Collection } from "@prisma/client";
+import { getPreferredTranslation } from "../public/scripts/languages.js";
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
+  const acceptsLanguages = req.acceptsLanguages();
+  const translation = getPreferredTranslation(acceptsLanguages);
   const locals = {
     page: "index",
     user: req.session.user,
+    translation: translation,
   };
   return res.render("index", locals);
 });
@@ -37,11 +41,14 @@ router.get("/new", async (req, res) => {
     if (a.server + a.num < b.server + b.num) return -1;
     return 1;
   });
+  const acceptsLanguages = req.acceptsLanguages();
+  const translation = getPreferredTranslation(acceptsLanguages);
   const locals = {
     page: "new",
     user: req.session.user,
     worlds: worlds,
     collections: [] as Collection[],
+    translation: translation,
   };
   if (req.session.user && req.session.user.rank >= 2) {
     const authorId = req.session.user.id;
@@ -56,20 +63,26 @@ router.get("/user/:id", async (req, res) => {
   if (!isValidId(id)) return res.status(404).render("not-found");
   const displayedUser = await readUser(id);
   if (displayedUser === null) return res.status(404).render("not-found");
+  const acceptsLanguages = req.acceptsLanguages();
+  const translation = getPreferredTranslation(acceptsLanguages);
   const locals = {
     page: "user",
     user: req.session.user,
     displayedUser: displayedUser,
+    translation: translation,
   };
   return res.render("user", locals);
 });
 
 router.get("/collections", async (req, res) => {
   const worlds = await readWorlds();
+  const acceptsLanguages = req.acceptsLanguages();
+  const translation = getPreferredTranslation(acceptsLanguages);
   const locals = {
     page: "collections",
     user: req.session.user,
     worlds: worlds,
+    translation: translation,
   };
   return res.render("collections", locals);
 });

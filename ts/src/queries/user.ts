@@ -122,7 +122,8 @@ export const upsertAdminAccount = async function (login: string, password: strin
     })
     .catch((err) => {
       console.error("Prisma error:", err);
-      return false;
+      return null;
     });
-  return true;
+  if (result) return true;
+  return false;
 };

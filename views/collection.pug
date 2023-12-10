@@ -41,21 +41,28 @@ html(lang="pl-PL")
       #info
         div
           if isAuthor
-            input#collection-title(type="text", name="collection-title", placeholder="Tytuł", value=collection.title, autocomplete="off", size="20")
+            input#collection-title(
+              type="text",
+              name="collection-title",
+              placeholder=translation.title,
+              value=collection.title,
+              autocomplete="off",
+              size="20"
+            )
           else
             input#collection-title(
               type="text",
               name="collection-title",
-              placeholder="Tytuł",
+              placeholder=translation.title,
               readonly="readonly",
               value=collection.title,
               autocomplete="off",
               size="20"
             )
           if isAuthor || isAdmin
-            button#delete-collection.label-button(type="button") usuń kolekcję
+            button#delete-collection.label-button(type="button")= translation.deleteCollection
         div
-          span= `Stworzona przez `
+          span= `${translation.createdBy} `
           a.label-button(href=`/user/${collection.author.id}`) #{ collection.author.login }
           span= ` ${collection.createdAt.toLocaleDateString()}`
         div
@@ -66,39 +73,54 @@ html(lang="pl-PL")
         #map-info.hidden
           div
             if isAuthor
-              input#map-title(type="text", name="map-title", placeholder="Tytuł", value="", autocomplete="off", size="20")
+              input#map-title(type="text", name="map-title", placeholder=translation.title, value="", autocomplete="off", size="20")
             else
-              input#map-title(type="text", name="map-title", placeholder="Tytuł", value="", readonly="readonly", autocomplete="off", size="20")
+              input#map-title(
+                type="text",
+                name="map-title",
+                placeholder=translation.title,
+                value="",
+                readonly="readonly",
+                autocomplete="off",
+                size="20"
+              )
             if isAuthor || isAdmin
-              button#delete-map.label-button(type="button") usuń mapę
+              button#delete-map.label-button(type="button")= translation.deleteMap
           div
             if isAuthor
               textarea#map-description(cols="1", autocomplete="off")
             else
               textarea#map-description(cols="1", readonly="readonly", autocomplete="off") 
           div
-            input#map-settings(type="text", name="map-settings", value="", placeholder="kod ustawień", readonly="readonly", autocomplete="off")
+            input#map-settings(
+              type="text",
+              name="map-settings",
+              value="",
+              placeholder=translation.mapSettings.toLowerCase(),
+              readonly="readonly",
+              autocomplete="off"
+            )
         if isAuthor
           #animation-settings
             div
               div
-                label(for="animation-creator-mode") Tryb tworzenia animacji
+                label(for="animation-creator-mode")= translation.animationCreatorMode
                 div
                   input#animation-creator-mode(type="checkbox", name="animation-creator-mode", autocomplete="off")
               div
-                button#check-all-frames(type="button", autocomplete="off", disabled) zaznacz wszystkie
-                button#uncheck-all-frames(type="button", autocomplete="off", disabled) odznacz wszystkie
+                button#check-all-frames(type="button", autocomplete="off", disabled)= translation.checkAll
+                button#uncheck-all-frames(type="button", autocomplete="off", disabled)= translation.uncheckAll
               div
-                label(for="frame-delay") Odstęp (ms):
-                input#frame-delay(
+                label(for="frame-interval")= `${translation.frameInterval} (ms):`
+                input#frame-interval(
                   type="number",
                   min="1",
                   max="60000",
-                  name="frame-delay",
+                  name="frame-interval",
                   autocomplete="off",
-                  placeholder="czas w milisekundach",
+                  placeholder=translation.timeInMilliseconds,
                   value="1000",
                   disabled
                 )
               div
-                button#create-animation(type="button", autocomplete="off", disabled) Stwórz animację
+                button#create-animation(type="button", autocomplete="off", disabled)= translation.createAnimation

@@ -5,7 +5,7 @@ import gifencoder from "gifencoder";
 const animationsDirectory = "public/images/animations";
 const mapsDirectory = "public/images/maps";
 
-const saveCollectionGif = async function (animationId: number, frames: number[], frameDelay: number): Promise<boolean> {
+const saveCollectionGif = async function (animationId: number, frames: number[], frameInterval: number): Promise<boolean> {
   try {
     const lastFrame = await loadImage(`${mapsDirectory}/${frames[frames.length - 1]}.png`);
     const width = lastFrame.width;
@@ -22,7 +22,7 @@ const saveCollectionGif = async function (animationId: number, frames: number[],
     encoderStream.pipe(writeStream);
     encoder.start();
     encoder.setRepeat(0);
-    encoder.setDelay(frameDelay);
+    encoder.setDelay(frameInterval);
     encoder.setQuality(10);
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext("2d");

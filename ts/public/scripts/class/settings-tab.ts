@@ -6,6 +6,10 @@ import { isValidId, settingsLimits } from "../validators.js";
 import { selectInputValue } from "../generator-controller-helpers.js";
 import { CreateMapRequestValidationCode, isValidCreateMapRequestPayload } from "../requests-validators.js";
 import { CreateMapRequestPayload, CreateMapResponse, Settings } from "../../../src/types.js";
+import { getPreferredTranslation } from "../languages.js";
+
+const acceptedLanguages = [...navigator.languages];
+const translation = getPreferredTranslation(acceptedLanguages);
 
 const inputs: { [key: string]: HTMLInputElement } = {
   autoRefresh: document.getElementById("auto-refresh") as HTMLInputElement,
@@ -23,7 +27,6 @@ const inputs: { [key: string]: HTMLInputElement } = {
 };
 const mapSettingsInput = document.getElementById("map-settings") as HTMLInputElement;
 const worldSelect = document.getElementById("world-select") as HTMLSelectElement;
-
 const collectionSelect = document.getElementById("collection") as HTMLSelectElement | null;
 const generateButton = document.getElementById("generate") as HTMLButtonElement | null;
 const publishMapButton = document.getElementById("publish-button") as HTMLButtonElement | null;
@@ -43,15 +46,15 @@ const addNewCollectionOption = function (newCollection: CreateMapResponse["newCo
 const sendAndHandleCreateMapRequest = async function (payload: CreateMapRequestPayload) {
   if (!publishMapButton) throw new Error("Publish map button is null");
   publishMapButton.disabled = true;
-  publishMapButton.innerHTML = "oczekiwanie";
+  publishMapButton.innerHTML = translation.waiting;
   const createMapResponse: Awaited<ReturnType<typeof handleCreateMap>> = await postRequest("/api/map/create", payload);
   if (!createMapResponse.success) {
-    publishMapButton.innerHTML = "Wystąpił błąd";
+    publishMapButton.innerHTML = translation.errorOccurred;
     publishMapButton.classList.add("danger");
     return console.log("Failed to publish the map");
   }
   if (createMapResponse.newCollection) addNewCollectionOption(createMapResponse.newCollection);
-  publishMapButton.innerHTML = "Dodałeś mapę do kolekcji";
+  publishMapButton.innerHTML = translation.mapAddedToCollection;
   publishMapButton.classList.add("success");
   console.log("Map published succesfully");
 };
@@ -251,7 +254,7 @@ class SettingsTab {
         if (inputs.autoRefresh.checked && generateButton) generateButton.disabled = true;
         if (publishMapButton) {
           publishMapButton.disabled = false;
-          publishMapButton.innerHTML = "Dodaj do kolekcji";
+          publishMapButton.innerHTML = translation.addToCollection;
           publishMapButton.classList.remove("success", "danger");
         }
       }
