@@ -2,7 +2,7 @@
   "compilerOptions": {
     "allowJs": false,
     "target": "es2017",
-    "module": "ES2022",
+    "module": "ESNext",
     "lib": ["esnext", "DOM"],
     "sourceMap": false,
     "esModuleInterop": true,
@@ -22,5 +22,5 @@
     "strictFunctionTypes": true
   },
   "include": ["./ts/**/*"],
-  "exclude": ["node_modules", "**/*.test.ts"]
+  "exclude": ["node_modules"]
 }

@@ -5,7 +5,7 @@ temp/*/
 !temp/r50800
 public/images/maps
 public/images/animations
-todo.txt
+*.txt
 coverage/*
 server.js
 public/scripts/

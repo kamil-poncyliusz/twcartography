@@ -1,4 +1,3 @@
-import "dotenv/config";
 import express from "express";
 import path from "path";
 import cors from "cors";
@@ -30,7 +29,6 @@ process.env.ROOT = __dirname;
 app.set("view engine", "pug");
 app.set("json escape", true);
 app.set("trust proxy", 1);
-
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(__dirname + "/public"));
@@ -47,13 +45,12 @@ app.use(
     proxy: true,
     name: "cookie",
     saveUninitialized: true,
-    cookie: { secure: process.env.SECURE_COOKIE === "true", maxAge: 3600000, sameSite: "lax" },
+    cookie: { secure: false, maxAge: 3600000, sameSite: "lax" },
   })
 );
 
-await upsertAdminAccount("Admin", process.env.ADMIN_ACCOUNT_PASSWORD ?? "password").then((success) => {
-  if (!success) console.log("Failed to create administrator account");
-});
+const isAdminAccountCreated = await upsertAdminAccount("Admin", process.env.ADMIN_ACCOUNT_PASSWORD ?? "password");
+if (!isAdminAccountCreated) console.log("Failed to create administrator account");
 
 await synchronizeTempDirectories();
 
@@ -69,6 +66,6 @@ app.all("*", (req, res) => {
 
 turnDataDownloaderDaemon.init();
 
-app.listen(process.env.PORT || PORT, () => {
+app.listen(PORT, () => {
   console.log("[server] Server started");
 });

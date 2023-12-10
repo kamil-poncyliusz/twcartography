@@ -1,7 +1,8 @@
-FROM node:20.5.1
+FROM node:20.10.0
 EXPOSE 8080
-COPY . /app
 WORKDIR /app
-RUN mv .env.dist .env
+COPY package.json package.json
+COPY package-lock.json package-lock.json
+COPY prisma/schema.prisma prisma/schema.prisma
 RUN npm install
-RUN npx tsc
+RUN npx prisma generate
