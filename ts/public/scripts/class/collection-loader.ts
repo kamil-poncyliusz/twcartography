@@ -1,6 +1,6 @@
 import { handleReadCollections } from "../../../routes/api/collection-handlers.js";
-import { postRequest } from "../requests.js";
-import { CollectionWithRelations, ReadCollectionsRequestPayload } from "../../../src/types";
+import { HttpMethod, httpRequest } from "../requests.js";
+import { CollectionWithRelations } from "../../../src/types";
 import { getPreferredTranslation } from "../languages.js";
 
 const acceptedLanguages = [...navigator.languages];
@@ -42,13 +42,10 @@ class CollectionLoader {
   async #fetch() {
     if (this.#isFetching || this.#endOfData) return;
     this.#isFetching = true;
-    const url = `/api/collection/read-many`;
-    const payload: ReadCollectionsRequestPayload = {
-      page: this.#nextPage,
-      authorId: this.#authorId,
-      worldId: this.#worldId,
-    };
-    const collections: Awaited<ReturnType<typeof handleReadCollections>> = await postRequest(url, payload);
+    const resource = `/api/collections`;
+    const method = HttpMethod.GET;
+    const endpoint = `${resource}/${this.#worldId}/${this.#authorId}/${this.#nextPage}`;
+    const collections: Awaited<ReturnType<typeof handleReadCollections>> = await httpRequest(endpoint, method);
     this.#isFetching = false;
     this.#nextPage++;
     if (!collections || collections.length === 0) return (this.#endOfData = true);

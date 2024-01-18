@@ -1,5 +1,5 @@
 import GeneratorController from "./generator-controller.js";
-import { Caption } from "../../../src/types.js";
+import { Caption } from "../../../src/types";
 
 const captionsTableBody = document.querySelector("#captions table tbody") as HTMLTableSectionElement;
 

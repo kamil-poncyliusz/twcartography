@@ -1,5 +1,5 @@
 import { handleCreateWorld, handleDeleteWorld } from "../../../routes/api/world-handlers.js";
-import { postRequest } from "../requests.js";
+import { HttpMethod, httpRequest } from "../requests.js";
 import { isValidCreateWorldRequestPayload } from "../requests-validators.js";
 import { isValidId } from "../validators.js";
 
@@ -7,27 +7,16 @@ const createWorldForm = document.querySelector("form") as HTMLFormElement;
 const deleteWorldButtons = document.querySelectorAll(".delete-world-button");
 const closeWorldButtons = document.querySelectorAll(".close-world-button");
 
-const sendDeleteWorldRequest = async function (worldId: number) {
-  const url = `${window.location.origin}/api/world/delete`;
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      id: worldId,
-    }),
-  });
-  const success: Awaited<ReturnType<typeof handleDeleteWorld>> = await response.json();
-  return success;
-};
+const worldEndpoint = "/api/world";
 
 const closeWorld = async function (e: Event) {
   const button = e.target as HTMLButtonElement;
   const worldId = parseInt(button.dataset.worldId ?? "");
   if (!isValidId(worldId)) throw new Error("Invalid world id");
   const currentTimestamp = Math.round(Date.now() / 1000);
-  const isClosed = await postRequest("/api/world/update", { id: worldId, endTimestamp: currentTimestamp });
+  const method = HttpMethod.PATCH;
+  const endpoint = `${worldEndpoint}/${worldId}`;
+  const isClosed = await httpRequest(endpoint, method, { endTimestamp: currentTimestamp });
   if (isClosed) window.location.reload();
   else console.log("Failed to close world with ID", worldId);
 };
@@ -47,7 +36,8 @@ const createWorld = async function (e: Event) {
     endTimestamp: parseInt(endTimestampInput.value),
   };
   if (!isValidCreateWorldRequestPayload(payload)) return console.log("Invalid worldRequestPayload");
-  const isCreated: Awaited<ReturnType<typeof handleCreateWorld>> = await postRequest("/api/world/create", payload);
+  const method = HttpMethod.POST;
+  const isCreated: Awaited<ReturnType<typeof handleCreateWorld>> = await httpRequest(worldEndpoint, method, payload);
   if (!isCreated) console.log("Failed to create a world");
   else window.location.reload();
 };
@@ -56,7 +46,10 @@ const deleteWorld = async function (e: Event) {
   const button = e.target as HTMLButtonElement;
   const worldId = parseInt(button.dataset.worldId ?? "");
   if (!isValidId(worldId)) throw new Error("Invalid world id");
-  const isDeleted = await sendDeleteWorldRequest(worldId);
+  const payload = { id: worldId };
+  const method = HttpMethod.DELETE;
+  const endpoint = `${worldEndpoint}/${worldId}`;
+  const isDeleted: Awaited<ReturnType<typeof handleDeleteWorld>> = await httpRequest(endpoint, method, payload);
   if (isDeleted) window.location.reload();
   else console.log("Failed to delete world with ID", worldId);
 };

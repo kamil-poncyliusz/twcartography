@@ -43,13 +43,12 @@ export const handleCreateMap = async function (req: Request): Promise<CreateMapR
 };
 
 export const handleUpdateMap = async function (req: Request): Promise<boolean> {
-  const id = req.body.id;
+  const id = parseInt(req.params.id);
   if (!req.session.user || !isValidId(id)) return false;
   const map = await readMap(id);
   if (!map || map.collection.authorId !== req.session.user.id) return false;
   const title = req.body.title;
   const description = req.body.description;
-  const position = req.body.position;
   if (isValidTitle(title)) {
     const isUpdated = await updateMap(id, { title: title });
     return isUpdated;
@@ -63,7 +62,7 @@ export const handleUpdateMap = async function (req: Request): Promise<boolean> {
 export const handleDeleteMap = async function (req: Request): Promise<boolean> {
   if (!req.session.user || req.session.user.rank < 1) return false;
   const userId = req.session.user.id;
-  const mapId = req.body.id;
+  const mapId = parseInt(req.params.id);
   if (!isValidId(mapId)) return false;
   const map = await readMap(mapId);
   if (!map) return false;

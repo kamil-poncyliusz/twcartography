@@ -27,7 +27,7 @@ export const handleCreateAnimation = async function (req: Request): Promise<bool
 export const handleDeleteAnimation = async function (req: Request): Promise<boolean> {
   if (!req.session.user || req.session.user.rank < 1) return false;
   const userId = req.session.user.id;
-  const animationId = req.body.id;
+  const animationId = parseInt(req.params.id);
   if (!isValidId(animationId)) return false;
   const animation = await readAnimation(animationId);
   if (!animation) return false;

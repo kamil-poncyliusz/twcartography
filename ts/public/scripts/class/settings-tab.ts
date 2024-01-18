@@ -1,11 +1,11 @@
 import GeneratorController from "./generator-controller.js";
 import { decodeJsonSettings, encodeJsonSettings } from "../settings-codec.js";
 import { handleCreateMap } from "../../../routes/api/map-handlers.js";
-import { postRequest } from "../requests.js";
+import { HttpMethod, httpRequest } from "../requests.js";
 import { isValidId, settingsLimits } from "../validators.js";
 import { selectInputValue } from "../generator-controller-helpers.js";
 import { CreateMapRequestValidationCode, isValidCreateMapRequestPayload } from "../requests-validators.js";
-import { CreateMapRequestPayload, CreateMapResponse, Settings } from "../../../src/types.js";
+import { CreateMapRequestPayload, CreateMapResponse, Settings } from "../../../src/types";
 import { getPreferredTranslation } from "../languages.js";
 
 const acceptedLanguages = [...navigator.languages];
@@ -47,7 +47,8 @@ const sendAndHandleCreateMapRequest = async function (payload: CreateMapRequestP
   if (!publishMapButton) throw new Error("Publish map button is null");
   publishMapButton.disabled = true;
   publishMapButton.innerHTML = translation.waiting;
-  const createMapResponse: Awaited<ReturnType<typeof handleCreateMap>> = await postRequest("/api/map/create", payload);
+  const method = HttpMethod.POST;
+  const createMapResponse: Awaited<ReturnType<typeof handleCreateMap>> = await httpRequest("/api/map", method, payload);
   if (!createMapResponse.success) {
     publishMapButton.innerHTML = translation.errorOccurred;
     publishMapButton.classList.add("danger");

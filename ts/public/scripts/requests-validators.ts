@@ -1,5 +1,5 @@
 import { isValidMapDescription, isValidSettings, isValidTitle } from "./validators.js";
-import { CreateMapRequestPayload, CreateWorldRequestPayload, ReadCollectionsRequestPayload } from "../../src/types";
+import { CreateMapRequestPayload, CreateWorldRequestPayload, ReadCollectionsRequestFilters } from "../../src/types";
 
 export enum CreateMapRequestValidationCode {
   Ok,
@@ -27,7 +27,7 @@ export const isValidCreateWorldRequestPayload = function (payload: CreateWorldRe
   return true;
 };
 
-export const isValidReadCollectionsRequestPayload = function (payload: ReadCollectionsRequestPayload): boolean {
+export const isValidReadCollectionsRequestFilters = function (payload: ReadCollectionsRequestFilters): boolean {
   if (typeof payload !== "object") return false;
   if (typeof payload.page !== "number" || isNaN(payload.page) || payload.page < 0) return false;
   if (typeof payload.authorId !== "number" || isNaN(payload.authorId) || payload.authorId < 0) return false;

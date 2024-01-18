@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 import { isValidCreateWorldRequestPayload } from "../public/scripts/requests-validators.js";
-import { CreateWorldRequestPayload } from "./types.js";
+import { CreateWorldRequestPayload } from "./types";
 
 export const getWorldDirectoryName = function (timestamp: number) {
   return timestamp.toString(36);

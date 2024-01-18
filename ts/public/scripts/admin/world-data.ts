@@ -1,5 +1,5 @@
 import { handleCreateTurnData } from "../../../routes/api/turn-data-handlers.js";
-import { postRequest } from "../requests.js";
+import { HttpMethod, httpRequest } from "../requests.js";
 import { isValidId, isValidTurn } from "../validators.js";
 
 const createTurnDataButtons = document.querySelectorAll("button.create-turn-data");
@@ -14,8 +14,9 @@ const createTurnData = async function (e: Event) {
     world: worldId,
     turn: turn,
   };
-  const endpoint = `/api/turn-data/create`;
-  const isCreated: Awaited<ReturnType<typeof handleCreateTurnData>> = await postRequest(endpoint, payload);
+  const endpoint = `/api/turn-data`;
+  const method = HttpMethod.POST;
+  const isCreated: Awaited<ReturnType<typeof handleCreateTurnData>> = await httpRequest(endpoint, method, payload);
   if (isCreated) window.location.reload();
   else console.log("Failed to create turn data");
 };

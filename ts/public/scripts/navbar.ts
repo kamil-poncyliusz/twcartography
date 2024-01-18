@@ -1,5 +1,5 @@
 import { handleAuthentication, handleLogout, handleRegistration } from "../../routes/handlers.js";
-import { postRequest } from "./requests.js";
+import { HttpMethod, httpRequest } from "./requests.js";
 import { isValidLogin, isValidPassword } from "./validators.js";
 
 const profileButton = document.getElementById("profile-button") as HTMLButtonElement;
@@ -31,7 +31,8 @@ const loginRequest = async function (e: Event) {
     login: login,
     password: password,
   };
-  const success: Awaited<ReturnType<typeof handleAuthentication>> = await postRequest("/auth", payload);
+  const method = HttpMethod.POST;
+  const success: Awaited<ReturnType<typeof handleAuthentication>> = await httpRequest("/auth", method, payload);
   if (!success) viewMessage("Nie udało się zalogować");
   else window.location.reload();
 };
@@ -48,13 +49,15 @@ const registerRequest = async function (e: Event) {
     login: login,
     password: password,
   };
-  const message: Awaited<ReturnType<typeof handleRegistration>> = await postRequest("/register", payload);
+  const method = HttpMethod.POST;
+  const message: Awaited<ReturnType<typeof handleRegistration>> = await httpRequest("/register", method, payload);
   if (message === "success") viewMessage("Rejestracja udana");
   else viewMessage("Rejestracja nieudana");
 };
 
 const logoutRequest = async function (e: Event) {
-  const success: Awaited<ReturnType<typeof handleLogout>> = await postRequest("/logout", {});
+  const method = HttpMethod.POST;
+  const success: Awaited<ReturnType<typeof handleLogout>> = await httpRequest("/logout", method, {});
   if (success) window.location.reload();
   else console.log("Failed to logout");
 };

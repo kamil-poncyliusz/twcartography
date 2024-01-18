@@ -1,5 +1,5 @@
 import { handleUpdateUser } from "../../../routes/api/user-handlers.js";
-import { postRequest } from "../requests.js";
+import { HttpMethod, httpRequest } from "../requests.js";
 import { isValidId, isValidUserRank } from "../validators.js";
 
 const selectElements = document.querySelectorAll("select.change-rank");
@@ -10,8 +10,10 @@ const changeUserRank = async function (e: Event) {
   const rank = parseInt(selectElement.value);
   if (!isValidId(id)) throw new Error("Invalid user id");
   if (!isValidUserRank(rank)) throw new Error("Invalid user rank");
-  const payload = { id: id, updatedFields: { rank: rank } };
-  const response: Awaited<ReturnType<typeof handleUpdateUser>> = await postRequest("/api/user/update/rank", payload);
+  const payload = { updatedFields: { rank: rank } };
+  const method = HttpMethod.PATCH;
+  const endpoint = `/api/user/${id}`;
+  const response: Awaited<ReturnType<typeof handleUpdateUser>> = await httpRequest(endpoint, method, payload);
   if (response) return window.location.reload();
   else {
     selectElement.classList.add("is-invalid");

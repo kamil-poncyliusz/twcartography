@@ -96,7 +96,7 @@ export interface CreateMapRequestPayload {
   title: string;
 }
 export type CreateWorldRequestPayload = Omit<World, "id">;
-export interface ReadCollectionsRequestPayload {
+export interface ReadCollectionsRequestFilters {
   page: number;
   authorId: number;
   worldId: number;

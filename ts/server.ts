@@ -10,7 +10,7 @@ import adminRouter from "./routes/admin/admin-router.js";
 import { minRequiredRank } from "./src/authorization.js";
 import { upsertAdminAccount } from "./src/queries/user.js";
 import turnDataDownloaderDaemon from "./src/turn-data-downloader-daemon.js";
-import { UserSessionData } from "./src/types.js";
+import { UserSessionData } from "./src/types";
 
 declare module "express-session" {
   interface SessionData {

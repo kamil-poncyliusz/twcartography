@@ -1,6 +1,6 @@
 import { handleReadTurnData } from "../../../routes/api/turn-data-handlers.js";
 import { handleReadWorld } from "../../../routes/api/world-handlers.js";
-import { getRequest } from "../requests.js";
+import { HttpMethod, httpRequest } from "../requests.js";
 import {
   isValidCaption,
   isValidCaptionCoordinate,
@@ -22,7 +22,7 @@ import SuggestionsTab from "./suggestions-tab.js";
 import SettingsTab from "./settings-tab.js";
 import CanvasFrame from "./canvas-frame.js";
 import CaptionsTab from "./captions-tab.js";
-import { MarkGroup, Settings, ParsedTurnData, Tribe, Caption } from "../../../src/types.js";
+import { MarkGroup, Settings, ParsedTurnData, Tribe, Caption } from "../../../src/types";
 import { getLatestTurn } from "../generator-controller-helpers.js";
 
 const DEFAULT_AUTO_REFRESH = true;
@@ -277,8 +277,9 @@ class GeneratorController {
   async changeWorld(worldId: number): Promise<boolean> {
     if (!isValidId(worldId)) return false;
     if (worldId === this.settings.world) return true;
-    const endpoint = `/api/world/read/${worldId}`;
-    const world: Awaited<ReturnType<typeof handleReadWorld>> = await getRequest(endpoint);
+    const endpoint = `/api/world/${worldId}`;
+    const method = HttpMethod.GET;
+    const world: Awaited<ReturnType<typeof handleReadWorld>> = await httpRequest(endpoint, method);
     this.data = {};
     this.settings.turn = -1;
     if (!world) return false;
@@ -328,8 +329,9 @@ class GeneratorController {
     if (this.settings.world === 0) return false;
     if (!isValidTurn(turn)) return false;
     if (typeof this.data[turn] === "object") return true;
-    const endpoint = `/api/turn-data/read/${this.settings.world}/${turn}`;
-    const turnData: Awaited<ReturnType<typeof handleReadTurnData>> = await getRequest(endpoint);
+    const endpoint = `/api/turn-data/${this.settings.world}/${turn}`;
+    const method = HttpMethod.GET;
+    const turnData: Awaited<ReturnType<typeof handleReadTurnData>> = await httpRequest(endpoint, method);
     if (!turnData) return false;
     this.data[turn] = turnData;
     return true;

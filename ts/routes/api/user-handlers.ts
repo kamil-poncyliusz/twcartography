@@ -4,7 +4,7 @@ import { updateUser } from "../../src/queries/user.js";
 
 export const handleUpdateUser = async function (req: Request): Promise<boolean> {
   if (!req.session.user || req.session.user.rank < 10) return false;
-  const id = req.body.id;
+  const id = parseInt(req.params.id);
   if (!req.body.updatedFields) return false;
   const rank = req.body.updatedFields.rank;
   const password = req.body.updatedFields.password;

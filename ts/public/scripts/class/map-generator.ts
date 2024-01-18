@@ -1,6 +1,6 @@
 import { calcExpansionArray, parseHexColor } from "../map-generator-helpers.js";
 import { MAX_VILLAGE_POINTS, TRIBAL_WARS_MAP_SIZE } from "../constants.js";
-import { Settings, ParsedColor, ParsedTurnData, Village, MarkGroup } from "../../../src/types.js";
+import { Settings, ParsedColor, ParsedTurnData, Village, MarkGroup } from "../../../src/types";
 
 const canvasModule = typeof process === "object" ? await import("canvas") : null;
 const CANVAS_FONT_FAMILY = "sans-serif";

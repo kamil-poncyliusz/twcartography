@@ -1,4 +1,3 @@
-import { Settings } from "../../src/types.js";
 import { defaultSettings } from "./class/generator-controller.js";
 import {
   isValidCaption,
@@ -11,6 +10,7 @@ import {
   isValidTopSpotSize,
   isValidTurn,
 } from "./validators.js";
+import { Settings } from "../../src/types";
 
 const minorSeparator = ",";
 const majorSeparator = ";";

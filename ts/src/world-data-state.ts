@@ -1,7 +1,7 @@
 import parseTurnData from "./parse-turn-data.js";
 import { createTurnData } from "./queries/turn-data.js";
 import { createWorld, readWorlds, readWorldsWithWorldData } from "./queries/world.js";
-import { WorldDataState, TurnDataState, CreateWorldRequestPayload } from "./types.js";
+import { WorldDataState, TurnDataState, CreateWorldRequestPayload } from "./types";
 import { areDataFilesAvailable, createWorldDirectory, getDirectories, getWorldDirectoryName, parseWorldInfoFile } from "./temp-directory-handlers.js";
 import { getLatestTurn } from "../public/scripts/generator-controller-helpers.js";
 

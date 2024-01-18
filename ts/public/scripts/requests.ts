@@ -1,28 +1,21 @@
-export const postRequest = async function (endpoint: string, body: { [key: string]: any }) {
+export enum HttpMethod {
+  GET = "GET",
+  POST = "POST",
+  PATCH = "PATCH",
+  DELETE = "DELETE",
+}
+
+export const httpRequest = async function (endpoint: string, method: HttpMethod, payload?: { [key: string]: any }) {
   try {
     const url = `${window.location.origin}${endpoint}`;
+    const body = method === HttpMethod.GET || method === HttpMethod.DELETE ? undefined : JSON.stringify(payload);
     const response = await fetch(url, {
-      method: "POST",
+      method: method,
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(body),
+      body: body,
     });
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-    const responseData = await response.json();
-    return responseData;
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    return false;
-  }
-};
-
-export const getRequest = async function (endpoint: string) {
-  try {
-    const url = `${window.location.origin}${endpoint}`;
-    const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }

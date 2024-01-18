@@ -1,5 +1,5 @@
 import { GROUP_NAME_FORBIDDEN_CHARACTERS, VALID_USER_RANKS } from "./constants.js";
-import { Caption, MarkGroup, Settings } from "../../src/types.js";
+import { Caption, MarkGroup, Settings } from "../../src/types";
 
 const LOGIN_MIN_LENGTH = 2;
 const LOGIN_MAX_LENGTH = 15;

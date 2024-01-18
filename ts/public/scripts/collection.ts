@@ -1,8 +1,9 @@
 import "./navbar.js";
 import { handleDeleteCollection } from "../../routes/api/collection-handlers.js";
-import { postRequest } from "./requests.js";
+import { HttpMethod, httpRequest } from "./requests.js";
 import { selectInputValue } from "./generator-controller-helpers.js";
 import { isValidCollectionDescription, isValidFrameInterval, isValidId, isValidMapDescription, isValidTitle } from "./validators.js";
+import { handleDeleteMap } from "../../routes/api/map-handlers.js";
 
 const mapTiles = document.querySelectorAll("#tiles .map-tile") as NodeListOf<HTMLDivElement>;
 const animationTiles = document.querySelectorAll("#tiles .animation-tile") as NodeListOf<HTMLDivElement>;
@@ -27,6 +28,9 @@ const frameIntervalInput = document.getElementById("frame-interval") as HTMLInpu
 const createAnimationButton = document.getElementById("create-animation") as HTMLButtonElement | null;
 
 let currentlyDisplayedMap: HTMLDivElement | null = null;
+const collectionEndpoint = "/api/collection";
+const mapEndpoint = "/api/map";
+const animationEndpoint = "/api/animation";
 
 const getCollectionId = function (): number {
   const id = parseInt(window.location.pathname.split("/")[2]);
@@ -150,13 +154,12 @@ const useKeyboardShortcut = function (e: KeyboardEvent) {
 };
 
 const deleteCollection = async function () {
-  const id = getCollectionId();
-  const payload = {
-    id: id,
-  };
+  const collectionId = getCollectionId();
   const isDeletionConfirmed = confirm("Na pewno chcesz usunąć całą kolekcję?");
   if (!isDeletionConfirmed) return;
-  const isDeleted: Awaited<ReturnType<typeof handleDeleteCollection>> = await postRequest("/api/collection/delete", payload);
+  const method = HttpMethod.DELETE;
+  const endpoint = `${collectionEndpoint}/${collectionId}`;
+  const isDeleted: Awaited<ReturnType<typeof handleDeleteCollection>> = await httpRequest(endpoint, method);
   if (isDeleted) window.location.href = "/";
   else console.log("Failed to delete this collection");
 };
@@ -164,11 +167,10 @@ const deleteCollection = async function () {
 const deleteMap = async function () {
   if (!currentlyDisplayedMap) throw new Error("Cannot get map Id: currentlyDisplayedMap is null");
   const id = getDisplayedMapId();
-  const payload = {
-    id: id,
-  };
-  const url = currentlyDisplayedMap.classList.contains("map-tile") ? "/api/map/delete" : "/api/animation/delete";
-  const isDeleted = await postRequest(url, payload);
+  const isResourceAMap = currentlyDisplayedMap.classList.contains("map-tile");
+  const endpoint = isResourceAMap ? `${mapEndpoint}/${id}` : `${animationEndpoint}/${id}`;
+  const method = HttpMethod.DELETE;
+  const isDeleted: Awaited<ReturnType<typeof handleDeleteMap>> = await httpRequest(endpoint, method);
   if (isDeleted) window.location.reload();
   else console.log("Failed to delete this map");
 };
@@ -178,7 +180,10 @@ const editCollectionTitle = async function (e: Event) {
   const collectionId = getCollectionId();
   const newTitle = target.value;
   if (!isValidTitle(newTitle)) return target.classList.add("is-invalid");
-  const isUpdated = await postRequest("/api/collection/update", { id: collectionId, title: newTitle });
+  const method = HttpMethod.PATCH;
+  const endpoint = `${collectionEndpoint}/${collectionId}`;
+  const payload = { title: newTitle };
+  const isUpdated = await httpRequest(endpoint, method, payload);
   if (isUpdated) target.classList.remove("is-invalid");
   else target.classList.add("is-invalid");
 };
@@ -188,7 +193,10 @@ const editCollectionDescription = async function (e: Event) {
   const collectionId = getCollectionId();
   const newDescription = target.value;
   if (!isValidCollectionDescription(newDescription)) return target.classList.add("is-invalid");
-  const isUpdated = await postRequest("/api/collection/update", { id: collectionId, description: newDescription });
+  const method = HttpMethod.PATCH;
+  const endpoint = `${collectionEndpoint}/${collectionId}`;
+  const payload = { description: newDescription };
+  const isUpdated = await httpRequest(endpoint, method, payload);
   if (isUpdated) target.classList.remove("is-invalid");
   else target.classList.add("is-invalid");
 };
@@ -198,7 +206,9 @@ const editMapTitle = async function (e: Event) {
   const mapId = getDisplayedMapId();
   const newTitle = target.value;
   if (!isValidTitle(newTitle)) return target.classList.add("is-invalid");
-  const isUpdated = await postRequest("/api/map/update", { id: mapId, title: newTitle });
+  const method = HttpMethod.PATCH;
+  const endpoint = `${mapEndpoint}/${mapId}`;
+  const isUpdated = await httpRequest(endpoint, method, { title: newTitle });
   if (isUpdated) target.classList.remove("is-invalid");
   else target.classList.add("is-invalid");
 };
@@ -208,7 +218,9 @@ const editMapDescription = async function (e: Event) {
   const mapId = getDisplayedMapId();
   const newDescription = target.value;
   if (!isValidMapDescription(newDescription)) return target.classList.add("is-invalid");
-  const isUpdated = await postRequest("/api/map/update", { id: mapId, description: newDescription });
+  const method = HttpMethod.PATCH;
+  const endpoint = `${mapEndpoint}/${mapId}`;
+  const isUpdated = await httpRequest(endpoint, method, { description: newDescription });
   if (isUpdated) target.classList.remove("is-invalid");
   else target.classList.add("is-invalid");
 };
@@ -259,12 +271,14 @@ const createAnimation = async function () {
   });
   const collectionId = getCollectionId();
   if (frames.length === 0) return console.log("No selected frames found");
+  const endpoint = `${animationEndpoint}`;
   const payload = {
     collectionId: collectionId,
     frames: frames,
     frameInterval: frameInterval,
   };
-  const isAnimationCreated = await postRequest("/api/animation/create", payload);
+  const method = HttpMethod.POST;
+  const isAnimationCreated = await httpRequest(endpoint, method, payload);
   if (isAnimationCreated) window.location.reload();
   else console.log("Failed to create an animation");
 };
