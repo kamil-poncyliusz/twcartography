@@ -90,10 +90,22 @@ cp default.env .env
 Production environment:
 
 ```bash
+docker compose -f docker-compose-production.yml up -d
+```
+
+or
+
+```bash
 npm run production
 ```
 
 Development environment:
+
+```bash
+docker compose up
+```
+
+or
 
 ```bash
 npm run dev
@@ -107,8 +119,8 @@ localhost:8080
 
 ## Usage
 
-Languages are not implemented yet, Polish is my native language. Translate website to your language if you need to.
-User needs an account to save maps on the server in the form of collections. Collections can be used to create animated maps.
+User needs an account to save maps on the server in the form of collections.
+Collections can be used to create animated maps.
 
 ### Using generator to create a map
 
@@ -144,7 +156,7 @@ Tips:
 
 ### Creating a GIF animation
 
-1. Repeat previous section several times to make a collection containing multiple maps.
+1. Repeat previous section several times to create a collection containing multiple maps.
 
 2. View you collection.
 
@@ -152,11 +164,13 @@ Tips:
 
 4. Uncheck the maps you don't want in the animation.
 
-5. Choose frame interval and submit animation with "Create animation" button.
+5. Choose a frame interval.
+
+6. Submit animation with "Create animation" button. When animation is finished, the browser will reload the page.
 
 Tips:
 
-- During every frame creation use "Output size" setting to make sure that all frames (created maps) have the same size.
+- Each time you create a frame, turn off "Trim" option and enter a fixed output size to ensure that all frames (created maps) have the same width and height.
 
 - To choose a right output size, start from the last frame where the world is most expanded.
 

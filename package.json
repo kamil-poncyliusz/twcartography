@@ -5,10 +5,11 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "build": "tsc",
-    "production": "docker compose -f docker-compose-production.yml up -d",
     "dev": "docker compose up",
-    "nodemon": "nodemon",
+    "production": "docker compose -f docker-compose-production.yml up -d",
+    "remove": "docker compose down --remove-orphans --volumes --rmi all",
+    "build": "tsc",
+    "watch": "nodemon",
     "test": "jest",
     "coverage": "jest --coverage"
   },
