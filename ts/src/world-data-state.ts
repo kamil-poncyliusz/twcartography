@@ -27,7 +27,8 @@ export const getWorldDataStates = async function (): Promise<WorldDataState[]> {
     }
     for (const turnData of world.worldData) {
       const turn = turnData.turn;
-      addedWorldDataState.turns[turn].isParsed = true;
+      if (addedWorldDataState.turns[turn]) addedWorldDataState.turns[turn].isParsed = true;
+      else console.log(`${world.server}${world.num}: Turn ${turn} is out of range 0-${addedWorldDataState.turns.length - 1}`);
     }
     worldDataStates.push(addedWorldDataState);
   }
