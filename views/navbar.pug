@@ -1,10 +1,10 @@
 nav#navbar
-  a.navbar-button(href="/")= translation.homepage
+  a.navbar-button(href="/", name="homepage-link")= translation.homepage
   if page !== "new"
-    a.navbar-button(href="/new")= translation.newMap
-    a.navbar-button(href="/collections")= translation.collections
+    a.navbar-button(href="/new", name="new-map-link")= translation.newMap
+    a.navbar-button(href="/collections", name="collections-link")= translation.collections
     if user && user.rank === 10
-      a.navbar-button(href="/admin")= translation.adminPanel
+      a.navbar-button(href="/admin", name="admin-panel-link")= translation.adminPanel
   else
     button#settings-button.navbar-button= translation.settings
     button#marks-button.navbar-button= translation.marks
@@ -14,7 +14,7 @@ nav#navbar
     div
       if user
         p= `${translation.loggedInAs} ${user.login}`
-        a(href=`/user/${user.id}`)= translation.myCollections
+        a(href=`/user/${user.id}`, name="my-collections-link")= translation.myCollections
         button#logout-button(type="button")= translation.logout
       else
         form#login-form
