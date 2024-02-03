@@ -11,7 +11,8 @@
     "build": "tsc",
     "watch": "nodemon",
     "test": "jest",
-    "coverage": "jest --coverage"
+    "coverage": "jest --coverage",
+    "e2e": "npx playwright test"
   },
   "author": "Kamil Poncyliusz",
   "license": "ISC",
@@ -30,7 +31,7 @@
     "pug": "^3.0.2"
   },
   "devDependencies": {
-    "@playwright/test": "^1.40.1",
+    "@playwright/test": "^1.41.2",
     "@prettier/plugin-pug": "^2.3.0",
     "@types/bcryptjs": "^2.4.2",
     "@types/cors": "^2.8.13",

@@ -103,7 +103,7 @@ export const updateUser = async function (id: number, updatedFields: { rank?: nu
   else return false;
 };
 
-export const upsertAdminAccount = async function (login: string, password: string): Promise<boolean> {
+export const upsertUser = async function (login: string, password: string, rank: number): Promise<boolean> {
   const hash = bcrypt.hashSync(password, 5);
   const result = await prisma.user
     .upsert({
@@ -112,12 +112,12 @@ export const upsertAdminAccount = async function (login: string, password: strin
       },
       update: {
         password: hash,
-        rank: 10,
+        rank: rank,
       },
       create: {
         login: login,
         password: hash,
-        rank: 10,
+        rank: rank,
       },
     })
     .catch((err) => {

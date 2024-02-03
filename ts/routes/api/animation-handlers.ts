@@ -11,6 +11,7 @@ export const handleCreateAnimation = async function (req: Request): Promise<bool
   const frames = req.body.frames as number[];
   const frameInterval = req.body.frameInterval as number;
   if (!isValidId(collectionId) || !isValidFrameInterval(frameInterval) || !Array.isArray(frames)) return false;
+  if (frames.some((frame) => typeof frame !== "number")) return false;
   const collection = await readCollection(collectionId);
   if (!collection || authorId !== collection.authorId) return false;
   const collectionMapsIds = collection.maps.map((map) => map.id);

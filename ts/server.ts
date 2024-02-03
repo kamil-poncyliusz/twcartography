@@ -8,7 +8,7 @@ import router from "./routes/router.js";
 import apiRouter from "./routes/api/api-router.js";
 import adminRouter from "./routes/admin/admin-router.js";
 import { minRequiredRank } from "./src/authorization.js";
-import { upsertAdminAccount } from "./src/queries/user.js";
+import { upsertUser } from "./src/queries/user.js";
 import turnDataDownloaderDaemon from "./src/turn-data-downloader-daemon.js";
 import { UserSessionData } from "./src/types";
 
@@ -47,8 +47,10 @@ app.use(
   })
 );
 
-const isAdminAccountCreated = await upsertAdminAccount("Admin", process.env.ADMIN_ACCOUNT_PASSWORD ?? "password");
+const isAdminAccountCreated = await upsertUser("Admin", process.env.ADMIN_ACCOUNT_PASSWORD ?? "password", 10);
 if (!isAdminAccountCreated) console.log("Failed to create administrator account");
+const isTestAccountCreated = await upsertUser("test", "test1234", 2);
+if (!isTestAccountCreated) console.log("Failed to create test user account");
 await turnDataDownloaderDaemon.init();
 
 app.use("/", router);
@@ -60,5 +62,5 @@ app.all("*", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log("[server] Server started");
+  console.log("[server] server started");
 });

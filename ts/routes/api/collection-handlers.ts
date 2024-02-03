@@ -41,7 +41,9 @@ export const handleDeleteCollection = async function (req: Request): Promise<boo
   const collectionId = parseInt(req.params.id);
   if (!isValidId(collectionId)) return false;
   const collection = await readCollection(collectionId);
-  if (!collection || collection.authorId !== userId) return false;
+  if (!collection) return false;
+  const hasRightsToDelete = collection.authorId === userId || req.session.user.rank >= 10;
+  if (!hasRightsToDelete) return false;
   const isDeleted = await deleteCollection(collectionId);
   return isDeleted;
 };

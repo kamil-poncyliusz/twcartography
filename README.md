@@ -134,7 +134,7 @@ Collections can be used to create animated maps.
 
 5. Tweak some settings under "Settings" tab to customize the map.
 
-6. Done! Save the map using context menu and use it however You want.
+6. Done! Save the map image and use it however You want.
 
 Tips:
 

@@ -48,7 +48,7 @@ class SuggestionsTab {
     const suggestions = this.#generator.getSuggestions(tag);
     suggestionsTableBody.innerHTML = "";
     let groupOptions = `<option selected disabled hidden>${translation.add}</option>`;
-    groupOptions += `<option value="-1"}">${translation.createNewGroup}</option>`;
+    groupOptions += `<option value="-1">${translation.createNewGroup}</option>`;
     for (let markGroupIndex = 0; markGroupIndex < this.#generator.settings.markGroups.length; markGroupIndex++) {
       const markGroup = this.#generator.settings.markGroups[markGroupIndex];
       groupOptions += `<option value="${markGroupIndex}">${markGroup.name}</option>`;
