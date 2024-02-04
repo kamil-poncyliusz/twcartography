@@ -5,13 +5,10 @@ import { isValidCollectionDescription, isValidId, isValidTitle } from "../../pub
 import { CollectionWithRelations, ReadCollectionsRequestFilters } from "../../src/types";
 
 export const handleReadCollections = async function (req: Request): Promise<CollectionWithRelations[]> {
-  const worldId = parseInt(req.params.world);
-  const authorId = parseInt(req.params.author);
-  const page = parseInt(req.params.page);
   const payload: ReadCollectionsRequestFilters = {
-    worldId: worldId,
-    authorId: authorId,
-    page: page,
+    worldId: parseInt(req.params.world),
+    authorId: parseInt(req.params.author),
+    page: parseInt(req.params.page),
   };
   if (!isValidReadCollectionsRequestFilters(payload)) return [];
   const collections = await readCollections(payload.page, { worldId: payload.worldId, authorId: payload.authorId });
@@ -19,30 +16,29 @@ export const handleReadCollections = async function (req: Request): Promise<Coll
 };
 
 export const handleUpdateCollection = async function (req: Request): Promise<boolean> {
-  const id = parseInt(req.params.id);
-  if (!req.session.user || !isValidId(id)) return false;
-  const collection = await readCollection(id);
+  const collectionId = parseInt(req.params.id);
+  if (!req.session.user || !isValidId(collectionId)) return false;
+  const collection = await readCollection(collectionId);
   if (!collection || collection.author.id !== req.session.user.id) return false;
-  const title = req.body.title;
-  const description = req.body.description;
+  const { title, description } = req.body;
   if (isValidTitle(title)) {
-    const isUpdated = await updateCollection(id, { title: title });
+    const isUpdated = await updateCollection(collectionId, { title: title });
     return isUpdated;
-  } else if (isValidCollectionDescription(description)) {
-    const isUpdated = await updateCollection(id, { description: description });
+  }
+  if (isValidCollectionDescription(description)) {
+    const isUpdated = await updateCollection(collectionId, { description: description });
     return isUpdated;
   }
   return false;
 };
 
 export const handleDeleteCollection = async function (req: Request): Promise<boolean> {
-  if (!req.session.user || req.session.user.rank < 1) return false;
-  const userId = req.session.user.id;
+  const user = req.session.user;
   const collectionId = parseInt(req.params.id);
-  if (!isValidId(collectionId)) return false;
+  if (!user || user.rank < 1 || !isValidId(collectionId)) return false;
   const collection = await readCollection(collectionId);
   if (!collection) return false;
-  const hasRightsToDelete = collection.authorId === userId || req.session.user.rank >= 10;
+  const hasRightsToDelete = collection.authorId === user.id || user.rank >= 10;
   if (!hasRightsToDelete) return false;
   const isDeleted = await deleteCollection(collectionId);
   return isDeleted;

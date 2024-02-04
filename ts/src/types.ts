@@ -90,7 +90,7 @@ export interface UserSessionData {
   rank: number;
 }
 export interface CreateMapRequestPayload {
-  collection: number;
+  collectionId: number;
   description: string;
   settings: Settings;
   title: string;

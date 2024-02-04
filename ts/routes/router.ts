@@ -62,7 +62,7 @@ router.get("/user/:id", async (req, res) => {
   const id = parseInt(req.params.id);
   if (!isValidId(id)) return res.status(404).render("not-found");
   const displayedUser = await readUser(id);
-  if (displayedUser === null) return res.status(404).render("not-found");
+  if (!displayedUser) return res.status(404).render("not-found");
   const acceptsLanguages = req.acceptsLanguages();
   const translation = getPreferredTranslation(acceptsLanguages);
   const locals = {

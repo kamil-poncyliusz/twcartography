@@ -12,7 +12,7 @@ export enum CreateMapRequestValidationCode {
 export const isValidCreateMapRequestPayload = function (payload: CreateMapRequestPayload): CreateMapRequestValidationCode {
   if (!isValidTitle(payload.title)) return CreateMapRequestValidationCode.InvalidTitle;
   if (!isValidMapDescription(payload.description)) return CreateMapRequestValidationCode.InvalidDescription;
-  if (typeof payload.collection !== "number" || !(payload.collection >= 0)) return CreateMapRequestValidationCode.InvalidCollection;
+  if (typeof payload.collectionId !== "number" || !(payload.collectionId >= 0)) return CreateMapRequestValidationCode.InvalidCollection;
   if (!isValidSettings(payload.settings)) return CreateMapRequestValidationCode.InvalidSettings;
   return CreateMapRequestValidationCode.Ok;
 };

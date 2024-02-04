@@ -7,9 +7,9 @@ import parseTurnData from "../../src/parse-turn-data.js";
 import { ParsedTurnData } from "../../src/types";
 
 export const handleCreateTurnData = async function (req: Request): Promise<boolean> {
-  if (!req.session.user || req.session.user.rank < 10) return false;
-  const worldId = req.body.world as number;
-  const turn = req.body.turn as number;
+  const user = req.session.user;
+  const { worldId, turn } = req.body;
+  if (!user || user.rank < 10) return false;
   if (!isValidId(worldId) || !isValidTurn(turn)) return false;
   const world = await readWorld(worldId);
   if (!world) return false;
@@ -18,8 +18,7 @@ export const handleCreateTurnData = async function (req: Request): Promise<boole
   if (!areFilesAvailable) return false;
   const parsedTurnData = await parseTurnData(worldDirectoryName, turn);
   const createdWorldData = await createTurnData(world.id, turn, parsedTurnData);
-  if (!createdWorldData) return false;
-  return true;
+  return createdWorldData;
 };
 
 export const handleReadTurnData = async function (req: Request): Promise<ParsedTurnData | null> {
@@ -27,6 +26,6 @@ export const handleReadTurnData = async function (req: Request): Promise<ParsedT
   const turn = parseInt(req.params.turn);
   if (!isValidId(worldId) || !isValidTurn(turn)) return null;
   const data = await readTurnData(worldId, turn);
-  if (data === null) return null;
+  if (!data) return null;
   return data;
 };

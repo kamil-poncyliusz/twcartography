@@ -8,70 +8,30 @@ import { handleCreateWorld, handleDeleteWorld, handleReadWorld, handleUpdateWorl
 
 const apiRouter = express.Router();
 
-apiRouter.post("/animation", async (req, res) => {
-  const responseData = await handleCreateAnimation(req);
+const handleRequest = async (handler: Function, req: express.Request, res: express.Response) => {
+  const responseData = await handler(req);
   return res.json(responseData);
-});
-apiRouter.delete("/animation/:id", async (req, res) => {
-  const responseData = await handleDeleteAnimation(req);
-  return res.json(responseData);
-});
+};
 
-apiRouter.get("/collections/:world/:author/:page", async (req, res) => {
-  const responseData = await handleReadCollections(req);
-  return res.json(responseData);
-});
-apiRouter.patch("/collection/:id", async (req, res) => {
-  const responseData = await handleUpdateCollection(req);
-  return res.json(responseData);
-});
-apiRouter.delete("/collection/:id", async (req, res) => {
-  const responseData = await handleDeleteCollection(req);
-  return res.json(responseData);
-});
+apiRouter.post("/animation", (req, res) => handleRequest(handleCreateAnimation, req, res));
+apiRouter.delete("/animation/:id", (req, res) => handleRequest(handleDeleteAnimation, req, res));
 
-apiRouter.post("/map", async (req, res) => {
-  const responseData = await handleCreateMap(req);
-  return res.json(responseData);
-});
-apiRouter.patch("/map/:id", async (req, res) => {
-  const responseData = await handleUpdateMap(req);
-  return res.json(responseData);
-});
-apiRouter.delete("/map/:id", async (req, res) => {
-  const responseData = await handleDeleteMap(req);
-  return res.json(responseData);
-});
+apiRouter.get("/collections/:world/:author/:page", (req, res) => handleRequest(handleReadCollections, req, res));
+apiRouter.patch("/collection/:id", (req, res) => handleRequest(handleUpdateCollection, req, res));
+apiRouter.delete("/collection/:id", (req, res) => handleRequest(handleDeleteCollection, req, res));
 
-apiRouter.post("/turn-data", async (req, res) => {
-  const responseData = await handleCreateTurnData(req);
-  return res.json(responseData);
-});
-apiRouter.get("/turn-data/:world/:turn", async (req, res) => {
-  const responseData = await handleReadTurnData(req);
-  return res.json(responseData);
-});
+apiRouter.post("/map", (req, res) => handleRequest(handleCreateMap, req, res));
+apiRouter.patch("/map/:id", (req, res) => handleRequest(handleUpdateMap, req, res));
+apiRouter.delete("/map/:id", (req, res) => handleRequest(handleDeleteMap, req, res));
 
-apiRouter.patch("/user/:id", async (req, res) => {
-  const responseData = await handleUpdateUser(req);
-  return res.json(responseData);
-});
+apiRouter.post("/turn-data", (req, res) => handleRequest(handleCreateTurnData, req, res));
+apiRouter.get("/turn-data/:world/:turn", (req, res) => handleRequest(handleReadTurnData, req, res));
 
-apiRouter.post("/world", async (req, res) => {
-  const responseData = await handleCreateWorld(req);
-  return res.json(responseData);
-});
-apiRouter.get("/world/:id", async (req, res) => {
-  const responseData = await handleReadWorld(req);
-  return res.json(responseData);
-});
-apiRouter.delete("/world/:id", async (req, res) => {
-  const responseData = await handleDeleteWorld(req);
-  return res.json(responseData);
-});
-apiRouter.patch("/world/:id", async (req, res) => {
-  const responseData = await handleUpdateWorld(req);
-  return res.json(responseData);
-});
+apiRouter.patch("/user/:id", (req, res) => handleRequest(handleUpdateUser, req, res));
+
+apiRouter.post("/world", (req, res) => handleRequest(handleCreateWorld, req, res));
+apiRouter.get("/world/:id", (req, res) => handleRequest(handleReadWorld, req, res));
+apiRouter.delete("/world/:id", (req, res) => handleRequest(handleDeleteWorld, req, res));
+apiRouter.patch("/world/:id", (req, res) => handleRequest(handleUpdateWorld, req, res));
 
 export default apiRouter;

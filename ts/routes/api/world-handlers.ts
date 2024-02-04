@@ -37,9 +37,9 @@ export const handleReadWorld = async function (req: Request): Promise<World | nu
 };
 
 export const handleDeleteWorld = async function (req: Request): Promise<boolean> {
-  if (!req.session.user || req.session.user.rank < 10) return false;
+  const user = req.session.user;
   const worldId = parseInt(req.params.id);
-  if (!isValidId(worldId)) return false;
+  if (!user || user.rank < 10 || !isValidId(worldId)) return false;
   const deletedWorld = await deleteWorld(worldId);
   if (!deletedWorld) return false;
   const worldDirectoryName = getWorldDirectoryName(deletedWorld.startTimestamp);
@@ -49,11 +49,11 @@ export const handleDeleteWorld = async function (req: Request): Promise<boolean>
 };
 
 export const handleUpdateWorld = async function (req: Request): Promise<boolean> {
-  if (!req.session.user || req.session.user.rank < 10) return false;
+  const user = req.session.user;
+  if (!user || user.rank < 10) return false;
   const worldId = parseInt(req.params.id);
   const endTimestamp = req.body.endTimestamp;
-  if (!isValidId(worldId)) return false;
-  if (!isValidTimestamp(endTimestamp)) return false;
+  if (!isValidId(worldId) || !isValidTimestamp(endTimestamp)) return false;
   const isUpdated = await updateWorld(worldId, { endTimestamp: endTimestamp });
   if (!isUpdated) return false;
   return true;

@@ -10,45 +10,45 @@ import { CreateMapRequestPayload, CreateMapResponse } from "../../src/types";
 import { getPreferredTranslation } from "../../public/scripts/languages.js";
 
 export const handleCreateMap = async function (req: Request): Promise<CreateMapResponse> {
-  if (!req.session.user || req.session.user.rank < 2) return { success: false };
-  const authorId = req.session.user.id;
+  const user = req.session.user;
+  const { settings, title, description, collectionId } = req.body;
+  if (!user || user.rank < 2) return { success: false };
   const newMapPayload: CreateMapRequestPayload = {
-    settings: req.body.settings,
-    title: req.body.title,
-    description: req.body.description,
-    collection: req.body.collection,
+    settings: settings,
+    title: title,
+    description: description,
+    collectionId: collectionId,
   };
   const acceptedLanguages = req.acceptsLanguages();
   const translation = getPreferredTranslation(acceptedLanguages);
-  const settings = newMapPayload.settings;
   const payloadValidationCode = isValidCreateMapRequestPayload(newMapPayload);
   if (payloadValidationCode !== CreateMapRequestValidationCode.Ok) return { success: false };
   const turnData = await readTurnData(settings.world, settings.turn);
-  if (turnData === null) return { success: false };
+  if (!turnData) return { success: false };
   const generator = new MapGenerator(turnData, settings);
   const mapImageData = generator.getMap();
-  const collectionExists = newMapPayload.collection > 0;
-  const newCollectionTitle = `${translation.newCollection} ${req.session.user.login}`;
+  const collectionExists = newMapPayload.collectionId > 0;
+  const newCollectionTitle = `${translation.newCollection} ${user.login}`;
   if (!collectionExists) {
     const newMapDescription = translation.noDescription;
-    const createdCollection = await createCollection(settings.world, authorId, newCollectionTitle, newMapDescription);
+    const createdCollection = await createCollection(settings.world, user.id, newCollectionTitle, newMapDescription);
     if (!createdCollection) return { success: false };
-    newMapPayload.collection = createdCollection.id;
+    newMapPayload.collectionId = createdCollection.id;
   }
-  const createdMap = await createMap(settings.turn, newMapPayload.title, newMapPayload.description, settings, newMapPayload.collection);
+  const createdMap = await createMap(settings.turn, newMapPayload.title, newMapPayload.description, settings, newMapPayload.collectionId);
   if (!createdMap) return { success: false };
   saveMapPng(createdMap.id, mapImageData as ImageData);
   if (collectionExists) return { success: true };
-  else return { success: true, newCollection: { id: newMapPayload.collection, title: newCollectionTitle, worldId: settings.world } };
+  else return { success: true, newCollection: { id: newMapPayload.collectionId, title: newCollectionTitle, worldId: settings.world } };
 };
 
 export const handleUpdateMap = async function (req: Request): Promise<boolean> {
+  const user = req.session.user;
   const id = parseInt(req.params.id);
-  if (!req.session.user || !isValidId(id)) return false;
+  const { title, description } = req.body;
+  if (!user || !isValidId(id)) return false;
   const map = await readMap(id);
-  if (!map || map.collection.authorId !== req.session.user.id) return false;
-  const title = req.body.title;
-  const description = req.body.description;
+  if (!map || map.collection.authorId !== user.id) return false;
   if (isValidTitle(title)) {
     const isUpdated = await updateMap(id, { title: title });
     return isUpdated;
@@ -60,13 +60,12 @@ export const handleUpdateMap = async function (req: Request): Promise<boolean> {
 };
 
 export const handleDeleteMap = async function (req: Request): Promise<boolean> {
-  if (!req.session.user || req.session.user.rank < 1) return false;
-  const userId = req.session.user.id;
+  const user = req.session.user;
+  if (!user || user.rank < 1) return false;
   const mapId = parseInt(req.params.id);
   if (!isValidId(mapId)) return false;
   const map = await readMap(mapId);
-  if (!map) return false;
-  if (map.collection.authorId !== userId) return false;
+  if (!map || map.collection.authorId !== user.id) return false;
   const isDeleted = await deleteMap(mapId);
   return isDeleted;
 };

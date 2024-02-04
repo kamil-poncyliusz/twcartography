@@ -192,12 +192,12 @@ class SettingsTab {
     if (!mapTitleInput || !mapDescriptionInput || !collectionSelect) throw new Error("Publish map form is missing an element");
     const title = mapTitleInput.value;
     const description = mapDescriptionInput.value;
-    const collection = parseInt(collectionSelect.value);
+    const collectionId = parseInt(collectionSelect.value);
     const payload: CreateMapRequestPayload = {
       settings: settings,
       title: title,
       description: description,
-      collection: collection,
+      collectionId: collectionId,
     };
     const payloadValidationCode = isValidCreateMapRequestPayload(payload);
     switch (payloadValidationCode) {

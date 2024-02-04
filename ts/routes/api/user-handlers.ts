@@ -3,17 +3,16 @@ import { isValidId, isValidPassword, isValidUserRank } from "../../public/script
 import { updateUser } from "../../src/queries/user.js";
 
 export const handleUpdateUser = async function (req: Request): Promise<boolean> {
-  if (!req.session.user || req.session.user.rank < 10) return false;
+  const user = req.session.user;
   const id = parseInt(req.params.id);
-  if (!req.body.updatedFields) return false;
-  const rank = req.body.updatedFields.rank;
-  const password = req.body.updatedFields.password;
-  if (!isValidId(id)) return false;
-  if (isValidUserRank(rank)) {
-    const success = await updateUser(id, { rank: rank });
+  const updatedFields = req.body.updatedFields;
+  if (!user || user.rank < 10) return false;
+  if (!updatedFields || !isValidId(id)) return false;
+  if (isValidUserRank(updatedFields.rank)) {
+    const success = await updateUser(id, { rank: updatedFields.rank });
     return success;
-  } else if (isValidPassword(password)) {
-    const success = await updateUser(id, { password: password });
+  } else if (isValidPassword(updatedFields.password)) {
+    const success = await updateUser(id, { password: updatedFields.password });
     return success;
   } else return false;
 };
