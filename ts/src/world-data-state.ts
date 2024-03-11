@@ -56,20 +56,18 @@ export const synchronizeTempDirectories = async function () {
   for (let world of worldsFromDatabase) {
     const { id: number, ...rest } = world;
     const payload: CreateWorldRequestPayload = rest;
-    createWorldDirectory(payload);
+    await createWorldDirectory(payload);
   }
   const worldDirectories = await getDirectories("temp");
-  const newWorldDirectories = worldDirectories.filter((worldDirectory) => {
-    return worldsFromDatabase.every((world) => {
-      const correctWorldDirectoryName = getWorldDirectoryName(world.startTimestamp);
-      return correctWorldDirectoryName !== worldDirectory;
-    });
-  });
+  const newWorldDirectories = worldDirectories.filter((worldDirectory) =>
+    worldsFromDatabase.every((world) => getWorldDirectoryName(world.startTimestamp) !== worldDirectory)
+  );
   for (let worldDirectory of newWorldDirectories) {
     const worldInfo = await parseWorldInfoFile(worldDirectory);
-    if (!worldInfo) return;
+    if (!worldInfo) continue;
     const isWorldCreated = await createWorld(worldInfo);
-    if (isWorldCreated) console.log(`Created a new world from ${worldDirectory} directory`);
-    else console.log(`Failed to create a world from ${worldDirectory} directory`);
+    const successMessage = `Created a new world from ${worldDirectory} directory`;
+    const failedMessage = `Failed to create a world from ${worldDirectory} directory`;
+    console.log(isWorldCreated ? successMessage : failedMessage);
   }
 };

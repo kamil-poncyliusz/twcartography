@@ -32,20 +32,11 @@ export const createWorldDirectory = async function (payload: CreateWorldRequestP
   const fileString = getWorldInfoFileString(payload);
   try {
     await fs.mkdir(worldDirectoryPath, { recursive: true });
-  } catch {
-    //
-  }
-  try {
-    await fs.access(worldDirectoryInfoFilePath);
-    await fs.unlink(worldDirectoryInfoFilePath);
-  } catch {
-    //
-  }
-  try {
+    await fs.rm(worldDirectoryInfoFilePath, { force: true });
     await fs.writeFile(worldDirectoryInfoFilePath, fileString);
     return true;
   } catch (error) {
-    console.log(error);
+    console.error(`Error creating world directory: ${error}`);
     return false;
   }
 };
@@ -69,7 +60,7 @@ export const parseWorldInfoFile = async function (worldDirectoryName: string): P
     const parsed: { [key: string]: any } = {};
     for (let row of fileRows) {
       let [key, value] = row.split("=");
-      if (typeof key === "string" && typeof value === "string" && key.length > 0) parsed[key.trim()] = value.trim();
+      if (key && value && key.length > 0) parsed[key.trim()] = value.trim();
     }
     if (parsed.startTimestamp) parsed.startTimestamp = parseInt(parsed.startTimestamp);
     if (parsed.endTimestamp) parsed.endTimestamp = parseInt(parsed.endTimestamp);
@@ -97,18 +88,12 @@ export const areDataFilesAvailable = async function (worldDirectoryName: string,
   const dataFilesPath = `temp/${worldDirectoryName}/${turn}`;
   for (const file of files) {
     const dataFilePath = `${dataFilesPath}/${file}.txt.gz`;
-    if (file === "conquer") {
-      const conquerDataTextFilePath = `${dataFilesPath}/${file}.txt`;
-      try {
-        await fs.access(conquerDataTextFilePath);
-      } catch {
-        try {
-          await fs.access(dataFilePath);
-        } catch {
-          return false;
-        }
-      }
-    } else {
+    const conquerDataFilePath = `${dataFilesPath}/${file}.txt`;
+    const filePath = file === "conquer" ? conquerDataFilePath : dataFilePath;
+    try {
+      await fs.access(filePath);
+    } catch {
+      if (file !== "conquer") return false;
       try {
         await fs.access(dataFilePath);
       } catch {

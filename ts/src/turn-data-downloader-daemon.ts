@@ -29,6 +29,15 @@ const downloadWorldDataFile = function (url: string, path: string, file: string)
   });
 };
 
+const SECONDS_IN_A_DAY = 24 * 60 * 60;
+const MARGIN = 15;
+
+const getUrl = (world: World, file: string): string => {
+  if (file !== "conquer") return `https://${world.server}${world.num}.${world.domain}/map/${file}.txt.gz`;
+  const dayAgoTimestamp = Math.ceil(Date.now() / 1000 - SECONDS_IN_A_DAY + MARGIN);
+  return `https://${world.server}${world.num}.${world.domain}/interface.php?func=get_conquer&since=${dayAgoTimestamp}`;
+};
+
 const downloadWorldData = async function (world: World, turn: number) {
   const files = ["village", "player", "ally", "conquer", "kill_all_tribe", "kill_att_tribe", "kill_def_tribe"];
   const worldDirectoryName = getWorldDirectoryName(world.startTimestamp);
@@ -39,19 +48,14 @@ const downloadWorldData = async function (world: World, turn: number) {
     await fs.mkdir(turnDirectoryPath, { recursive: true });
   }
   const downloadPromises = files.map((file) => {
-    let url = `https://${world.server}${world.num}.${world.domain}/map/${file}.txt.gz`;
-    if (file === "conquer") {
-      const secondsInADay = 24 * 60 * 60;
-      const margin = 15;
-      const dayAgoTimestamp = Math.ceil(Date.now() / 1000 - secondsInADay + margin);
-      url = `https://${world.server}${world.num}.${world.domain}/interface.php?func=get_conquer&since=${dayAgoTimestamp}`;
-    }
+    const url = getUrl(world, file);
     return downloadWorldDataFile(url, turnDirectoryPath, file);
   });
   try {
     await Promise.all(downloadPromises);
     return true;
-  } catch {
+  } catch (error) {
+    console.error(`Error downloading world data files: ${error}`);
     return false;
   }
 };
@@ -70,25 +74,20 @@ const turnDataDownloaderDaemon = {
     if (process.env.RUN_DOWNLOADER_DAEMON !== "true") return;
     if (world.endTimestamp > 0) return;
     const serverStartTimestamp = new Date(world.startTimestamp * 1000);
-    const serverStartSeconds = serverStartTimestamp.getSeconds();
-    const serverStartMinutes = serverStartTimestamp.getMinutes();
-    const serverStartHours = serverStartTimestamp.getHours();
-    const rule = `${serverStartSeconds} ${serverStartMinutes} ${serverStartHours} * * *`;
+    const rule = `${serverStartTimestamp.getSeconds()} ${serverStartTimestamp.getMinutes()} ${serverStartTimestamp.getHours()} * * *`;
     const jobName = world.id.toString();
     this.scheduler.scheduleJob(jobName, rule, async function () {
-      const turn = Math.round((Date.now() - serverStartTimestamp.getTime()) / 1000 / 60 / 60 / 24);
+      const turn = Math.round((Date.now() - serverStartTimestamp.getTime()) / 1000 / SECONDS_IN_A_DAY);
       const worldDirectoryName = getWorldDirectoryName(world.startTimestamp);
       if (!isValidTurn(turn)) return console.log(`Downloader daemon: ${turn} is not a valid turn`);
       const success = await downloadWorldData(world, turn);
-      if (success) {
-        console.log(`Downloading turn ${turn} of ${world.server}${world.num} completed`);
-        const parsedWorldData = await parseTurnData(worldDirectoryName, turn);
-        const isCreated = await createTurnData(world.id, turn, parsedWorldData);
-        if (isCreated) console.log(`Turn data created for ${turn} turn of ${world.server + world.num}`);
-        else console.log(`Failed to create turn data record in database`);
-      } else {
-        console.log(`Downloading turn ${turn} of ${world.server}${world.num} failed`);
-      }
+      if (!success) return console.log(`Downloading turn ${turn} of ${world.server}${world.num} failed`);
+      console.log(`Downloading turn ${turn} of ${world.server}${world.num} completed`);
+      const parsedWorldData = await parseTurnData(worldDirectoryName, turn);
+      const isCreated = await createTurnData(world.id, turn, parsedWorldData);
+      const successMessage = `Turn data created for ${turn} turn of ${world.server + world.num}`;
+      const failedMessage = `Failed to create turn data record in database`;
+      console.log(isCreated ? successMessage : failedMessage);
     });
   },
   stopDownloading: function (world: World) {

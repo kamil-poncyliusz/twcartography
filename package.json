@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "docker compose up",
     "production": "docker compose -f docker-compose-production.yml up -d",
-    "remove": "docker compose down --remove-orphans --volumes --rmi all",
+    "purge": "docker compose down --remove-orphans --volumes --rmi all",
     "build": "tsc",
     "watch": "nodemon",
     "test": "jest",

@@ -2,6 +2,23 @@ import fs from "fs/promises";
 import zlib from "zlib";
 import { ParsedTurnData } from "./types";
 
+const CENTER_POINT = 500;
+const MARGIN = 2;
+const ROUNDING_FACTOR = 10;
+
+const calculateMinWidth = function (data: ParsedTurnData) {
+  let maxDistance = 0;
+  for (let tribeId in data.tribes) {
+    const tribe = data.tribes[tribeId];
+    for (const village of tribe.villages) {
+      const distanceX = Math.abs(CENTER_POINT - village.x);
+      const distanceY = Math.abs(CENTER_POINT - village.y);
+      maxDistance = Math.max(maxDistance, distanceX, distanceY);
+    }
+  }
+  return Math.ceil((maxDistance + MARGIN) / ROUNDING_FACTOR) * ROUNDING_FACTOR * 2;
+};
+
 const parseFile = async function (worldDirectoryName: string, turn: number, fileName: string): Promise<string[]> {
   const directoryPath = `temp/${worldDirectoryName}/${turn}`;
   try {
@@ -124,18 +141,7 @@ const parseTurnData = async function (worldDirectoryName: string, turn: number):
   for (let i = 0; i < conquerData.length; i++) {
     const [villageId, timestamp, newOwner, oldOwner] = conquerData[i].split(",");
   }
-  let maxDistance = 0;
-  let distance = 0;
-  for (let tribeId in parsedData.tribes) {
-    const tribe = parsedData.tribes[tribeId];
-    for (const village of tribe.villages) {
-      distance = Math.abs(500 - village.x);
-      if (distance > maxDistance) maxDistance = distance;
-      distance = Math.abs(500 - village.y);
-      if (distance > maxDistance) maxDistance = distance;
-    }
-  }
-  parsedData.width = Math.ceil((maxDistance + 2) / 10) * 20;
+  parsedData.width = calculateMinWidth(parsedData);
   return parsedData;
 };
 

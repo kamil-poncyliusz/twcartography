@@ -24,6 +24,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 process.env.ROOT = __dirname;
 
+const createAccount = async (username: string, password: string, rank: number) => {
+  const isAccountCreated = await upsertUser(username, password, rank);
+  if (!isAccountCreated) console.log(`Failed to create ${username} account`);
+};
+
 app.set("view engine", "pug");
 app.set("json escape", true);
 app.set("trust proxy", 1);
@@ -31,11 +36,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(__dirname + "/public"));
 app.use(helmet());
-app.use(
-  cors({
-    origin: true,
-  })
-);
+app.use(cors({ origin: true }));
 app.use(
   session({
     secret: process.env.SESSION_SECRET as string,
@@ -47,19 +48,14 @@ app.use(
   })
 );
 
-const isAdminAccountCreated = await upsertUser("Admin", process.env.ADMIN_ACCOUNT_PASSWORD ?? "password", 10);
-if (!isAdminAccountCreated) console.log("Failed to create administrator account");
-const isTestAccountCreated = await upsertUser("test", "test1234", 2);
-if (!isTestAccountCreated) console.log("Failed to create test user account");
+await createAccount("Admin", process.env.ADMIN_ACCOUNT_PASSWORD ?? "password", 10);
+await createAccount("test", "test1234", 2);
 await turnDataDownloaderDaemon.init();
 
 app.use("/", router);
 app.use("/api", apiRouter);
-app.use("/admin", minRequiredRank(10));
-app.use("/admin", adminRouter);
-app.all("*", (req, res) => {
-  return res.status(404).render("not-found");
-});
+app.use("/admin", minRequiredRank(10), adminRouter);
+app.all("*", (req, res) => res.status(404).render("not-found"));
 
 app.listen(PORT, () => {
   console.log("[server] server started");
