@@ -1,4 +1,5 @@
-import { handleAuthentication, handleLogout, handleRegistration } from "../../routes/handlers.js";
+import { handleCreateUser } from "../../routes/api/user-handlers.js";
+import { handleAuthentication, handleLogout } from "../../routes/handlers.js";
 import { HttpMethod, httpRequest } from "./requests.js";
 import { isValidLogin, isValidPassword } from "./validators.js";
 
@@ -50,7 +51,7 @@ const registerRequest = async function (e: Event) {
     password: password,
   };
   const method = HttpMethod.POST;
-  const message: Awaited<ReturnType<typeof handleRegistration>> = await httpRequest("/register", method, payload);
+  const message: Awaited<ReturnType<typeof handleCreateUser>> = await httpRequest("/api/user", method, payload);
   if (message === "success") viewMessage("Rejestracja udana");
   else viewMessage("Rejestracja nieudana");
 };

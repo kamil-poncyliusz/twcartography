@@ -3,7 +3,7 @@ import { handleCreateAnimation, handleDeleteAnimation } from "./animation-handle
 import { handleDeleteCollection, handleReadCollections, handleUpdateCollection } from "./collection-handlers.js";
 import { handleCreateMap, handleDeleteMap, handleUpdateMap } from "./map-handlers.js";
 import { handleCreateTurnData, handleReadTurnData } from "./turn-data-handlers.js";
-import { handleUpdateUser } from "./user-handlers.js";
+import { handleCreateUser, handleUpdateUser } from "./user-handlers.js";
 import { handleCreateWorld, handleDeleteWorld, handleReadWorld, handleUpdateWorld } from "./world-handlers.js";
 
 const apiRouter = express.Router();
@@ -28,6 +28,7 @@ apiRouter.post("/turn-data", (req, res) => handleRequest(handleCreateTurnData, r
 apiRouter.get("/turn-data/:world/:turn", (req, res) => handleRequest(handleReadTurnData, req, res));
 
 apiRouter.patch("/user/:id", (req, res) => handleRequest(handleUpdateUser, req, res));
+apiRouter.post("/user", (req, res) => handleRequest(handleCreateUser, req, res));
 
 apiRouter.post("/world", (req, res) => handleRequest(handleCreateWorld, req, res));
 apiRouter.get("/world/:id", (req, res) => handleRequest(handleReadWorld, req, res));

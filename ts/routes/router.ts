@@ -1,5 +1,5 @@
 import express from "express";
-import { handleAuthentication, handleLogout, handleReadCollection, handleRegistration } from "./handlers.js";
+import { handleAuthentication, handleLogout, handleReadCollection } from "./handlers.js";
 import { isValidId } from "../public/scripts/validators.js";
 import { readCollections } from "../src/queries/collection.js";
 import { readUser } from "../src/queries/user.js";
@@ -28,11 +28,6 @@ router.post("/auth", async (req, res) => {
 router.post("/logout", async (req, res) => {
   const responseData = await handleLogout(req);
   res.json(responseData);
-});
-
-router.post("/register", async (req, res) => {
-  const responseData = await handleRegistration(req);
-  return res.json(responseData);
 });
 
 router.get("/new", async (req, res) => {
