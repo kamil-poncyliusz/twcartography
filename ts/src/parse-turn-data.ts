@@ -19,8 +19,8 @@ const calculateMinWidth = function (data: ParsedTurnData) {
   return Math.ceil((maxDistance + MARGIN) / ROUNDING_FACTOR) * ROUNDING_FACTOR * 2;
 };
 
-const parseFile = async function (worldDirectoryName: string, turn: number, fileName: string): Promise<string[]> {
-  const directoryPath = `temp/${worldDirectoryName}/${turn}`;
+const parseFile = async function (worldName: string, day: string, fileName: string): Promise<string[]> {
+  const directoryPath = `data-files/${worldName}/${day}`;
   try {
     if (fileName === "conquer") {
       const fileData = await fs.readFile(`${directoryPath}/${fileName}.txt`);
@@ -39,7 +39,7 @@ const parseFile = async function (worldDirectoryName: string, turn: number, file
   }
 };
 
-const parseTurnData = async function (worldDirectoryName: string, turn: number): Promise<ParsedTurnData> {
+const parseTurnData = async function (worldName: string, day: string): Promise<ParsedTurnData> {
   const parsedData: ParsedTurnData = {
     conquer: {},
     tribes: {},
@@ -60,7 +60,7 @@ const parseTurnData = async function (worldDirectoryName: string, turn: number):
     villages: [],
   };
   const playerTribeIds: { [key: string]: string } = {};
-  const tribesData = await parseFile(worldDirectoryName, turn, "ally");
+  const tribesData = await parseFile(worldName, day, "ally");
   for (let i = 0; i < tribesData.length; i++) {
     const [id, name, tag, players, villages, points, allPoints, rank] = tribesData[i].split(",");
     parsedData.tribes[id] = {
@@ -75,12 +75,12 @@ const parseTurnData = async function (worldDirectoryName: string, turn: number):
       killDef: 0,
     };
   }
-  const playersData = await parseFile(worldDirectoryName, turn, "player");
+  const playersData = await parseFile(worldName, day, "player");
   for (let i = 0; i < playersData.length; i++) {
     const [id, name, tribeId, villages, points, rank] = playersData[i].split(",");
     playerTribeIds[id] = tribeId;
   }
-  const villagesData = await parseFile(worldDirectoryName, turn, "village");
+  const villagesData = await parseFile(worldName, day, "village");
   const villagePointsArray: number[] = [];
   for (let i = 0; i < villagesData.length; i++) {
     const [id, name, x, y, playerId, points, rank] = villagesData[i].split(",");
@@ -110,7 +110,7 @@ const parseTurnData = async function (worldDirectoryName: string, turn: number):
     villagePointsSum += villagePointsArray[i];
   }
   parsedData.averageVillagePoints = Math.round(villagePointsSum / villagePointsArray.length);
-  const killAllData = await parseFile(worldDirectoryName, turn, "kill_all_tribe");
+  const killAllData = await parseFile(worldName, day, "kill_all_tribe");
   for (let i = 0; i < killAllData.length; i++) {
     const [rank, id, score] = killAllData[i].split(",");
     if (parsedData.tribes[id] === undefined) {
@@ -119,7 +119,7 @@ const parseTurnData = async function (worldDirectoryName: string, turn: number):
       parsedData.tribes[id].killAll = parseInt(score);
     }
   }
-  const killAttData = await parseFile(worldDirectoryName, turn, "kill_att_tribe");
+  const killAttData = await parseFile(worldName, day, "kill_att_tribe");
   for (let i = 0; i < killAttData.length; i++) {
     const [rank, id, score] = killAttData[i].split(",");
     if (parsedData.tribes[id] === undefined) {
@@ -128,7 +128,7 @@ const parseTurnData = async function (worldDirectoryName: string, turn: number):
       parsedData.tribes[id].killAtt = parseInt(score);
     }
   }
-  const killDefData = await parseFile(worldDirectoryName, turn, "kill_def_tribe");
+  const killDefData = await parseFile(worldName, day, "kill_def_tribe");
   for (let i = 0; i < killDefData.length; i++) {
     const [rank, id, score] = killDefData[i].split(",");
     if (parsedData.tribes[id] === undefined) {
@@ -137,7 +137,7 @@ const parseTurnData = async function (worldDirectoryName: string, turn: number):
       parsedData.tribes[id].killDef = parseInt(score);
     }
   }
-  const conquerData = await parseFile(worldDirectoryName, turn, "conquer");
+  const conquerData = await parseFile(worldName, day, "conquer");
   for (let i = 0; i < conquerData.length; i++) {
     const [villageId, timestamp, newOwner, oldOwner] = conquerData[i].split(",");
   }

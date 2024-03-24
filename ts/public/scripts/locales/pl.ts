@@ -34,6 +34,7 @@ const plTranslation: Translation = {
   timeInMilliseconds: "Czas w milisekundach",
   frameInterval: "Odstęp między klatkami",
   server: "Serwer",
+  servers: "Serwery",
   number: "Numer",
   domain: "Domena",
   startTime: "Czas startu",
@@ -63,7 +64,7 @@ const plTranslation: Translation = {
   createNewCollection: "Utwórz nową",
   autoRefresh: "Auto-odświeżanie",
   worldTooltip: "Świat, z którego będą pobierane dane",
-  turnTooltip: "liczba dni od początku świata, dzień '0' to start świata",
+  dayTooltip: "zostaną użyte dane z wybranego dnia",
   backgroundColorTooltip: "kolor tła wyjściowej mapy",
   scaleTooltip: "powiększenie mapy, świat o wielkości 400x400 pól w skali 3 będzie miał rozmiar 1200x1200px",
   spotSizeTooltip: "promień plamki najlepiej punktowanych wiosek",
@@ -90,6 +91,11 @@ const plTranslation: Translation = {
   createNewGroup: "Stwórz nową",
   newCollection: "Nowa kolekcja",
   noDescription: "Bez opisu",
+  updateHour: "Godzina aktualizacji",
+  activate: "Aktywuj",
+  deactivate: "Dezaktywuj",
+  hour: "Godzina",
+  day: "Dzień",
 };
 
 export default plTranslation;

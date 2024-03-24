@@ -8,7 +8,7 @@ import {
   isValidOutputWidth,
   isValidScale,
   isValidTopSpotSize,
-  isValidTurn,
+  isValidDayTimestamp,
 } from "./validators.js";
 import { Settings } from "../../src/types";
 
@@ -93,7 +93,7 @@ const majorSeparator = ";";
 //     };
 //     captions.push(caption);
 //   }
-//   const [backgroundColor, borderColor, displayUnmarked, outputWidth, scale, spotsFilter, trim, turn, unmarkedColor, world, topSpotSize] =
+//   const [backgroundColor, borderColor, displayUnmarked, outputWidth, scale, spotsFilter, trim, day, unmarkedColor, world, topSpotSize] =
 //     settingsArray;
 //   const result: Settings = {
 //     backgroundColor: backgroundColor,
@@ -104,7 +104,7 @@ const majorSeparator = ";";
 //     scale: parseInt(scale),
 //     topSpotSize: parseInt(topSpotSize ? topSpotSize : "8"),
 //     trim: parseInt(trim) === 1 ? true : false,
-//     turn: parseInt(turn),
+//     day: parseInt(day),
 //     world: parseInt(world),
 //   };
 //   return result;
@@ -131,7 +131,7 @@ export const decodeJsonSettings = function (stringifiedSettings: string): Settin
     if (typeof parsedSettings.smoothBorders === "boolean") resultSettings.smoothBorders = parsedSettings.smoothBorders;
     if (isValidTopSpotSize(parsedSettings.topSpotSize)) resultSettings.topSpotSize = parsedSettings.topSpotSize;
     if (typeof parsedSettings.trim === "boolean") resultSettings.trim = parsedSettings.trim;
-    if (isValidTurn(parsedSettings.turn)) resultSettings.turn = parsedSettings.turn;
+    if (isValidDayTimestamp(parsedSettings.day)) resultSettings.day = parsedSettings.day;
     if (isValidId(parsedSettings.world)) resultSettings.world = parsedSettings.world;
     if (Array.isArray(parsedSettings.markGroups)) {
       parsedSettings.markGroups.forEach((markGroup) => {

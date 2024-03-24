@@ -1,5 +1,5 @@
-import { isValidMapDescription, isValidSettings, isValidTitle } from "./validators.js";
-import { CreateMapRequestPayload, CreateWorldRequestPayload, ReadCollectionsRequestFilters } from "../../src/types";
+import { isValidDomain, isValidMapDescription, isValidSettings, isValidTitle } from "./validators.js";
+import { CreateMapRequestPayload, CreateServerRequestPayload, ReadCollectionsRequestFilters } from "../../src/types";
 
 export enum CreateMapRequestValidationCode {
   Ok,
@@ -17,13 +17,11 @@ export const isValidCreateMapRequestPayload = function (payload: CreateMapReques
   return CreateMapRequestValidationCode.Ok;
 };
 
-export const isValidCreateWorldRequestPayload = function (payload: CreateWorldRequestPayload): boolean {
-  if (typeof payload !== "object") return false;
-  if (typeof payload.server !== "string" || payload.server.length === 0) return false;
-  if (typeof payload.num !== "string" || payload.num.length === 0) return false;
-  if (typeof payload.domain !== "string" || payload.domain.length === 0) return false;
-  if (typeof payload.startTimestamp !== "number" || payload.startTimestamp <= 0) return false;
-  if (typeof payload.endTimestamp !== "number" || payload.endTimestamp < 0) return false;
+export const isValidCreateServerRequestPayload = function (payload: CreateServerRequestPayload): boolean {
+  if (!isValidDomain) return false;
+  if (typeof payload.name !== "string" || payload.name.length !== 2) return false;
+  if (payload.domain !== null && !isValidDomain(payload.domain)) return false;
+  if (typeof payload.updateHour !== "number") return false;
   return true;
 };
 

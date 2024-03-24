@@ -31,6 +31,6 @@ showCaptionsButton?.addEventListener("click", () => {
 });
 
 window.addEventListener("beforeunload", (event) => {
-  const isGeneratorUsed = generatorController.settings.world !== 0 && generatorController.settings.turn !== -1;
+  const isGeneratorUsed = generatorController.settings.world !== 0 && generatorController.settings.day !== -1;
   if (isGeneratorUsed) event.preventDefault();
 });

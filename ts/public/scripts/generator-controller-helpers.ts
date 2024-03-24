@@ -109,10 +109,3 @@ export const selectInputValue = function (e: Event) {
   const input = e.target as HTMLInputElement;
   input.select();
 };
-
-export const getLatestTurn = function (world: World) {
-  const isWorldOpen = world.endTimestamp === 0;
-  const endTimestamp = isWorldOpen ? Math.round(Date.now() / 1000) : world.endTimestamp;
-  const latestTurn = Math.floor((endTimestamp - world.startTimestamp) / 60 / 60 / 24);
-  return latestTurn;
-};

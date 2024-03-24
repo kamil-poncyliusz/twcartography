@@ -5,8 +5,8 @@ const LOGIN_MIN_LENGTH = 2;
 const LOGIN_MAX_LENGTH = 15;
 const PASSWORD_MIN_LENGTH = 8;
 const PASSWORD_MAX_LENGTH = 30;
-const TURN_MIN = 0;
-export const TURN_MAX = 730;
+const TURN_MIN = 18261;
+export const TURN_MAX = 25565;
 const TITLE_MIN_LENGTH = 1;
 const TITLE_MAX_LENGTH = 20;
 const MAP_DESCRIPTION_MAX_LENGTH = 200;
@@ -77,7 +77,7 @@ export const isValidUserRank = function (rank: number): boolean {
   return true;
 };
 
-export const isValidTurn = function (input: number): boolean {
+export const isValidDayTimestamp = function (input: number): boolean {
   if (typeof input !== "number" || isNaN(input) || !Number.isInteger(input) || input < TURN_MIN || input > TURN_MAX) return false;
   return true;
 };
@@ -183,5 +183,11 @@ export const isValidMarkGroup = function (markGroup: MarkGroup): boolean {
   if (!Array.isArray(markGroup.tribes)) return false;
   const areTribeIdsValid = markGroup.tribes.every((tribeId) => typeof tribeId === "string" && Number.isInteger(parseInt(tribeId)));
   if (!areTribeIdsValid) return false;
+  return true;
+};
+
+export const isValidDomain = function (domain: string): boolean {
+  if (typeof domain !== "string") return false;
+  const regex = new RegExp("^([a-z]+|([a-z]+[-][a-z]+))+([.][a-z]{2,5}){1,2}$");
   return true;
 };

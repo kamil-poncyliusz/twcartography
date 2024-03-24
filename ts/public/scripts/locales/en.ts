@@ -34,6 +34,7 @@ const enTranslation: Translation = {
   timeInMilliseconds: "Time in milliseconds",
   frameInterval: "Frame interval",
   server: "Server",
+  servers: "Servers",
   number: "Number",
   domain: "Domain",
   startTime: "Start time",
@@ -63,7 +64,7 @@ const enTranslation: Translation = {
   createNewCollection: "Create new",
   autoRefresh: "Auto-refresh",
   worldTooltip: "...",
-  turnTooltip: "...",
+  dayTooltip: "...",
   backgroundColorTooltip: "...",
   scaleTooltip: "...",
   spotSizeTooltip: "...",
@@ -89,6 +90,11 @@ const enTranslation: Translation = {
   createNewGroup: "Create new",
   newCollection: "New collection",
   noDescription: "No description",
+  updateHour: "Update hour",
+  activate: "Activate",
+  deactivate: "Deactivate",
+  hour: "Hour",
+  day: "Day",
 };
 
 export default enTranslation;

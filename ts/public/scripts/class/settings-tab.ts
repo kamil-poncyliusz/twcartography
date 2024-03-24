@@ -11,6 +11,16 @@ import { getPreferredTranslation } from "../languages.js";
 const acceptedLanguages = [...navigator.languages];
 const translation = getPreferredTranslation(acceptedLanguages);
 
+const dayTimestampFromDateString = function (dateString: string): number {
+  const date = new Date(dateString);
+  return Math.round(date.getTime() / 1000 / 60 / 60 / 24);
+};
+
+const dateStringFromDayTimestamp = function (dayTimestamp: number): string {
+  const date = new Date(dayTimestamp * 24 * 60 * 60 * 1000);
+  return date.toISOString().split("T")[0];
+};
+
 const inputs: { [key: string]: HTMLInputElement } = {
   autoRefresh: document.getElementById("auto-refresh") as HTMLInputElement,
   backgroundColor: document.getElementById("background-color") as HTMLInputElement,
@@ -23,8 +33,8 @@ const inputs: { [key: string]: HTMLInputElement } = {
   smoothBorders: document.getElementById("smooth-borders") as HTMLInputElement,
   topSpotSize: document.getElementById("top-spot-size") as HTMLInputElement,
   trim: document.getElementById("trim") as HTMLInputElement,
-  turn: document.getElementById("turn-input") as HTMLInputElement,
 };
+const dayInput = document.getElementById("day-input") as HTMLInputElement;
 const mapSettingsInput = document.getElementById("map-settings") as HTMLInputElement;
 const worldSelect = document.getElementById("world-select") as HTMLSelectElement;
 const collectionSelect = document.getElementById("collection") as HTMLSelectElement | null;
@@ -76,7 +86,7 @@ class SettingsTab {
     inputs.smoothBorders.addEventListener("change", this.changeSmoothBorders);
     inputs.topSpotSize.addEventListener("change", this.changeTopSpotSize);
     inputs.trim.addEventListener("input", this.changeTrim);
-    inputs.turn.addEventListener("change", this.changeTurn);
+    dayInput.addEventListener("change", this.changeTurn);
     worldSelect.addEventListener("change", this.changeWorld);
     mapSettingsInput.addEventListener("click", selectInputValue);
     mapSettingsInput.addEventListener("input", this.changeSettings);
@@ -87,6 +97,7 @@ class SettingsTab {
     for (const key in inputs) {
       inputs[key].disabled = value;
     }
+    dayInput.disabled = value;
     if (generateButton) generateButton.disabled = value;
     if (publishMapButton) publishMapButton.disabled = value;
     if (mapTitleInput) mapTitleInput.disabled = value;
@@ -175,8 +186,9 @@ class SettingsTab {
   };
   changeTurn = async (e: Event) => {
     const input = e.target as HTMLInputElement;
-    const turn = parseInt(input.value);
-    const isChanged = await this.#generator.changeTurn(turn);
+    const date = input.value;
+    const day = dayTimestampFromDateString(date);
+    const isChanged = await this.#generator.changeTurn(day);
     if (isChanged) input.classList.remove("is-invalid");
     else input.classList.add("is-invalid");
   };
@@ -237,6 +249,7 @@ class SettingsTab {
       else input.value = String(value);
       input.classList.remove("is-invalid");
     }
+    dayInput.value = dateStringFromDayTimestamp(settings.day);
     mapSettingsInput.value = encodedSettings;
     mapSettingsInput.classList.remove("is-invalid");
     inputs.autoRefresh.checked = this.#generator.autoRefresh;
@@ -244,9 +257,9 @@ class SettingsTab {
     if (this.#generator.settings.world > 0) {
       const worldIdString = String(this.#generator.settings.world);
       worldSelect.value = worldIdString;
-      if (this.#generator.settings.turn === -1) {
-        inputs.turn.disabled = false;
-        inputs.turn.value = "";
+      if (this.#generator.settings.day === -1) {
+        dayInput.disabled = false;
+        dayInput.value = "";
       } else {
         this.disabled = false;
         if (inputs.trim.checked) inputs.outputWidth.disabled = true;
@@ -260,12 +273,6 @@ class SettingsTab {
         }
       }
     }
-    const getTurnInputPlaceholder = function (latestTurn: number): string {
-      if (latestTurn < 0) return "-";
-      return `0-${latestTurn}`;
-    };
-    const turnPlaceholder = getTurnInputPlaceholder(this.#generator.latestTurn);
-    inputs.turn.setAttribute("placeholder", turnPlaceholder);
     for (let setting in settingsLimits.min) {
       inputs[setting].setAttribute("placeholder", String(settingsLimits.min[setting]) + "-");
       inputs[setting].setAttribute("min", String(settingsLimits.min[setting]));

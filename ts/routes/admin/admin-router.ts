@@ -3,6 +3,7 @@ import { getWorldDataStates } from "../../src/world-data-state.js";
 import { readUsers } from "../../src/queries/user.js";
 import { readWorlds } from "../../src/queries/world.js";
 import { getPreferredTranslation } from "../../public/scripts/languages.js";
+import { readServers } from "../../src/queries/server.js";
 
 const adminRouter = express.Router();
 
@@ -14,15 +15,15 @@ adminRouter.get("/", (req, res) => {
   };
   return res.render("admin/index", locals);
 });
-adminRouter.get("/worlds", async (req, res) => {
-  const worlds = await readWorlds();
+adminRouter.get("/servers", async (req, res) => {
+  const servers = await readServers();
   const acceptsLanguages = req.acceptsLanguages();
   const translation = getPreferredTranslation(acceptsLanguages);
   const locals = {
-    worlds: worlds,
+    servers: servers,
     translation: translation,
   };
-  return res.render("admin/worlds", locals);
+  return res.render("admin/servers", locals);
 });
 adminRouter.get("/world-data", async (req, res) => {
   const worldDataStates = await getWorldDataStates();

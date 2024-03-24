@@ -33,7 +33,7 @@ router.post("/logout", async (req, res) => {
 router.get("/new", async (req, res) => {
   const worlds = await readWorlds();
   worlds.sort((a, b) => {
-    if (a.server + a.num < b.server + b.num) return -1;
+    if (a.name < b.name) return -1;
     return 1;
   });
   const acceptsLanguages = req.acceptsLanguages();

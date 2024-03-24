@@ -13,26 +13,25 @@ html(lang="pl-PL")
   body
     table#world-data
       tbody
-        each world in state
+        each world, worldName in state
           tr
-            td= world.serverName
-            each turn, index in world.turns
-              if turn.isParsed
-                if turn.hasDataFiles
+            td= world.name
+            each day, dayTimestamp in world.days
+              if day.isParsed
+                if day.hasDataFiles
                   td.available(
-                    title=`${translation.turn} ${index}, ${translation.parsedDataAvailable.toLowerCase()}, ${translation.filesAvailable.toLowerCase()}`
-                  )= index
+                    title=`${translation.day} ${dayTimestamp}, ${translation.parsedDataAvailable.toLowerCase()}, ${translation.filesAvailable.toLowerCase()}`
+                  )= dayTimestamp
                 else
                   td.data-only(
-                    title=`${translation.turn} ${index}, ${translation.parsedDataAvailable.toLowerCase()}, ${translation.filesUnavailable.toLowerCase()}`
-                  )= index
+                    title=`${translation.day} ${dayTimestamp}, ${translation.parsedDataAvailable.toLowerCase()}, ${translation.filesUnavailable.toLowerCase()}`
+                  )= dayTimestamp
               else
-                if turn.hasDataFiles
+                if day.hasDataFiles
                   td.files-only(
-                    title=`${translation.turn} ${index}, ${translation.parsedDataUnavailable.toLowerCase()}, ${translation.filesAvailable.toLowerCase()}`
-                  )
-                    button.create-turn-data(data-world=world.id, data-turn=index)= index
+                    title=`${translation.day} ${dayTimestamp}, ${translation.parsedDataUnavailable.toLowerCase()}, ${translation.filesAvailable.toLowerCase()}`
+                  )= dayTimestamp
                 else
                   td.unavailable(
-                    title=`${translation.turn} ${index}, ${translation.parsedDataUnavailable.toLowerCase()}, ${translation.filesUnavailable.toLowerCase()}`
-                  )= index
+                    title=`${translation.day} ${dayTimestamp}, ${translation.parsedDataUnavailable.toLowerCase()}, ${translation.filesUnavailable.toLowerCase()}`
+                  )= dayTimestamp

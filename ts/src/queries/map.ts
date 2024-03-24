@@ -22,11 +22,11 @@ export const readMap = async function (id: number): Promise<CreatedMapWithRelati
   return result;
 };
 
-export const createMap = async function (turn: number, title: string, description: string, settings: Settings, collection: number) {
+export const createMap = async function (day: number, title: string, description: string, settings: Settings, collection: number) {
   const result = await prisma.createdMap
     .create({
       data: {
-        turn: turn,
+        turn: day,
         title: title,
         description: description,
         settings: settings as unknown as Prisma.InputJsonValue,

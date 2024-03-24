@@ -27,22 +27,30 @@ model User {
 }
 
 model TurnData {
-  id       Int            @id @default(autoincrement())
-  data     Json           @db.Json
-  turn     Int
-  worldId  Int
-  world    World          @relation(fields: [worldId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id        Int            @id @default(autoincrement())
+  worldId   Int
+  data      Json           @db.Json
+  day       Int
+  timestamp DateTime       @default(now()) @db.Timestamptz(0)
+  world     World          @relation(fields: [worldId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model Server{
+  id              Int          @id @default(autoincrement())
+  name            String       @unique
+  domain          String?
+  updateHour      Int
+  worlds          World[]
 }
 
 model World {
   id              Int           @id @default(autoincrement())
-  domain          String
-  num             String
-  server          String
-  startTimestamp  Int
-  endTimestamp    Int           @default(0)
+  serverId        Int
+  name            String        @unique
+  active          Boolean       @default(true)
   collections     Collection[]
   worldData       TurnData[]
+  server          Server        @relation(fields: [serverId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Collection {

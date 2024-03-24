@@ -1,0 +1,41 @@
+doctype html
+html(lang="pl-PL")
+  head
+    meta(charset="UTF-8")
+    meta(http-equiv="X-UA-Compatible", content="IE=edge")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title TW Cartography
+    include ../favicon.pug
+    link(rel="stylesheet", href="/css/reset.css", type="text/css")
+    link(rel="stylesheet", href="/css/main.css", type="text/css")
+    link(rel="stylesheet", href="/css/admin/servers.css", type="text/css")
+    script(src="/scripts/admin/servers.js", type="module", defer)
+  body
+    form
+      table
+        thead
+          tr
+            th ID
+            th= translation.name
+            th= translation.domain
+            th= translation.updateHour
+            th
+        tbody
+          each server in servers
+            tr
+              td= server.id
+              td= server.name
+              td= server.domain
+              td= server.updateHour
+              td
+                button.server-status-button(type="button", data-server-id=server.id)= translation.deactivate
+          tr
+            td -
+            td
+              input#name(type="text", name="name", autocomplete="off", placeholder=translation.name.toLowerCase())
+            td
+              input#domain(type="text", name="domain", autocomplete="off", placeholder=translation.domain.toLowerCase())
+            td
+              input#update-hour(type="number", name="update-hour", autocomplete="off", placeholder=translation.hour.toLowerCase())
+            td
+              input(type="submit", value=translation.add)

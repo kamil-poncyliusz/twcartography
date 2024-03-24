@@ -3,12 +3,12 @@ import { ParsedTurnData } from "../types";
 
 const prisma = new PrismaClient();
 
-export const readTurnData = async function (worldId: number, turn: number): Promise<ParsedTurnData | null> {
+export const readTurnData = async function (worldId: number, day: number): Promise<ParsedTurnData | null> {
   const result = await prisma.turnData
     .findFirst({
       where: {
         worldId: worldId,
-        turn: turn,
+        day: day,
       },
     })
     .catch((err) => {
@@ -22,10 +22,10 @@ export const readTurnData = async function (worldId: number, turn: number): Prom
   return null;
 };
 
-export const createTurnData = async function (worldId: number, turn: number, parsedTurnData: ParsedTurnData): Promise<boolean> {
+export const createTurnData = async function (worldId: number, day: number, parsedTurnData: ParsedTurnData): Promise<boolean> {
   const result = await prisma.turnData
     .create({
-      data: { worldId: worldId, turn: turn, data: parsedTurnData as unknown as Prisma.InputJsonValue },
+      data: { worldId: worldId, day: day, data: parsedTurnData as unknown as Prisma.InputJsonValue },
     })
     .catch((err) => {
       console.error("Prisma error:", err);

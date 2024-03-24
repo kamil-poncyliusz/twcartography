@@ -1,4 +1,4 @@
-import { Collection, CreatedAnimation, CreatedMap, User, World } from "@prisma/client";
+import { Collection, CreatedAnimation, CreatedMap, Server, User, World } from "@prisma/client";
 
 export interface MarkGroup {
   tribes: string[];
@@ -18,7 +18,7 @@ export interface Settings {
   smoothBorders: boolean;
   trim: boolean;
   topSpotSize: number;
-  turn: number;
+  day: number;
   world: number;
 }
 export interface ParsedColor {
@@ -61,10 +61,11 @@ export interface ParsedTurnData {
 export type CreatedMapWithRelations = CreatedMap & {
   collection: Collection;
 };
-export type WorldWithWorldData = World & { worldData: { id: number; turn: number }[] };
+export type WorldWithWorldData = World & { worldData: { id: number; day: number }[] };
 export type UserWithRelations = User & {
   collections: Collection[];
 };
+export type ServerWithWorlds = Server & { worlds: World[] };
 export type CollectionWithRelations = Collection & {
   animations: CreatedAnimation[];
   author: User;
@@ -75,10 +76,9 @@ export type CreatedAnimationWithRelations = CreatedAnimation & {
   collection: Collection;
 };
 export interface WorldDataState {
-  filesDirectoryName: string;
+  name: string;
   id: number;
-  serverName: string;
-  turns: TurnDataState[];
+  days: { [key: string]: TurnDataState };
 }
 export interface TurnDataState {
   hasDataFiles: boolean;
@@ -95,12 +95,12 @@ export interface CreateMapRequestPayload {
   settings: Settings;
   title: string;
 }
-export type CreateWorldRequestPayload = Omit<World, "id">;
 export interface ReadCollectionsRequestFilters {
   page: number;
   authorId: number;
   worldId: number;
 }
+export type CreateServerRequestPayload = Omit<Server, "id" | "active">;
 export interface CreateMapResponse {
   success: boolean;
   newCollection?: {
@@ -143,6 +143,7 @@ export interface Translation {
   timeInMilliseconds: string;
   frameInterval: string;
   server: string;
+  servers: string;
   number: string;
   domain: string;
   startTime: string;
@@ -172,7 +173,7 @@ export interface Translation {
   createNewCollection: string;
   autoRefresh: string;
   worldTooltip: string;
-  turnTooltip: string;
+  dayTooltip: string;
   backgroundColorTooltip: string;
   scaleTooltip: string;
   spotSizeTooltip: string;
@@ -198,4 +199,9 @@ export interface Translation {
   createNewGroup: string;
   newCollection: string;
   noDescription: string;
+  updateHour: string;
+  activate: string;
+  deactivate: string;
+  hour: string;
+  day: string;
 }

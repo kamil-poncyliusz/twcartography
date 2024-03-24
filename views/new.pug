@@ -23,11 +23,11 @@ html(lang="pl-PL")
               select#world-select(name="world", autofocus, autocomplete="off")
                 option(value="", selected, disabled, hidden)= translation.choose.toLowerCase()
                 each world in worlds
-                  option(value=world.id) #{ world.server+world.num }
+                  option(value=world.id) #{ world.name }
           .row
-            label(for="turn-input", title=translation.turnTooltip)= `${translation.turn}:`
+            label(for="day-input", title=translation.dayTooltip)= `${translation.day}:`
             div
-              input#turn-input(type="number", name="turn-input", min="0", max="365", placeholder="-", autocomplete="off", disabled)
+              input#day-input(type="date", name="day-input", autocomplete="off", disabled)
           .row
             label(for="background-color", title=translation.backgroundColorTooltip)= `${translation.backgroundColor}:`
             div

@@ -23,7 +23,7 @@ export const handleCreateMap = async function (req: Request): Promise<CreateMapR
   const translation = getPreferredTranslation(acceptedLanguages);
   const payloadValidationCode = isValidCreateMapRequestPayload(newMapPayload);
   if (payloadValidationCode !== CreateMapRequestValidationCode.Ok) return { success: false };
-  const turnData = await readTurnData(settings.world, settings.turn);
+  const turnData = await readTurnData(settings.world, settings.day);
   if (!turnData) return { success: false };
   const generator = new MapGenerator(turnData, settings);
   const mapImageData = generator.getMap();
@@ -35,7 +35,7 @@ export const handleCreateMap = async function (req: Request): Promise<CreateMapR
     if (!createdCollection) return { success: false };
     newMapPayload.collectionId = createdCollection.id;
   }
-  const createdMap = await createMap(settings.turn, newMapPayload.title, newMapPayload.description, settings, newMapPayload.collectionId);
+  const createdMap = await createMap(settings.day, newMapPayload.title, newMapPayload.description, settings, newMapPayload.collectionId);
   if (!createdMap) return { success: false };
   saveMapPng(createdMap.id, mapImageData as ImageData);
   if (collectionExists) return { success: true };

@@ -1,5 +1,5 @@
 import { PrismaClient, World } from "@prisma/client";
-import { CreateWorldRequestPayload, WorldWithWorldData } from "../types";
+import { WorldWithWorldData } from "../types";
 
 const prisma = new PrismaClient();
 
@@ -32,7 +32,7 @@ export const readWorldsWithWorldData = async function (): Promise<WorldWithWorld
         worldData: {
           select: {
             id: true,
-            turn: true,
+            day: true,
           },
         },
       },
@@ -44,15 +44,12 @@ export const readWorldsWithWorldData = async function (): Promise<WorldWithWorld
   return result;
 };
 
-export const createWorld = async function (createWorldRequestPayload: CreateWorldRequestPayload): Promise<World | null> {
+export const createWorld = async function (serverId: number, name: string): Promise<World | null> {
   const createdWorld = await prisma.world
     .create({
       data: {
-        server: createWorldRequestPayload.server,
-        num: createWorldRequestPayload.num,
-        domain: createWorldRequestPayload.domain,
-        startTimestamp: createWorldRequestPayload.startTimestamp,
-        endTimestamp: createWorldRequestPayload.endTimestamp,
+        name: name,
+        serverId: serverId,
       },
     })
     .catch((err) => {
@@ -74,20 +71,4 @@ export const deleteWorld = async function (id: number): Promise<World | null> {
       return null;
     });
   return deletedWorld;
-};
-
-export const updateWorld = async function (id: number, updatedFields: { endTimestamp: number }): Promise<boolean> {
-  const result = await prisma.world
-    .update({
-      where: {
-        id: id,
-      },
-      data: updatedFields,
-    })
-    .catch((err) => {
-      console.error("Prisma error:", err);
-      return false;
-    });
-  if (result) return true;
-  else return false;
 };

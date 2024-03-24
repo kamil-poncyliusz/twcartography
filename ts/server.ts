@@ -9,8 +9,9 @@ import apiRouter from "./routes/api/api-router.js";
 import adminRouter from "./routes/admin/admin-router.js";
 import { minRequiredRank } from "./src/authorization.js";
 import { upsertUser } from "./src/queries/user.js";
-import turnDataDownloaderDaemon from "./src/turn-data-downloader-daemon.js";
+// import turnDataDownloaderDaemon from "./src/turn-data-downloader-daemon.js";
 import { UserSessionData } from "./src/types";
+import dataFilesDownloaderDaemon from "./src/data-files-downloader-daemon.js";
 
 declare module "express-session" {
   interface SessionData {
@@ -50,7 +51,7 @@ app.use(
 
 await createAccount("Admin", process.env.ADMIN_ACCOUNT_PASSWORD ?? "password", 10);
 await createAccount("test", "test1234", 2);
-await turnDataDownloaderDaemon.init();
+await dataFilesDownloaderDaemon.init();
 
 app.use("/", router);
 app.use("/api", apiRouter);
