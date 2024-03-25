@@ -16,7 +16,7 @@ export const readCollection = async function (id: number): Promise<CollectionWit
         author: true,
         maps: {
           orderBy: {
-            turn: "asc",
+            day: "asc",
           },
         },
         world: true,

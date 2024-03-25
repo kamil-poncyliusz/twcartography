@@ -9,7 +9,6 @@ import apiRouter from "./routes/api/api-router.js";
 import adminRouter from "./routes/admin/admin-router.js";
 import { minRequiredRank } from "./src/authorization.js";
 import { upsertUser } from "./src/queries/user.js";
-// import turnDataDownloaderDaemon from "./src/turn-data-downloader-daemon.js";
 import { UserSessionData } from "./src/types";
 import dataFilesDownloaderDaemon from "./src/data-files-downloader-daemon.js";
 

@@ -23,6 +23,7 @@ import SettingsTab from "./settings-tab.js";
 import CanvasFrame from "./canvas-frame.js";
 import CaptionsTab from "./captions-tab.js";
 import { MarkGroup, Settings, ParsedTurnData, Tribe, Caption } from "../../../src/types";
+import { World } from "@prisma/client";
 
 const DEFAULT_AUTO_REFRESH = true;
 const MAX_TRIBE_SUGGESTIONS = 50;
@@ -69,6 +70,7 @@ class GeneratorController {
   };
   #settingsTab: SettingsTab;
   #suggestionsTab: SuggestionsTab;
+  world: World | null = null;
   constructor() {
     this.#canvasFrame = new CanvasFrame(this);
     this.#captionsTab = new CaptionsTab(this);
@@ -281,6 +283,7 @@ class GeneratorController {
     this.data = {};
     this.settings.day = -1;
     if (!world) return false;
+    this.world = world;
     this.settings.world = worldId;
     this.#settingsTab.update();
     return true;

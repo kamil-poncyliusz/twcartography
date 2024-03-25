@@ -126,7 +126,7 @@ Collections can be used to create animated maps.
 
 1. Click "Create a map" to enter the generator.
 
-2. Select a world and turn.
+2. Select a world and day.
 
 3. Under "Marks" tab, create groups and add tribes that You want to mark on the map.
 

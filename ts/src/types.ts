@@ -83,6 +83,7 @@ export interface WorldDataState {
 export interface TurnDataState {
   hasDataFiles: boolean;
   isParsed: boolean;
+  dateString: string;
 }
 export interface UserSessionData {
   id: number;

@@ -2,6 +2,7 @@ import { Request } from "express";
 import { createServer } from "../../src/queries/server.js";
 import { CreateServerRequestPayload } from "../../src/types";
 import { isValidCreateServerRequestPayload } from "../../public/scripts/requests-validators.js";
+import dataFilesDownloaderDaemon from "../../src/data-files-downloader-daemon.js";
 
 export const handleCreateServer = async function (req: Request): Promise<boolean> {
   if (!req.session.user || req.session.user.rank < 10) return false;
@@ -13,6 +14,7 @@ export const handleCreateServer = async function (req: Request): Promise<boolean
   if (!isValidCreateServerRequestPayload(payload)) return false;
   const createdServer = await createServer(payload);
   if (!createdServer) return false;
+  dataFilesDownloaderDaemon.startDownloading(createdServer);
   return true;
 };
 

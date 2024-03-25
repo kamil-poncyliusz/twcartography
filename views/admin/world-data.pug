@@ -21,17 +21,17 @@ html(lang="pl-PL")
                 if day.hasDataFiles
                   td.available(
                     title=`${translation.day} ${dayTimestamp}, ${translation.parsedDataAvailable.toLowerCase()}, ${translation.filesAvailable.toLowerCase()}`
-                  )= dayTimestamp
+                  )= day.dateString
                 else
                   td.data-only(
                     title=`${translation.day} ${dayTimestamp}, ${translation.parsedDataAvailable.toLowerCase()}, ${translation.filesUnavailable.toLowerCase()}`
-                  )= dayTimestamp
+                  )= day.dateString
               else
                 if day.hasDataFiles
                   td.files-only(
                     title=`${translation.day} ${dayTimestamp}, ${translation.parsedDataUnavailable.toLowerCase()}, ${translation.filesAvailable.toLowerCase()}`
-                  )= dayTimestamp
+                  )= day.dateString
                 else
                   td.unavailable(
                     title=`${translation.day} ${dayTimestamp}, ${translation.parsedDataUnavailable.toLowerCase()}, ${translation.filesUnavailable.toLowerCase()}`
-                  )= dayTimestamp
+                  )= day.dateString

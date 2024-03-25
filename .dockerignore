@@ -1,8 +1,8 @@
 node_modules
 app.code-workspace
 .env
-temp/*/
-!temp/r50800
+data-files/*/
+!data-files/tt1
 public/images/maps
 public/images/animations
 *.txt

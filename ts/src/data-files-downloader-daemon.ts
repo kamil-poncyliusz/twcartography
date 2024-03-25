@@ -30,7 +30,8 @@ const downloadDataFile = function (url: string, path: string, file: string) {
 };
 
 const getWorldsList = async function (server: Server): Promise<string> {
-  const command = `curl https://${server.domain}/backend/get_servers.php`;
+  if (!server.domain) return "";
+  const command = `curl https://www.${server.domain}/backend/get_servers.php`;
   return new Promise((resolve, reject) => {
     exec(command, (error, stdout, stderr) => {
       if (error) {
@@ -90,14 +91,17 @@ const dataFilesDownloaderDaemon = {
     await parseAvailableTurnData();
     const servers = await readServers();
     for (let server of servers) {
-      if (server.domain !== null) this.startDownloading({ ...server });
+      this.startDownloading({ ...server });
     }
   },
   startDownloading: function (server: Server) {
     if (process.env.RUN_DOWNLOADER_DAEMON !== "true") return;
+    if (server.domain === null) return;
     const rule = `0 0 ${server.updateHour} * * *`;
     const jobName = server.id.toString();
+    console.log(`Daemon: Downloading for server ${server.name} set at hour ${server.updateHour}`);
     this.scheduler.scheduleJob(jobName, rule, async function () {
+      console.log(`Daemon: Downloading data files for server ${server.name}`);
       const day = Math.floor(Date.now() / 1000 / SECONDS_IN_A_DAY);
       const worldsListString = await getWorldsList(server);
       const worldsList = parseWorldsList(worldsListString);
@@ -105,24 +109,25 @@ const dataFilesDownloaderDaemon = {
       if (!serverWithWorlds) return;
       for (let world of worldsList) {
         const isDownloaded = await downloadDataFiles(world, day);
-        if (!isDownloaded) console.log(`Error downloading data files for ${world.name}`);
-        let worldInDb = serverWithWorlds.worlds.find((w) => w.name === world.name);
-        if (!worldInDb) {
-          const worldInDb = await createWorld(server.id, world.name);
-          if (!worldInDb) {
-            console.log(`Error while adding world ${world.name} to the database`);
+        if (!isDownloaded) continue;
+        let worldInDatabase = serverWithWorlds.worlds.find((w) => w.name === world.name);
+        if (!worldInDatabase) {
+          const createdWorld = await createWorld(server.id, world.name);
+          if (createdWorld) worldInDatabase = createdWorld;
+          else {
+            console.log(`Daemon: Error while adding world ${world.name} to the database`);
             continue;
           }
         }
         const parsedData = await parseTurnData(world.name, String(day));
         if (!parsedData) {
-          console.log(`Error while parsing data for ${world.name}`);
+          console.log(`Daemon: Error while parsing data for ${world.name}`);
           continue;
         }
-        if (!worldInDb) continue;
-        const isTurnDataCreated = await createTurnData(worldInDb.id, day, parsedData);
-        if (!isTurnDataCreated) console.log(`Error while adding turn data for ${world.name}`);
+        const isTurnDataCreated = await createTurnData(worldInDatabase.id, day, parsedData);
+        if (!isTurnDataCreated) console.log(`Daemon: Error while adding world ${world.name} turn data to the database`);
       }
+      console.log(`Daemon: Downloading data files for server ${server.name} finished`);
     });
   },
   stopDownloading: function (world: World) {

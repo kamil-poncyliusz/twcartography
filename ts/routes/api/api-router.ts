@@ -25,7 +25,6 @@ apiRouter.post("/map", (req, res) => handleRequest(handleCreateMap, req, res));
 apiRouter.patch("/map/:id", (req, res) => handleRequest(handleUpdateMap, req, res));
 apiRouter.delete("/map/:id", (req, res) => handleRequest(handleDeleteMap, req, res));
 
-// apiRouter.post("/turn-data", (req, res) => handleRequest(handleCreateTurnData, req, res));
 apiRouter.get("/turn-data/:world/:day", (req, res) => handleRequest(handleReadTurnData, req, res));
 
 apiRouter.patch("/user/:id", (req, res) => handleRequest(handleUpdateUser, req, res));
@@ -33,7 +32,6 @@ apiRouter.post("/user", (req, res) => handleRequest(handleCreateUser, req, res))
 
 apiRouter.get("/world/:id", (req, res) => handleRequest(handleReadWorld, req, res));
 
-// apiRouter.get("/servers", (req, res) => handleRequest(handleReadServers, req, res));
-apiRouter.post("/servers", (req, res) => handleRequest(handleCreateServer, req, res));
+apiRouter.post("/server", (req, res) => handleRequest(handleCreateServer, req, res));
 // apiRouter.delete("/server/:id", (req, res) => handleRequest(handleDeleteServer, req, res));
 export default apiRouter;

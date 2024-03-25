@@ -4,7 +4,6 @@ import { HttpMethod, httpRequest } from "../requests.js";
 import { isValidId } from "../validators.js";
 
 const createServerForm = document.querySelector("form") as HTMLFormElement;
-const deleteServerButtons = document.querySelectorAll(".delete-server-button");
 const serverStatusButtons = document.querySelectorAll(".server-status-button");
 
 const serverEndpoint = "/api/server";

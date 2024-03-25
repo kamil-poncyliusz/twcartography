@@ -26,7 +26,7 @@ export const createMap = async function (day: number, title: string, description
   const result = await prisma.createdMap
     .create({
       data: {
-        turn: day,
+        day: day,
         title: title,
         description: description,
         settings: settings as unknown as Prisma.InputJsonValue,

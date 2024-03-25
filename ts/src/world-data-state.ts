@@ -3,7 +3,8 @@ import { createTurnData } from "./queries/turn-data.js";
 import { createWorld, readWorldsWithWorldData } from "./queries/world.js";
 import { WorldDataState, TurnDataState } from "./types";
 import { areDataFilesAvailable, getDirectories } from "./data-files-directory-handlers.js";
-import { createServer, readServer, readServerByName } from "./queries/server.js";
+import { createServer, readServerByName } from "./queries/server.js";
+import { dateStringFromDayTimestamp } from "../public/scripts/time-helpers.js";
 
 const getAvailableDataFiles = async function (): Promise<{ [key: string]: string[] }> {
   const result: { [key: string]: string[] } = {};
@@ -35,6 +36,7 @@ export const getWorldDataStates = async function (): Promise<{ [key: string]: Wo
       const newDay: TurnDataState = {
         hasDataFiles: false,
         isParsed: true,
+        dateString: dateStringFromDayTimestamp(turnData.day),
       };
       newWorld.days[String(turnData.day)] = newDay;
     }
@@ -54,6 +56,7 @@ export const getWorldDataStates = async function (): Promise<{ [key: string]: Wo
         const newDay: TurnDataState = {
           hasDataFiles: false,
           isParsed: false,
+          dateString: dateStringFromDayTimestamp(parseInt(day)),
         };
         worldDataStates[worldName].days[day] = newDay;
       }

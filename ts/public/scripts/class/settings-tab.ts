@@ -7,19 +7,10 @@ import { selectInputValue } from "../generator-controller-helpers.js";
 import { CreateMapRequestValidationCode, isValidCreateMapRequestPayload } from "../requests-validators.js";
 import { CreateMapRequestPayload, CreateMapResponse, Settings } from "../../../src/types";
 import { getPreferredTranslation } from "../languages.js";
+import { dateStringFromDayTimestamp, dayTimestampFromDateString } from "../time-helpers.js";
 
 const acceptedLanguages = [...navigator.languages];
 const translation = getPreferredTranslation(acceptedLanguages);
-
-const dayTimestampFromDateString = function (dateString: string): number {
-  const date = new Date(dateString);
-  return Math.round(date.getTime() / 1000 / 60 / 60 / 24);
-};
-
-const dateStringFromDayTimestamp = function (dayTimestamp: number): string {
-  const date = new Date(dayTimestamp * 24 * 60 * 60 * 1000);
-  return date.toISOString().split("T")[0];
-};
 
 const inputs: { [key: string]: HTMLInputElement } = {
   autoRefresh: document.getElementById("auto-refresh") as HTMLInputElement,
@@ -254,11 +245,11 @@ class SettingsTab {
     mapSettingsInput.classList.remove("is-invalid");
     inputs.autoRefresh.checked = this.#generator.autoRefresh;
     this.disabled = true;
+    dayInput.disabled = true;
     if (this.#generator.settings.world > 0) {
-      const worldIdString = String(this.#generator.settings.world);
-      worldSelect.value = worldIdString;
+      worldSelect.value = String(this.#generator.settings.world);
+      dayInput.disabled = false;
       if (this.#generator.settings.day === -1) {
-        dayInput.disabled = false;
         dayInput.value = "";
       } else {
         this.disabled = false;
