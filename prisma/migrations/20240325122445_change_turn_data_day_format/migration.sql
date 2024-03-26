@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "CreatedMap" ALTER COLUMN "day" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "TurnData" ALTER COLUMN "day" SET DATA TYPE TEXT;

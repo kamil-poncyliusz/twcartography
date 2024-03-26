@@ -67,7 +67,7 @@ const getDataFileUrl = (world: WorldListEntry, file: string): string => {
   return `${world.adress}/interface.php?func=get_conquer&since=${dayAgoTimestamp}`;
 };
 
-const downloadDataFiles = async function (world: WorldListEntry, day: number): Promise<boolean> {
+const downloadDataFiles = async function (world: WorldListEntry, day: string): Promise<boolean> {
   const files = ["village", "player", "ally", "conquer", "kill_all_tribe", "kill_att_tribe", "kill_def_tribe"];
   const directoryPath = getDataFilesDirectoryPath(world.name, day);
   const isDirectoryCreated = await createDirectory(directoryPath);
@@ -102,7 +102,8 @@ const dataFilesDownloaderDaemon = {
     console.log(`Daemon: Downloading for server ${server.name} set at hour ${server.updateHour}`);
     this.scheduler.scheduleJob(jobName, rule, async function () {
       console.log(`Daemon: Downloading data files for server ${server.name}`);
-      const day = Math.floor(Date.now() / 1000 / SECONDS_IN_A_DAY);
+      const date = new Date();
+      const day = date.toISOString().split("T")[0];
       const worldsListString = await getWorldsList(server);
       const worldsList = parseWorldsList(worldsListString);
       const serverWithWorlds = await readServerWithWorlds(server.id);
@@ -119,7 +120,7 @@ const dataFilesDownloaderDaemon = {
             continue;
           }
         }
-        const parsedData = await parseTurnData(world.name, String(day));
+        const parsedData = await parseTurnData(world.name, day);
         if (!parsedData) {
           console.log(`Daemon: Error while parsing data for ${world.name}`);
           continue;

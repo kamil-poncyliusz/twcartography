@@ -77,9 +77,11 @@ export const isValidUserRank = function (rank: number): boolean {
   return true;
 };
 
-export const isValidDayTimestamp = function (input: number): boolean {
-  if (typeof input !== "number" || isNaN(input) || !Number.isInteger(input) || input < TURN_MIN || input > TURN_MAX) return false;
-  return true;
+// function checks if strings is in format "YYYY-MM-DD"
+export const isValidDay = function (input: string): boolean {
+  if (typeof input !== "string") return false;
+  const regex = new RegExp(/^\d{4}-\d{1,2}-\d{1,2}$/);
+  return regex.test(input);
 };
 
 export const isValidTimestamp = function (input: number): boolean {

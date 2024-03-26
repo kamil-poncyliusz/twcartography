@@ -3,7 +3,7 @@ import { ParsedTurnData } from "../types";
 
 const prisma = new PrismaClient();
 
-export const readTurnData = async function (worldId: number, day: number): Promise<ParsedTurnData | null> {
+export const readTurnData = async function (worldId: number, day: string): Promise<ParsedTurnData | null> {
   const result = await prisma.turnData
     .findFirst({
       where: {
@@ -22,7 +22,7 @@ export const readTurnData = async function (worldId: number, day: number): Promi
   return null;
 };
 
-export const createTurnData = async function (worldId: number, day: number, parsedTurnData: ParsedTurnData): Promise<boolean> {
+export const createTurnData = async function (worldId: number, day: string, parsedTurnData: ParsedTurnData): Promise<boolean> {
   const result = await prisma.turnData
     .create({
       data: { worldId: worldId, day: day, data: parsedTurnData as unknown as Prisma.InputJsonValue },

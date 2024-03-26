@@ -9,7 +9,7 @@ import {
   isValidPassword,
   isValidScale,
   isValidTitle,
-  isValidDayTimestamp,
+  isValidDay,
   settingsLimits,
 } from "../../../../ts/public/scripts/validators";
 
@@ -106,13 +106,13 @@ describe("isValidTitle", () => {
     expect(isValidTitle(exampleString(21))).toBe(false);
   });
 });
-describe("isValidDayTimestamp", () => {
+describe("isValidDay", () => {
   test("Should check if given day is valid", () => {
-    expect(isValidDayTimestamp(-123)).toBe(false);
-    expect(isValidDayTimestamp(0)).toBe(true);
-    expect(isValidDayTimestamp(1)).toBe(true);
-    expect(isValidDayTimestamp(1.23)).toBe(false);
-    expect(isValidDayTimestamp(123)).toBe(true);
-    expect(isValidDayTimestamp(NaN)).toBe(false);
+    expect(isValidDay(-123)).toBe(false);
+    expect(isValidDay(0)).toBe(true);
+    expect(isValidDay(1)).toBe(true);
+    expect(isValidDay(1.23)).toBe(false);
+    expect(isValidDay(123)).toBe(true);
+    expect(isValidDay(NaN)).toBe(false);
   });
 });

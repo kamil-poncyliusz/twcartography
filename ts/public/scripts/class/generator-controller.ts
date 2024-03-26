@@ -14,7 +14,7 @@ import {
   isValidScale,
   isValidSettings,
   isValidTopSpotSize,
-  isValidDayTimestamp,
+  isValidDay,
 } from "../validators.js";
 import MapGenerator from "./map-generator.js";
 import MarkGroupsTab from "./mark-groups-tab.js";
@@ -41,7 +41,7 @@ export const defaultSettings: Settings = {
   smoothBorders: true,
   topSpotSize: 8,
   trim: true,
-  day: 0,
+  day: "",
   world: 1,
 };
 
@@ -49,7 +49,7 @@ class GeneratorController {
   autoRefresh: boolean = DEFAULT_AUTO_REFRESH;
   #canvasFrame: CanvasFrame;
   #captionsTab: CaptionsTab;
-  data: { [key: number]: ParsedTurnData } = {};
+  data: { [key: string]: ParsedTurnData } = {};
   #mapGenerator: MapGenerator | undefined = undefined;
   #markGroupsTab: MarkGroupsTab;
   settings: Settings = {
@@ -79,7 +79,7 @@ class GeneratorController {
     this.#settingsTab = new SettingsTab(this);
   }
   get tribes(): { [key: string]: Tribe } {
-    if (this.settings.world === 0 || this.settings.day === -1) return {};
+    if (this.settings.world === 0 || this.settings.day === "") return {};
     return this.data[this.settings.day].tribes;
   }
   addCaption(caption: Caption, options?: { skipUpdate?: boolean }): boolean {
@@ -94,7 +94,7 @@ class GeneratorController {
     return true;
   }
   addMark(markGroupIndex: number, tribeTag: string, options?: { skipUpdate?: boolean }): boolean {
-    if (this.settings.day === -1) return false;
+    if (this.settings.day === "") return false;
     const markGroup = this.settings.markGroups[markGroupIndex];
     const tribe = this.findTribe(tribeTag);
     if (!tribe || !markGroup) return false;
@@ -110,7 +110,7 @@ class GeneratorController {
     return true;
   }
   addMarkGroup(group: MarkGroup, options?: { skipUpdate?: boolean }): boolean {
-    if (this.settings.day === -1) return false;
+    if (this.settings.day === "") return false;
     if (!isValidGroupName(group.name) || !isValidColor(group.color)) return false;
     if (this.isGroupNameTaken(group.name)) return false;
     const newGroup: MarkGroup = {
@@ -222,7 +222,7 @@ class GeneratorController {
     return true;
   }
   changeMarkGroupColor(markGroupIndex: number, newColor: string): boolean {
-    if (this.settings.day === -1) return false;
+    if (this.settings.day === "") return false;
     const markGroup = this.settings.markGroups[markGroupIndex];
     if (!markGroup) return false;
     if (!isValidColor(newColor)) return false;
@@ -235,7 +235,7 @@ class GeneratorController {
     return true;
   }
   changeMarkGroupName(markGroupIndex: number, newName: string): boolean {
-    if (this.settings.day === -1) return false;
+    if (this.settings.day === "") return false;
     const markGroup = this.settings.markGroups[markGroupIndex];
     if (!markGroup) return false;
     if (!isValidGroupName(newName)) return false;
@@ -249,10 +249,10 @@ class GeneratorController {
     this.#suggestionsTab.render();
     return true;
   }
-  async changeTurn(day: number, options?: { skipUpdate?: boolean }): Promise<boolean> {
+  async changeTurn(day: string, options?: { skipUpdate?: boolean }): Promise<boolean> {
     const isTurnDataAvailable = await this.fetchTurnData(day);
     if (!isTurnDataAvailable) {
-      this.settings.day = -1;
+      this.settings.day = "";
       this.#mapGenerator = undefined;
       return false;
     }
@@ -281,7 +281,7 @@ class GeneratorController {
     const method = HttpMethod.GET;
     const world: Awaited<ReturnType<typeof handleReadWorld>> = await httpRequest(endpoint, method);
     this.data = {};
-    this.settings.day = -1;
+    this.settings.day = "";
     if (!world) return false;
     this.world = world;
     this.settings.world = worldId;
@@ -299,7 +299,7 @@ class GeneratorController {
     return true;
   }
   deleteMark(markGroupIndex: number, tribeTag: string): boolean {
-    if (this.settings.day === -1) return false;
+    if (this.settings.day === "") return false;
     const markGroup = this.settings.markGroups[markGroupIndex];
     if (!markGroup) return false;
     const tribeIndex = markGroup.tribes.findIndex((tribeId) => this.tribes[tribeId].tag === tribeTag);
@@ -325,9 +325,9 @@ class GeneratorController {
     this.#suggestionsTab.render();
     return true;
   }
-  async fetchTurnData(day: number): Promise<boolean> {
+  async fetchTurnData(day: string): Promise<boolean> {
     if (this.settings.world === 0) return false;
-    if (!isValidDayTimestamp(day)) return false;
+    if (!isValidDay(day)) return false;
     if (typeof this.data[day] === "object") return true;
     const endpoint = `/api/turn-data/${this.settings.world}/${day}`;
     const method = HttpMethod.GET;
@@ -382,7 +382,7 @@ class GeneratorController {
     return false;
   }
   setBackgroundColor(color: string): boolean {
-    if (this.settings.day === -1) return false;
+    if (this.settings.day === "") return false;
     if (!isValidColor(color)) return false;
     this.settings.backgroundColor = color;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
@@ -392,7 +392,7 @@ class GeneratorController {
     return true;
   }
   setBorderColor(color: string): boolean {
-    if (this.settings.day === -1) return false;
+    if (this.settings.day === "") return false;
     if (!isValidColor(color)) return false;
     this.settings.borderColor = color;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
@@ -402,7 +402,7 @@ class GeneratorController {
     return true;
   }
   setDrawBorders(value: boolean): boolean {
-    if (this.settings.day === -1) return false;
+    if (this.settings.day === "") return false;
     if (typeof value !== "boolean") return false;
     this.settings.drawBorders = value;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
@@ -412,7 +412,7 @@ class GeneratorController {
     return true;
   }
   setDrawLegend(value: boolean): boolean {
-    if (this.settings.day === -1) return false;
+    if (this.settings.day === "") return false;
     if (typeof value !== "boolean") return false;
     this.settings.drawLegend = value;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
@@ -422,7 +422,7 @@ class GeneratorController {
     return true;
   }
   setOutputWidth(value: number): boolean {
-    if (this.settings.day === -1) return false;
+    if (this.settings.day === "") return false;
     if (!isValidOutputWidth(value)) return false;
     this.settings.outputWidth = value;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
@@ -432,7 +432,7 @@ class GeneratorController {
     return true;
   }
   setLegendFontSize(value: number): boolean {
-    if (this.settings.day === -1) return false;
+    if (this.settings.day === "") return false;
     if (!isValidLegendFontSize(value)) return false;
     this.settings.legendFontSize = value;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
@@ -442,7 +442,7 @@ class GeneratorController {
     return true;
   }
   setScale(value: number): boolean {
-    if (this.settings.day === -1) return false;
+    if (this.settings.day === "") return false;
     if (!isValidScale(value)) return false;
     this.settings.scale = value;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
@@ -452,7 +452,7 @@ class GeneratorController {
     return true;
   }
   setSmoothBorders(value: boolean): boolean {
-    if (this.settings.day === -1) return false;
+    if (this.settings.day === "") return false;
     if (typeof value !== "boolean") return false;
     this.settings.smoothBorders = value;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
@@ -462,7 +462,7 @@ class GeneratorController {
     return true;
   }
   setTopSpotSize(value: number): boolean {
-    if (this.settings.day === -1) return false;
+    if (this.settings.day === "") return false;
     if (!isValidTopSpotSize(value)) return false;
     this.settings.topSpotSize = value;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");
@@ -472,7 +472,7 @@ class GeneratorController {
     return true;
   }
   setTrim(value: boolean): boolean {
-    if (this.settings.day === -1) return false;
+    if (this.settings.day === "") return false;
     if (typeof value !== "boolean") return false;
     this.settings.trim = value;
     if (!this.#mapGenerator) throw new Error("GeneratorController: map generator is undefined");

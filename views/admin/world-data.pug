@@ -16,22 +16,22 @@ html(lang="pl-PL")
         each world, worldName in state
           tr
             td= world.name
-            each day, dayTimestamp in world.days
+            each day, date in world.days
               if day.isParsed
                 if day.hasDataFiles
                   td.available(
-                    title=`${translation.day} ${dayTimestamp}, ${translation.parsedDataAvailable.toLowerCase()}, ${translation.filesAvailable.toLowerCase()}`
-                  )= day.dateString
+                    title=`${translation.day} ${date}, ${translation.parsedDataAvailable.toLowerCase()}, ${translation.filesAvailable.toLowerCase()}`
+                  )= date
                 else
                   td.data-only(
-                    title=`${translation.day} ${dayTimestamp}, ${translation.parsedDataAvailable.toLowerCase()}, ${translation.filesUnavailable.toLowerCase()}`
-                  )= day.dateString
+                    title=`${translation.day} ${date}, ${translation.parsedDataAvailable.toLowerCase()}, ${translation.filesUnavailable.toLowerCase()}`
+                  )= date
               else
                 if day.hasDataFiles
                   td.files-only(
-                    title=`${translation.day} ${dayTimestamp}, ${translation.parsedDataUnavailable.toLowerCase()}, ${translation.filesAvailable.toLowerCase()}`
-                  )= day.dateString
+                    title=`${translation.day} ${date}, ${translation.parsedDataUnavailable.toLowerCase()}, ${translation.filesAvailable.toLowerCase()}`
+                  )= date
                 else
                   td.unavailable(
-                    title=`${translation.day} ${dayTimestamp}, ${translation.parsedDataUnavailable.toLowerCase()}, ${translation.filesUnavailable.toLowerCase()}`
-                  )= day.dateString
+                    title=`${translation.day} ${date}, ${translation.parsedDataUnavailable.toLowerCase()}, ${translation.filesUnavailable.toLowerCase()}`
+                  )= date

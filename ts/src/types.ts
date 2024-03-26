@@ -18,7 +18,7 @@ export interface Settings {
   smoothBorders: boolean;
   trim: boolean;
   topSpotSize: number;
-  day: number;
+  day: string;
   world: number;
 }
 export interface ParsedColor {
@@ -61,7 +61,7 @@ export interface ParsedTurnData {
 export type CreatedMapWithRelations = CreatedMap & {
   collection: Collection;
 };
-export type WorldWithWorldData = World & { worldData: { id: number; day: number }[] };
+export type WorldWithWorldData = World & { worldData: { id: number; day: string }[] };
 export type UserWithRelations = User & {
   collections: Collection[];
 };
@@ -83,7 +83,6 @@ export interface WorldDataState {
 export interface TurnDataState {
   hasDataFiles: boolean;
   isParsed: boolean;
-  dateString: string;
 }
 export interface UserSessionData {
   id: number;

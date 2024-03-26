@@ -14,7 +14,7 @@ model CreatedMap {
   description      String      @db.VarChar(200)
   settings         Json        @db.Json @default("{}")
   title            String      @db.VarChar(20)
-  day              Int
+  day              String
   collection       Collection  @relation(fields: [collectionId], references: [id], onDelete:Cascade, onUpdate: Cascade)
 }
 
@@ -30,7 +30,7 @@ model TurnData {
   id        Int            @id @default(autoincrement())
   worldId   Int
   data      Json           @db.Json
-  day       Int
+  day       String
   timestamp DateTime       @default(now()) @db.Timestamptz(0)
   world     World          @relation(fields: [worldId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }

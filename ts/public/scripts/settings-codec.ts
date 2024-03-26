@@ -8,7 +8,7 @@ import {
   isValidOutputWidth,
   isValidScale,
   isValidTopSpotSize,
-  isValidDayTimestamp,
+  isValidDay,
 } from "./validators.js";
 import { Settings } from "../../src/types";
 
@@ -131,7 +131,7 @@ export const decodeJsonSettings = function (stringifiedSettings: string): Settin
     if (typeof parsedSettings.smoothBorders === "boolean") resultSettings.smoothBorders = parsedSettings.smoothBorders;
     if (isValidTopSpotSize(parsedSettings.topSpotSize)) resultSettings.topSpotSize = parsedSettings.topSpotSize;
     if (typeof parsedSettings.trim === "boolean") resultSettings.trim = parsedSettings.trim;
-    if (isValidDayTimestamp(parsedSettings.day)) resultSettings.day = parsedSettings.day;
+    if (isValidDay(parsedSettings.day)) resultSettings.day = parsedSettings.day;
     if (isValidId(parsedSettings.world)) resultSettings.world = parsedSettings.world;
     if (Array.isArray(parsedSettings.markGroups)) {
       parsedSettings.markGroups.forEach((markGroup) => {

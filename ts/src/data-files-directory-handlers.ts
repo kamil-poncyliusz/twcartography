@@ -1,5 +1,4 @@
 import fs from "fs/promises";
-import { ServerWithWorlds } from "./types";
 
 export const getDirectories = async function (path: string): Promise<string[]> {
   try {
@@ -13,7 +12,7 @@ export const getDirectories = async function (path: string): Promise<string[]> {
   }
 };
 
-export const getDataFilesDirectoryPath = function (worldName: string, day: number): string {
+export const getDataFilesDirectoryPath = function (worldName: string, day: string): string {
   return `data-files/${worldName}/${day}`;
 };
 

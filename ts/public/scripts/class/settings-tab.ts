@@ -7,7 +7,6 @@ import { selectInputValue } from "../generator-controller-helpers.js";
 import { CreateMapRequestValidationCode, isValidCreateMapRequestPayload } from "../requests-validators.js";
 import { CreateMapRequestPayload, CreateMapResponse, Settings } from "../../../src/types";
 import { getPreferredTranslation } from "../languages.js";
-import { dateStringFromDayTimestamp, dayTimestampFromDateString } from "../time-helpers.js";
 
 const acceptedLanguages = [...navigator.languages];
 const translation = getPreferredTranslation(acceptedLanguages);
@@ -177,8 +176,7 @@ class SettingsTab {
   };
   changeTurn = async (e: Event) => {
     const input = e.target as HTMLInputElement;
-    const date = input.value;
-    const day = dayTimestampFromDateString(date);
+    const day = input.value;
     const isChanged = await this.#generator.changeTurn(day);
     if (isChanged) input.classList.remove("is-invalid");
     else input.classList.add("is-invalid");
@@ -240,7 +238,7 @@ class SettingsTab {
       else input.value = String(value);
       input.classList.remove("is-invalid");
     }
-    dayInput.value = dateStringFromDayTimestamp(settings.day);
+    dayInput.value = settings.day;
     mapSettingsInput.value = encodedSettings;
     mapSettingsInput.classList.remove("is-invalid");
     inputs.autoRefresh.checked = this.#generator.autoRefresh;
@@ -249,9 +247,7 @@ class SettingsTab {
     if (this.#generator.settings.world > 0) {
       worldSelect.value = String(this.#generator.settings.world);
       dayInput.disabled = false;
-      if (this.#generator.settings.day === -1) {
-        dayInput.value = "";
-      } else {
+      if (this.#generator.settings.day !== "") {
         this.disabled = false;
         if (inputs.trim.checked) inputs.outputWidth.disabled = true;
         if (!inputs.drawBorders.checked) inputs.borderColor.disabled = true;
