@@ -108,11 +108,16 @@ describe("isValidTitle", () => {
 });
 describe("isValidDay", () => {
   test("Should check if given day is valid", () => {
-    expect(isValidDay(-123)).toBe(false);
-    expect(isValidDay(0)).toBe(true);
-    expect(isValidDay(1)).toBe(true);
-    expect(isValidDay(1.23)).toBe(false);
-    expect(isValidDay(123)).toBe(true);
-    expect(isValidDay(NaN)).toBe(false);
+    expect(isValidDay("")).toBe(false);
+    expect(isValidDay("0")).toBe(false);
+    expect(isValidDay("aaaaaaaaaa")).toBe(false);
+    expect(isValidDay("01-01-2024")).toBe(false);
+    expect(isValidDay("2024-06-150")).toBe(false);
+    expect(isValidDay("2024-1-1")).toBe(false);
+    expect(isValidDay("2024-0615")).toBe(false);
+    expect(isValidDay("2024-A6-15")).toBe(false);
+    expect(isValidDay("2024-00-00")).toBe(true);
+    expect(isValidDay("2024-06-15")).toBe(true);
+    expect(isValidDay("2024-99-99")).toBe(true);
   });
 });

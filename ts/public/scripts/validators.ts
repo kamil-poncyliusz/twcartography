@@ -5,8 +5,6 @@ const LOGIN_MIN_LENGTH = 2;
 const LOGIN_MAX_LENGTH = 15;
 const PASSWORD_MIN_LENGTH = 8;
 const PASSWORD_MAX_LENGTH = 30;
-const TURN_MIN = 18261;
-export const TURN_MAX = 25565;
 const TITLE_MIN_LENGTH = 1;
 const TITLE_MAX_LENGTH = 20;
 const MAP_DESCRIPTION_MAX_LENGTH = 200;
@@ -77,10 +75,9 @@ export const isValidUserRank = function (rank: number): boolean {
   return true;
 };
 
-// function checks if strings is in format "YYYY-MM-DD"
 export const isValidDay = function (input: string): boolean {
   if (typeof input !== "string") return false;
-  const regex = new RegExp(/^\d{4}-\d{1,2}-\d{1,2}$/);
+  const regex = new RegExp(/^\d{4}-\d{2}-\d{2}$/);
   return regex.test(input);
 };
 

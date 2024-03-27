@@ -8,8 +8,8 @@ testLoggedInUser("generating a map and deleting it", async ({ loggedInUser }) =>
     loggedInUser.waitForResponse((response) => response.url().includes("/api/world")),
     loggedInUser.locator("#world-select").selectOption("1"),
   ]);
-  await loggedInUser.locator("#turn-input").fill("5");
-  await loggedInUser.locator("#turn-input").press("Enter");
+  await loggedInUser.locator("#day-input").fill("2024-01-06");
+  // await loggedInUser.locator("#turn-input").press("Enter");
   await loggedInUser.locator("#marks-button").click();
   await loggedInUser.locator("#mark-suggestions select").first().selectOption("-1");
   await loggedInUser.locator("#mark-suggestions select").first().selectOption("-1");
