@@ -98,7 +98,7 @@ const dataFilesDownloaderDaemon = {
     if (process.env.RUN_DOWNLOADER_DAEMON !== "true") return;
     if (server.domain === null) return;
     const rule = `0 0 ${server.updateHour} * * *`;
-    const jobName = server.id.toString();
+    const jobName = server.name;
     console.log(`Daemon: Downloading for server ${server.name} set at hour ${server.updateHour}`);
     this.scheduler.scheduleJob(jobName, rule, async function () {
       console.log(`Daemon: Downloading data files for server ${server.name}`);
@@ -131,8 +131,8 @@ const dataFilesDownloaderDaemon = {
       console.log(`Daemon: Downloading data files for server ${server.name} finished`);
     });
   },
-  stopDownloading: function (world: World) {
-    const jobName = world.id.toString();
+  stopDownloading: function (server: Server) {
+    const jobName = server.name;
     this.scheduler.cancelJob(jobName);
   },
 };

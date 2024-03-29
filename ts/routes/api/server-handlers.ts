@@ -1,8 +1,10 @@
 import { Request } from "express";
-import { createServer } from "../../src/queries/server.js";
+import { createServer, deleteServer } from "../../src/queries/server.js";
 import { CreateServerRequestPayload } from "../../src/types";
 import { isValidCreateServerRequestPayload } from "../../public/scripts/requests-validators.js";
 import dataFilesDownloaderDaemon from "../../src/data-files-downloader-daemon.js";
+import { isValidId } from "../../public/scripts/validators.js";
+import { deleteServerDirectories } from "../../src/data-files-directory-handlers.js";
 
 export const handleCreateServer = async function (req: Request): Promise<boolean> {
   if (!req.session.user || req.session.user.rank < 10) return false;
@@ -18,13 +20,13 @@ export const handleCreateServer = async function (req: Request): Promise<boolean
   return true;
 };
 
-// export const handleDeleteServer = async function (req: Request): Promise<boolean> {
-//   const user = req.session.user;
-//   const serverId = parseInt(req.params.id);
-//   if (!user || user.rank < 10 || !isValidId(serverId)) return false;
-//   const deletedServer = await deleteServer(serverId);
-//   if (!deletedServer) return false;
-//   // turnDataDownloaderDaemon.stopDownloading(deletedServer);
-//   await deleteServerDirectory(deletedServer.name);
-//   return true;
-// };
+export const handleDeleteServer = async function (req: Request): Promise<boolean> {
+  if (!req.session.user || req.session.user.rank < 10) return false;
+  const serverId = parseInt(req.params.id);
+  if (!isValidId(serverId)) return false;
+  const deletedServer = await deleteServer(serverId);
+  if (!deletedServer) return false;
+  dataFilesDownloaderDaemon.stopDownloading(deletedServer);
+  await deleteServerDirectories(deletedServer.name);
+  return true;
+};

@@ -5,7 +5,7 @@ import { handleCreateMap, handleDeleteMap, handleUpdateMap } from "./map-handler
 import { handleReadTurnData } from "./turn-data-handlers.js";
 import { handleCreateUser, handleUpdateUser } from "./user-handlers.js";
 import { handleReadWorld } from "./world-handlers.js";
-import { handleCreateServer } from "./server-handlers.js";
+import { handleCreateServer, handleDeleteServer } from "./server-handlers.js";
 
 const apiRouter = express.Router();
 
@@ -33,5 +33,5 @@ apiRouter.post("/user", (req, res) => handleRequest(handleCreateUser, req, res))
 apiRouter.get("/world/:id", (req, res) => handleRequest(handleReadWorld, req, res));
 
 apiRouter.post("/server", (req, res) => handleRequest(handleCreateServer, req, res));
-// apiRouter.delete("/server/:id", (req, res) => handleRequest(handleDeleteServer, req, res));
+apiRouter.delete("/server/:id", (req, res) => handleRequest(handleDeleteServer, req, res));
 export default apiRouter;

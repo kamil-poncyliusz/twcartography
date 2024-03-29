@@ -18,7 +18,8 @@ html(lang="pl-PL")
             th ID
             th= translation.name
             th= translation.domain
-            th= translation.updateHour
+            th= `${translation.updateHour}(UTC)`
+            th
             th
         tbody
           each server in servers
@@ -29,6 +30,8 @@ html(lang="pl-PL")
               td= server.updateHour
               td
                 button.server-status-button(type="button", data-server-id=server.id)= translation.deactivate
+              td
+                button.delete-server-button(type="button", data-server-id=server.id)= translation.delete
           tr
             td -
             td
@@ -37,5 +40,6 @@ html(lang="pl-PL")
               input#domain(type="text", name="domain", autocomplete="off", placeholder=translation.domain.toLowerCase())
             td
               input#update-hour(type="number", name="update-hour", autocomplete="off", placeholder=translation.hour.toLowerCase())
+            td -
             td
               input(type="submit", value=translation.add)

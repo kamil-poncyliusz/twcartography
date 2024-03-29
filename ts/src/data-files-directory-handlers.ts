@@ -26,17 +26,24 @@ export const createDirectory = async function (path: string): Promise<boolean> {
   }
 };
 
-// export const deleteServerDirectory = async function (serverSymbol: string) {
-//   const pathToDelete = `temp/${serverSymbol}`;
-//   try {
-//     await fs.access(pathToDelete);
-//     await fs.rm(pathToDelete, { recursive: true, force: true });
-//     return true;
-//   } catch (error) {
-//     console.log(error);
-//     return false;
-//   }
-// };
+export const deleteDirectory = async function (path: string): Promise<boolean> {
+  try {
+    await fs.rm(path, { recursive: true, force: true });
+    return true;
+  } catch (error) {
+    console.error(`Error deleting ${path} directory: ${error}`);
+    return false;
+  }
+};
+
+export const deleteServerDirectories = async function (serverName: string) {
+  const worldDirectories = await getDirectories("data-files");
+  const serverDirectories = worldDirectories.filter((worldDirectory) => worldDirectory.startsWith(serverName));
+  for (const serverDirectory of serverDirectories) {
+    const path = `data-files/${serverDirectory}`;
+    await deleteDirectory(path);
+  }
+};
 
 export const areDataFilesAvailable = async function (worldName: string, day: string): Promise<boolean> {
   const files = ["village", "player", "ally", "conquer", "kill_all_tribe", "kill_att_tribe", "kill_def_tribe"];
