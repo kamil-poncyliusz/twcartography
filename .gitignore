@@ -5,7 +5,7 @@ data-files/*/
 !data-files/tt1
 public/images/maps
 public/images/animations
-*.txt
+todo.txt
 coverage/*
 server.js
 public/scripts/

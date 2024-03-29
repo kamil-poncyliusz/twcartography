@@ -42,5 +42,4 @@ testLoggedInUser("generating a map and deleting it", async ({ loggedInUser }) =>
     loggedInUser.locator("#delete-collection").click(),
   ]);
   await loggedInUser.waitForURL("http://localhost:8080/");
-  console.log(loggedInUser.url());
 });
