@@ -17,7 +17,7 @@ services:
       database-production:
         condition: service_healthy
     volumes:
-      - world_data_files:/app/temp
+      - world_data_files:/app/data-files
       - saved_maps:/app/public/images/maps
       - saved_animations:/app/public/images/animations
     command: sh -c "npx prisma migrate deploy && node server.js"
